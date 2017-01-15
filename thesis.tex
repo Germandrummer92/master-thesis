@@ -1,0 +1,161 @@
+%% LaTeX2e class for student theses
+%% thesis.tex
+%% 
+%% Karlsruhe Institute of Technology
+%% Institute for Program Structures and Data Organization (IPD)
+%% Chair for Software Design and Quality (SDQ)
+%%
+%% Dr.-Ing. Erik Burger
+%% burger@kit.edu
+%%
+%% Version 1.1, 2014-11-21
+
+%% Available languages: english,ngerman
+%% Available modes: draft,final (see README)
+\documentclass[english]{sdqthesis}
+%% ---------------------------------
+%% | Information about the thesis  |
+%% ---------------------------------
+
+%% Name of the author
+\author{Daniel H. Draper}
+
+%% Title (and possibly subtitle) of the thesis
+\title{Online Neural Network-based Language Identification}
+
+%% Type of the thesis 
+\thesistype{Master's Thesis}
+
+%% Change the institute here, ``IPD'' is default
+\myinstitute{Institute for Anthropomatics and Robotics}
+
+%% You can put a logo in the ``logos'' directory and include it here
+%% instead of the SDQ logo
+% \grouplogo{myfile}
+%% Alternatively, you can disable the group logo
+\nogrouplogo
+
+%% The reviewers are the professors that grade your thesis
+\reviewerone{Dr.-Ing. Sebastian Stüker}
+%\reviewertwo{Prof. B}
+
+%% The advisors are PhDs or Postdocs
+\advisorone{M.Sc. Markus Müller}
+%% The second advisor can be omitted
+%\advisortwo{Dipl.-Inform. D}
+
+%% Please enter the start end end time of your thesis
+\editingtime{12. December 2016}{11. May 2017}
+
+\settitle
+
+%% --------------------------------
+%% | Settings for word separation |
+%% --------------------------------
+
+%% Describe separation hints here.
+%% For more details, see 
+%% http://en.wikibooks.org/wiki/LaTeX/Text_Formatting#Hyphenation
+\hyphenation{im-ple-men-ta-tion
+% me-ta-mo-del
+}
+
+%% --------------------------------
+%% | Bibliography                 |
+%% --------------------------------
+
+%% Use biber instead of BibTeX, see README
+%\usepackage[citestyle=numeric,style=numeric,backend=biber]{biblatex}
+\usepackage{xr}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage[nopostdot,nonumberlist,toc]{glossaries}
+\usepackage{tikz}
+%\addbibresource{thesis.bib}
+\newcommand{\ltab}{\raggedright\arraybackslash}
+
+\makeglossaries
+%% ====================================
+%% ====================================
+%% ||                                ||
+%% || Beginning of the main document ||
+%% ||                                ||
+%% ====================================
+%% ====================================
+\begin{document}
+
+%% Set PDF metadata
+\setpdf
+
+%% Set the title
+\maketitle
+
+%% The Preamble begins here
+\frontmatter
+
+\include{sections/declaration}
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+
+%% ----------------
+%% |   Abstract   |
+%% ----------------
+
+%% For theses written in English, an abstract both in English
+%% and German is mandatory.
+%%
+%% For theses written in German, a German abstract is sufficient.
+%%
+%% The text is included from the following files:
+%% - sections/abstract
+
+\includeabstract
+
+%% ------------------------
+%% |   Table of Contents  |
+%% ------------------------
+\tableofcontents
+
+\listoffigures
+\listoftables
+
+%% -----------------
+%% |   Main part   |
+%% -----------------
+
+\mainmatter
+
+%\include{sections/introduction}
+\include{sections/preliminary}
+%\include{sections/content}
+%\include{sections/conclusion}
+
+
+
+
+
+
+
+
+
+
+
+%% --------------------
+%% |   Bibliography   |
+%% --------------------
+
+%% Add entry to the table of contents for the bibliography
+\bibliography{thesis}
+\bibliographystyle{alpha}
+%\printbibliography[heading=bibintoc]
+
+
+%% ----------------
+%% |   Appendix   |
+%% ----------------
+\appendix
+%\include{sections/appendix}
+\glsaddall
+\printglossaries
+\end{document}

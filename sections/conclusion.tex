@@ -1,0 +1,25 @@
+%% LaTeX2e class for student theses
+%% sections/conclusion.tex
+%% 
+%% Karlsruhe Institute of Technology
+%% Institute for Program Structures and Data Organization
+%% Chair for Software Design and Quality (SDQ)
+%%
+%% Dr.-Ing. Erik Burger
+%% burger@kit.edu
+%%
+%% Version 1.1, 2014-11-21
+
+\chapter{Conclusion}
+\label{ch:Conclusion}
+
+In this thesis we have presented, discussed and applied our approach to refining a hybrid model of a CPS, like a hybrid program, into a concrete implementation of the control part of the system. Overall our approach appears sound during application and a viable way of gaining a concrete implementation from an existing hybrid model. Our introduced third proof component of the glue works in proving the entire CPS's correctness according to the safety property. 
+
+Finding the glue as a relation between the discrete and analogue world proved difficult during application and non-trivial even in seemingly easy systems as our first example, the water tank. As rounding or flooring functions will most likely always be a part of the glue relation due to the discrete world's , the glue proof will often have to be used to further refine the implementation. As it did for us, as the original hook postconditions used as a form of specification for the implementation will often not include the rounding/flooring errors. 
+
+Overall our work improves upon existing notions of analyzing and verifying hybrid systems and offers a non-trivial way of proving correctness of hybrid model/implementation packages.
+
+\section{Future Work}
+\label{con:fut} 
+
+As mentioned in the corresponding implementation sections, our implementations for both concrete examples err on the side of caution and do not provide the same functionality a real-world example would. More case studies could be done as to show the soundness of our approach further. Aside from this, a more formalized process outline for our only roughly outlined approach would improve the applicability. In the future an automatic generation of the glue proof from an existing hybrid model and implementation is also thinkable.
