@@ -13,4 +13,33 @@
 %To be able to reference labels in other file
 \externaldocument{introduction}
 \externaldocument{appendix}
+
+\chapter{Language Identification Tasks}
+\label{ch:LITasks}
+This chapter introduces the datasets used to train the networks employed in this approach. While Language Identification is applicable in many different scenarios, in this thesis the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
+
+This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the neural net.
+
+\subsection{Euronews 2014}
+\label{sec:LITasks:Euronews}
+Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web. The first data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portugese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this can be seen in table ~\ref{tab:spkData}.
+
+\begin{tabular}[h]{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Number of Speakers} & \textbf{Length overall} \\
+	Arabian & 1055 & \\
+	German & 928 & \\
+	Spanish & 932 & \\
+	French & 1016 & \\
+	Italian & 935 & \\
+	Polish & 1229 & \\
+	Portugese & 1062 & \\
+	Russian & 958 & \\
+	Turkish & 957 & \\
+	English & 928 & \\
+	\hline
+	Overall & 10000 & \\
+	\label{tab:spkData}
+\end{tabular}
+
 	
