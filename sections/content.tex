@@ -22,9 +22,12 @@ This means that the output of the net is evaluated after short samples of speech
 
 \subsection{Euronews 2014}
 \label{sec:LITasks:Euronews}
-Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web. The first data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portugese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this can be seen in table ~\ref{tab:spkData}.
+Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web. The first data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portugese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
-\begin{tabular}[h]{| l | c | r | }
+\begin{table}[h]
+\label{tab:spkData}
+\centering
+\begin{tabular}{| l | c | r | }
 	\hline
 	\textbf{Language} & \textbf{Number of Speakers} & \textbf{Length overall} \\
 	Arabian & 1055 & \\
@@ -38,8 +41,35 @@ Our first data set we retrieved from Euronews \footnote{Euronews: http://www.eur
 	Turkish & 957 & \\
 	English & 928 & \\
 	\hline
-	Overall & 10000 & \\
-	\label{tab:spkData}
+	\textbf{Overall} & 10000 & \\
+	\hline
+	
 \end{tabular}
+\caption{The Euronews corpus speaker breakdown with total utterances length}
+\end{table}
+
+The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets.
+
+
+\subsection{Lecture Data}
+\label{sec:LITasks:Lecture}
+
+\subsection{European Parliament}
+\label{sec:LITasks:EU}
+
+\chapter{Feature Preprocessing}
+\label{ch:FP}
+
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup we used is based on the standard capabilities of the Janus Recognition Toolkit\footnote{Janus Recognition Toolkit(JRTk): http://isl.anthropomatik.kit.edu/cmu-kit/english/1406.php}. It is then run through a six layer Automatic Speech Recognition network that was pretrained on 10 languages. The 2nd last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this first network in detail and explain the Feature Preprocessing.
+
+\subsection{Feature Access}
+\label{sec:FP:FA}
+
+\subsection{Feature Description}
+\label{sec:FP:FD}
+%% TODO: references
+The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
+
+First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal.
 
 	

@@ -3,7 +3,6 @@
 *.glg
 *.glo
 *.log
-*.cls
 *.bbl
 *.aux
 *.lot
