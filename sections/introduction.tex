@@ -12,3 +12,22 @@
 
 \chapter{Introduction}
 \label{ch:Introduction}
+Language Identification describes the task of differentiating between spoken speech in different languages and being able to correctly identify which speech-segment consists of which language.  Neural Networks refer to Artificial Neural Network's, a Machine Learning approach to classification tasks employed greatly throughout all sciences and especially in computer science and tasks concerned with the processing on spoken speech. This thesis tries to find a low-latency, fast, or ''online'', approach to Language Identification. 
+
+The following chapter gives an introductory view of the applications of Language Identification, and introduces the tasks this thesis tries to solve. It also presents related work and how this thesis can be put into perspective to those works. Afterwards we give preliminary theoretical explanations and definitions, including an introduction to Neural Networks in Sec.~\ref{sec:Prelimary:NN}. The chapter afterwards introduces the language identification tasks this thesis deals with, and the different data corpusses used, followed by our solution split into two chapters: the preprocessing and actual neural networks trained with its training results. Evaluation results are then presented followed by the conclusion and an outlook.
+\subsection{Applications}
+\label{sec:Introduction:Apps}
+Automatic Speech Recognition (ASR) is used in many applications and devices today, especially in the rise of handheld mobile devices like smart-phones and tablets. It has progressed quickly in the last five years and has found commercial success. Famous examples include Google\footnote{Google: \url{www.google.com}}'s ''Ok, Google" and Apple\footnote{Apple: \url{www.apple.com}}'s Siri. Which both include voice search\cite{franz2008voice}, a form of voice control, that even is extensible in the case of Google and Android e.g\cite{voicecontrol2014}. Many other applications have emerged, including spoken language translation\footnote{IWSLT: \url{iwslt.org}}, especially for this thesis in the realm of Lecture Translation\cite{lecturetranslator2016} .
+
+The task of Language Identification can be applied in all of those fields, as Automatic Speech Recognition is trained on one language and therefore always requires manual changing of the language as to use the correct language for the speech recognizer. Robust and low-latency language identification would eliminate the need for this.
+
+Spoken language translation, as used for example in the European Parliament where already components of ASR and Machine Translation are employed and are being actively developed\footnote{TC-STAR: \url{tcstar.org}}\cite{vilar2005statistical}. 
+
+This thesis will focus mostly on the KIT's lecture Translator\footnote{Lecture Translator: \url{https://lecture-translator.kit.edu}}  as the system trained was implemented for it. We believe our results are general enough to be transferable to other applications with implementation-specific changes.
+
+\subsection{Language Identification in History}
+\label{sec:Introduction:LIDHistory}
+
+\section{Related Work}
+\label{ch:Intro:Related}
+This section takes a look at related work that shows different modern approaches of identifying Language in spoken speech and describe the differences between their work and our approach. 
