@@ -22,7 +22,7 @@ This means that the output of the net is evaluated after short samples of speech
 
 \subsection{Euronews 2014}
 \label{sec:LITasks:Euronews}
-Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web. The first data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
+Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
 \begin{table}[h]
 \label{tab:spkData}
@@ -77,6 +77,23 @@ First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast 
 \label{ch:LIDNetwork}
 
 This chapter describes the actual Language Identification Neural Network trained as well as the results of different network/data setups used. Most network experiments in the Network Geometry, meaning the number of hidden layers as well as the layout of the neurons in these layers were tried using the Euronews corpus. Results from this corpus were then transferred over to the other corpusses, meaning that the network layout that worked best for Euronews was then adjusted for the lecture data but otherwise the geometry was kept intact.
+
+\section{Basic Setup}
+\label{sec:LIDNetwork:Basic}
+
+Many different tools exist for deeplearning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification using ASR BNFs wused a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from the ASR net~\ref{sec:FP:FA} with 966 coefficients. The net setup were 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
+
+The neural net was then trained using mini batches of size 2m and a learning Rate of 0.01. The pretrained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
+
+The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively.
+
+The following sections describe different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
+
+\section{Improving Network Layout}
+\label{sec:LIDNetwork:Layout}
+
+Different experiments were undertaken with the network layout. This includes a 6 hidden layer-pretraining as well as a change in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}
+
 
 
 	
