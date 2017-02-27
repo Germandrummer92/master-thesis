@@ -74,6 +74,44 @@
 %\addbibresource{thesis.bib}
 \newcommand{\ltab}{\raggedright\arraybackslash}
 
+\lstdefinelanguage{tclfix}% from tcl definition
+   {alsoletter={.:,*=&-},%
+     morekeywords={after,append,array,names,exists,anymore,donesearch,%
+       get,nextelement,set,size,startsearch,auto_mkindex,binary,break,%
+       case,catch,cd,clock,close,concat,console,continue,default,else,%
+       elseif,eof,error,eval,exec,-keepnewline,exit,expr,fblocked,%
+       fconfigure,fcopy,file,atime,dirname,executable,exists,extension,%
+       isdirectory,isfile,join,lstat,mtime,owned,readable,readlink,%
+       rootname,size,stat,tail,type,writable,-permissions,-group,-owner,%
+       -archive,-hidden,-readonly,-system,-creator,-type,-force,%
+       fileevent,flush,for,foreach,format,gets,glob,global,history,if,%
+       incr,info,argsbody,cmdcount,commands,complete,default,exists,%
+       globals,level,library,locals,patchlevel,procs,script,tclversion,%
+       vars,interp,join,lappend,lindex,linsert,list,llength,lrange,%
+       lreplace,lsearch,-exact,-regexp,-glob,lsort,-ascii,-integer,%
+       -real,-dictionary,-increasing,-decreasing,-index,-command,load,%
+       namespace,open,package,forget,ifneeded,provide,require,unknown,%
+       vcompare,versions,vsatisfies,pid,proc,puts,-nonewline,pwd,read,%
+       regexp,-indices,regsub,-all,-nocaserename,return,scan,seek,set,%
+       socket,source,split,string,compare,first,index,last,length,match,%
+       range,tolower,toupper,trim,trimleft,trimright,subst,switch,tell,%
+       time,trace,variable,vdelete,vinfo,unknown,unset,uplevel,upvar,%
+       vwait,while,acos,asin,atan,atan2,ceil,cos,cosh,exp,floor,fmod,%
+       hypot,log,log10,pow,sin,sinh,sqrt,tan,tanh,abs,double,int,round%
+     },%
+     morestring=[d]",%
+%   MoreSelectCharTable=%   <= the strange definition
+%   \lst@CArgX\#\relax\lst@DefDelimB{}{}%
+%   {\ifx\lst@lastother\lstum@backslash
+%     \expandafter\@gobblethree
+%     \fi}%
+%   \lst@BeginComment\lst@commentmode
+%   {{\lst@commentstyle}\lst@Lmodetrue}%
+     morecomment=[l]\#     % <= this one ! Much simpler
+   }[keywords,comments,strings]%
+
+\lstset{commentstyle=\itshape,language=tclfix}
+
 \makeglossaries
 %% ====================================
 %% ====================================
@@ -130,12 +168,6 @@
 \include{sections/preliminary}
 \include{sections/content}
 \include{sections/conclusion}
-
-
-
-
-
-
 
 
 

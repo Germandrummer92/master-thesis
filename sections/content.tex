@@ -20,7 +20,7 @@ This chapter introduces the datasets used to train the networks employed in this
 
 This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the neural net.
 
-\subsection{Euronews 2014}
+\section{Euronews 2014}
 \label{sec:LITasks:Euronews}
 Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes our 10 language (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
@@ -51,26 +51,29 @@ Our first data set we retrieved from Euronews \footnote{Euronews: http://www.eur
 The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets.
 
 
-\subsection{Lecture Data}
+\section{Lecture Data}
 \label{sec:LITasks:Lecture}
 
-\subsection{European Parliament}
+\section{European Parliament}
 \label{sec:LITasks:EU}
 
 \chapter{Feature Preprocessing}
 \label{ch:FP}
 
-This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup we used is based on the standard capabilities of the Janus Recognition Toolkit\footnote{Janus Recognition Toolkit(JRTk): http://isl.anthropomatik.kit.edu/cmu-kit/english/1406.php}. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires.
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup we used is based on the standard capabilities of the Janus Recognition Toolkit. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires.
 
-\subsection{Feature Access}
+\section{Feature Access}
 \label{sec:FP:FA}
 
-\subsection{Feature Description}
+\section{Feature Description}
 \label{sec:FP:FD}
 %% TODO: references
 The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard Mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
 
 First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal.
+
+\section{ASR BNF network}
+\label{sec:FP:Net}
 
 
 \chapter{LID Network}
@@ -95,5 +98,65 @@ The following sections describe different network layouts and changes we made to
 Different experiments were undertaken with the network layout. This includes a 6 hidden layer-pretraining as well as a change in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}
 
 
+\chapter{Output smoothing}
+\label{ch:Output}
 
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in.
+
+\section{Basic Test Filter}
+\label{sec:Output:basic}
+
+The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warmup'' time, which still would make it usable in an online environment.
+
+See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this basic filtering approach. 
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+\begin{lstlisting}[label=lst:basic,caption=Most basic filter employed to smooth output]
+proc filter{} {
+    #setting up variables
+     for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+   #Going through whole sample frame by frame -> can be changed to work on continuously incoming data easily
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+	#we find the current output of the net
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        #Actual Filtering: Only count if last 4 frames were also classified to be this language
+        if {$maxFrameID != $lastFrameID} {
+           set lastFrameID $maxFrameID
+           set counter 0
+       #Also filter for the actual output of the neuron
+        } elseif {$maxFrame >= 0.61} {
+           incr counter
+           if {$counter >= 5} {
+              set currentOutput $maxFrameID
+           }
+        }
+	if {$currentOutput != -1} {
+              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+        }
+
+    }
+    set maxOverall -1
+    set maxID -1
+    #Now get the output for the whole sample by 
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+    }
+   #print out the total classification for the entire sample
+    puts -nonewline "Overall we have classified as: "
+    #help function to print language name not id.
+    puts [getName $maxID]
+    return $maxID
+}
+
+\end{lstlisting}
+The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing. 
 	
