@@ -14,34 +14,35 @@
 \externaldocument{introduction}
 \externaldocument{appendix}
 
-\chapter{Language Identification Tasks}
+\chapter{Experimental Setup}
 \label{ch:LITasks}
-This chapter introduces the datasets used to train the networks employed in this approach. While Language Identification is applicable in many different scenarios, in this thesis the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
+This chapter lays out the experimental setup we used for this thesis. While Language Identification is applicable in many different scenarios, in this thesis the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
 
 This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the neural net.
 
 \section{Euronews 2014}
 \label{sec:LITasks:Euronews}
-Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes10 language (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English)  with about 20 hours of data per language provided overall. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
+Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes10 language (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English)  with about 18 hours of data per language provided overall. Data was taken both from online video and recordings of the transmissions as described in \cite{gretter2014euronews}.
+. It was then broken down to a per-speaker-basis based on its automatic transcriptions. From this data we took a random sample of 10.000 speakers, while making sure the total length of samples of that language were still comparable to the other languages. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
 \begin{table}[h]
 \label{tab:spkData}
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
-	\textbf{Language} & \textbf{Number of Speakers} & \textbf{Length overall} \\
-	Arabian & 1055 & \\
-	German & 928 & \\
-	Spanish & 932 & \\
-	French & 1016 & \\
-	Italian & 935 & \\
-	Polish & 1229 & \\
-	Portuguese & 1062 & \\
-	Russian & 958 & \\
-	Turkish & 957 & \\
-	English & 928 & \\
+	\textbf{Language} & \textbf{Number of Speakers} & \textbf{Combined Length} \\
+	Arabian & 1055 & 16.76 h \\
+	German & 928 & 18.80 h \\
+	Spanish & 932 & 18.78 h \\
+	French & 1016 & 18.67 h \\  
+	Italian & 935 & 19.00 h \\  
+	Polish & 1229 & 18.30 h \\ 
+	Portuguese & 1062 & 16.19 h \\ 
+	Russian & 958 & 18.66 h \\ 
+	Turkish & 957 & 18.61 h \\  
+	English & 928 & 18.54 h \\ 
 	\hline
-	\textbf{Overall} & 10000 & \\
+	\textbf{Overall} & 10000 & 182.31 h\\
 	\hline
 	
 \end{tabular}
@@ -50,33 +51,32 @@ Our first data set we retrieved from Euronews \footnote{Euronews: http://www.eur
 
 The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets.
 
-
 \section{Lecture Data}
 \label{sec:LITasks:Lecture}
 
 \section{European Parliament}
 \label{sec:LITasks:EU}
 
-\chapter{Feature Preprocessing}
+\section{Feature Preprocessing}
 \label{ch:FP}
 
 This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup we used is based on the standard capabilities of the Janus Recognition Toolkit. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires.
 
-\section{Feature Access}
+\subsection{Feature Access}
 \label{sec:FP:FA}
 
-\section{Feature Description}
+\subsection{Feature Description}
 \label{sec:FP:FD}
 %% TODO: references
 The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard Mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
 
 First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal.
 
-\section{ASR BNF network}
+\subsection{ASR BNF network}
 \label{sec:FP:Net}
 
 
-\chapter{LID Network}
+\chapter{LID Network Structure and Results}
 \label{ch:LIDNetwork}
 
 This chapter describes the actual Language Identification Neural Network trained as well as the results of different network/data setups used. Most network experiments in the Network Geometry, meaning the number of hidden layers as well as the layout of the neurons in these layers were tried using the Euronews corpus. Results from this corpus were then transferred over to the other corpusses, meaning that the network layout that worked best for Euronews was then adjusted for the lecture data but otherwise the geometry was kept intact.
@@ -84,29 +84,32 @@ This chapter describes the actual Language Identification Neural Network trained
 \section{Basic Setup}
 \label{sec:LIDNetwork:Basic}
 
-Many different tools exist for deeplearning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification using ASR BNFs used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from the ASR net~\ref{sec:FP:FA} with 966 coefficients. The net setup were 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
+Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification using ASR BNFs used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from the ASR net~\ref{sec:FP:FA} with 966 coefficients. The net setup were 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
 
 The neural net was then trained using mini batches of size 2m and a learning Rate of 0.01. The pretrained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
 
-The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively.
+The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error.
 
 The following sections describe different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
 
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
 
-Different experiments were undertaken with the network layout. This includes a 6 hidden layer-pretraining as well as a change in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}
+Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as a change in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}. 
+
+\section{Results}
+\label{sec:LIDNetwork:Results}
 
 
-\chapter{Output smoothing}
-\label{ch:Output}
+\chapter{Smoothing and Evaluation}
+\label{ch:eval}
 
 While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in.
 
 \section{Basic Test Filter}
-\label{sec:Output:basic}
+\label{sec:eval:basic}
 
-The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warmup'' time, which still would make it usable in an online environment.
+The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment. It did however provide no improvement over the bare network output.
 
 See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this basic filtering approach. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing. Table~\ref{tab:eval} shows a comparison of the basic filter with a bare setup only outputting the direct output of the LID net. Fig.~\ref{fig:lengthBasic} shows a comparison of the length of samples and the amount of correctly classified samples of this length for the LID net with the best evaluation results, the 6-layered geometry-adjusted lower learning rate net (See Sec.~\ref{ch:LIDNetwork:Layout}) 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
@@ -161,21 +164,21 @@ proc filter{} {
 
 
 \section{Advanced Test Filter}
-\label{sec:Output:advanced}
+\label{sec:eval:advanced}
 The advanced test filter is based on the jrtk's \textit{FILTER} capability. It automatically takes a defined amount of frames and calculates the weighted arithmetic mean with predefined weights for incoming audio. First tries were done using a basic filter setup of:
 \begin{verbatim}
 filter          nnFILTER   nnBNF  {-2 {1 2 3 2 1}}
-\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively. Applying our basic setup from above on this of smoothing on this weighted average output it turned out, as expected, that the context of only 4 frames was too small. 
+\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  It improved the evaluation results, but only by a negligible amount.
 
 It was adjusted to use a 10-frame based approach with descending weights for frames further out:
 \begin{verbatim}
 filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
-which produces better results and an improvement on the basic setup of about 0.5 \% on average for the different net setups. Evaluation results are listed in Tab.~\ref{tab:eval}. The full tcl code for this can be found in the Appendix.
+which however did not provide a furhter increase in correctness. The full tcl code for this can be found in the Appendix.
 
 
 \section{Variance Test Filter}
-\label{sec:Output:variance}
+\label{sec:eval:variance}
 As a next approach, the variance between the two most likely outputs was taken into account. This however, did not lead to an improvement in the robustness of the classification on the development set. The reason possibly being that the output of the 2\textsuperscript{nd} most likely neuron is not going to differ from the maximum output on many different language pairs: E.g. French/Italian, Russian/Polish, Italian/Portuguese. The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in Tab.~\ref{tab:eval}
 
 

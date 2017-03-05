@@ -11,8 +11,28 @@
 %% Version 1.1, 2014-11-21
 
 
-\chapter{Preliminary Definitions}
-\label{ch:Preliminary}
+\chapter{Fundamentals}
+\label{ch:fund}
 
 In the following chapter we want to define and explain terms and concepts used throughout this thesis as well as give an outlook to related work and the general language identification approaches.
 
+\section{Janus Recognition Toolkit (jrtk)}
+\label{sec:fund:jrtk}
+The Janus Recognition Toolkit (jrtk) also known as just ``Janus'' is a general-purpose speech recognition toolkit developed in joint cooperation by both the Carnegie Mellon University Interactive Systems Lab and the Karlsruhe Institute of Technology Interactive Systems Lab~\cite{lavie1997janus}. Part of janus and the jrtk are a speech-to-speech translation system which includes Janus-SR the speech recognition component mainly used in this thesis. 
+
+Developed to be flexible and extensible the jrtk can be seen as a programmable shell with janus functionality being accessible through objects in the tcl/tk scripting language. It features the IBIS decoder, that uses Hidden Markov Models for acoustic modeling in general, although in this thesis we used a neural network as our speech recognizer to generate the input features required by our Language ID network.
+
+This thesis makes extensive use of the jrtk's and tcl/tk's scripting capabilities to be able to pre-process speech audio files for further use by our experimental setup. It also uses tcl/tk scripts and it's janus API functionality in the development of our smoothing and evaluation scripts as can be seen in Ch.~\ref{ch:eval}.
+\section{Neural Networks}
+\label{sec:fund:NN}
+Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which will be described in Sec.~\ref{sec:fund:work}. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader.
+
+Neural Networks are b
+\subsection{Training}
+\label{sec:fund:Train}
+
+\subsubsection{Sampling}
+\label{sec:fund:Sampling}
+
+\section{Related Work}
+\label{sec:fund:work}
