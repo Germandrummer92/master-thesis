@@ -16,16 +16,16 @@
 
 \chapter{Experimental Setup}
 \label{ch:LITasks}
-This chapter lays out the experimental setup we used for this thesis. While Language Identification is applicable in many different scenarios, in this thesis the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
+This chapter lays out the experimental setup used in this thesis. While Language Identification is applicable in many different scenarios, here the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
 
-This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the neural net.
+This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator
 
 \section{Euronews 2014}
 \label{sec:LITasks:Euronews}
 
-Our first data set we retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes 10 languages (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English) with around 18 hours of data per language provided overall. Data was taken both from online video and recordings of the transmissions as described in \cite{gretter2014euronews}.
+The first data set used, was retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes 10 languages (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English) with around 18 hours of data per language provided overall. Data was taken both from online video and recordings of the transmissions as described in \cite{gretter2014euronews}.
 
-It was then broken down to a per-speaker-basis based on its automatic transcriptions. From this data we took a random sample of 10.000 speakers, while making sure the total length of samples of that language were still comparable to the other languages. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
+It was then broken down to a per-speaker-basis based on its automatic transcriptions. From this data we took a random sample of 10.000 speakers, while making sure the total length of samples for each language were roughly the same. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
 \begin{table}[h!]
 \label{tab:spkData}
@@ -67,16 +67,16 @@ It was then broken down to a per-speaker-basis based on its automatic transcript
 \caption{The Euronews corpus breakdown into the three data sets.}
 \end{table}
 
-The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets. 
+The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) allocated to the train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets. 
 
-We also had a second Euronews Corpus available that was much larger. This was used to conform intuition that a larger data corpus leads to better results which can be seen in Sec.~\ref{sec:LIDNetwork:Results}. The breakdown of the large corpus' data is listed in Table~\ref{tab:spkDataBig}
+We also had a second Euronews Corpus available that was much larger. This was used to confirm intuition that a larger data corpus leads to better results which can be seen in Sec.~\ref{sec:LIDNetwork:Results}. The breakdown of the large corpus' data is listed in Table~\ref{tab:spkDataBig}
 
 \section{Lecture Data}
 \label{sec:LITasks:Lecture}
 
-As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at the conference Interspeech,  as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition. 
+As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}},  as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition. 
 
-This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
+This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
 
 The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. As the main work was done on the Euronews corpus this data corpus is considerarbly smaller and was mostly just used as a proof-of-concept for a possible integration of a LID-Net into the Lecture Translator. 
 \begin{table}[h!]
