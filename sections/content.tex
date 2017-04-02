@@ -14,23 +14,31 @@
 \externaldocument{introduction}
 \externaldocument{appendix}
 
+
 \chapter{Experimental Setup}
 \label{ch:LITasks}
 
 This chapter lays out the experimental setup used in this thesis. While Language Identification is applicable in many different scenarios, here the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard, the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
 
-This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator
+This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator.
+
+This chapter introduces our experimental setup as well as the data sets the experiments were conducted on.
+
+\section{General Setup}
+\label{sec:LITasks:GS}
+
+Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification, or rather Language Feature Vector Extraction using a LID Network in~\cite{Mueller2016b}, used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from a multilingual ASR net, further explained in Sec.~\ref{sec:FP:FA}, which we used to generate Bottleneck Features with 966 coefficients. The LID network introduced in the following chapters then uses these BNF vectors to classify the audio input into a language. Different Network Structures and types (DNNs/RNNs) were used that will be further explained in Ch.~\ref{ch:LIDNetwork}
+
 
 \section{Euronews 2014}
 \label{sec:LITasks:Euronews}
 
 
-The first data set used, was retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes 10 languages (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English) with around 72 hours of data per language provided overall, meaning the corpus had a total length of around 720 hours of audio data.This data was taken both from online video and recordings of the transmissions as described in \cite{gretter2014euronews}.
+The first data set used, was retrieved from Euronews \footnote{Euronews: http://www.euronews.com/} 2014. Euronews is a TV channel that is broadcast in 13 different languages simultaneously both on TV and over the Web and is semi-automatically transcribed. The data corpus includes 10 languages (Arabian, German, Spanish, French, Italian, Polish, Portuguese, Russian, Turkish and English) with around 72 hours of data per language provided overall, meaning the corpus had a total length of around 720 hours of audio data. This data was taken both from online video and recordings of the transmissions as described in \cite{gretter2014euronews}.
 
-For the purposes of this work we then broke this corpus down further into a more manageable size as to make the feedback-cycle faster, while still keeping the results comparable to actual data-perfomance. Later, we then used the full corpus to compare results between the smaller and bigger set.
+For the purposes of this work we then broke this corpus down further into a more manageable size as to make the feedback-cycle faster, while still keeping the corpus big enough to make results comparable to performance with the full corpus. Later, we then used the full data set to compare results between the smaller and bigger sets.
 
-It was broken down to a per-speaker-basis based on its automatic transcriptions. From this data we took a random sample of 10.000 speakers, while making sure the total length of samples for each language were roughly the same. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
-
+The corpus was broken down to a per-speaker-basis based on its automatic transcriptions. From this data we took a sample of a random 10.000 speakers, while making sure the total length of samples for each language were roughly the same. Details of this breakdown can be seen in table ~\ref{tab:spkData}.
 
 \begin{table}[h!]
 \label{tab:spkData}
@@ -135,18 +143,18 @@ This chapter describes the actual Language Identification Neural Network trained
 \section{Basic Setup}
 \label{sec:LIDNetwork:Basic}
 
-Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification using ASR BNFs used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from the ASR net~\ref{sec:FP:FA} with 966 coefficients. The net setup were 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
+The first experimental net setup consisted pof 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
 
 The neural net was then trained using mini batches of size 2m and a learning Rate of 0.01. The pretrained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
 
-The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error.
+The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error calculated on training data.
 
 The following sections describe different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
 
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
 
-Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as a change in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}. 
+Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}. The most obvious increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition as:
 
 \section{Results}
 \label{sec:LIDNetwork:Results}

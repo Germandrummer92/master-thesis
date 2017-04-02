@@ -86,7 +86,7 @@ In such a basic network, the output layer consists of as many neurons as classes
 A common description of this phenomen is, that each hidden layer increases the level of abstraction the network can manage. E.g, in image processing, if the first layer recognizes a color in a certain pixel, then the next layer can infer more abstract characteristics from the output of the first layer. For example, after knowing a certain pixel is dark the next layer can derive that area might be the eye in a picture of a face, etc. This obviously makes more complicated classification tasks possible but also makes learning algorithms more difficult.
 
 \subsubsection{Deep Recurrent Neural Networks}
-\textit{Deep Recurrent Neural Networks}, RNNs, refer to neural networks that are DNN's but cyclic connections are allowed. This means the network can have temporal behavior, so its performance changes dynamically over time.
+\textit{Deep Recurrent Neural Networks}, RNNs, refer to neural networks that are DNN's but cyclic connections are allowed. This means the network can have temporal behavior, so its performance changes dynamically over time, when the state of later neurons changes and affects the neurons in previous layers.
 
 
 \subsection{Learning}
@@ -125,12 +125,27 @@ One way to calculate the difference between the net and the teacher-classificati
 E = 1 / 2 \sum_{j=1}^{M}(f(x;\Theta) - t)^2
 \end{equation}
 
-\paragraph{Stochastic Gradient Descent} The goal of course is to minimize the MSE as defined above by adjusting parameters for each neuron and layer (including weights to output neurons) to change the predicted output of the net.  This is done by adjusting the parameters in direction of the falling gradient for each weight.
+\paragraph{Stochastic Gradient Descent} The goal of course is to minimize the MSE as defined above by adjusting parameters for each neuron and layer (including weights to output neurons) to change the predicted output of the net.  This is done by adjusting the weights in direction of the falling gradient for each weight.
 \begin{equation}
 w_{i+1} = w_i - \eta \nabla E(f(x;w), t) = w_i - \eta \nabla 1/2\sum_{j=1}^M(f(x;w) - t)^2
 \end {equation}
 
-This method is called the ``Gradient Descent'', with \(\eta\) being the ``Learning Rate'', the freely adjustable speed at which the network changes and therefore learns. As calculation of this gradient for every sample in the training data set is expensive, a stochastic approach is used where only a small number of samples is used each iteration to calculate the gradient, as the relation between the change of the mean error and the value of samples is not linear, therefore the calculation of the ´´Stochastic Gradient Descent'' (SGD) is enough to estimate the real required parameter-changes.
+This method is called the ``Gradient Descent'', with \(\eta\) being the ``Learning Rate'', the freely adjustable speed at which the network changes and therefore learns. As calculation of this gradient for every sample in the training data set is expensive, a stochastic approach is used where only a small number of samples is used each iteration to calculate the gradient, as the relation between the change of the mean error and the value of samples is not linear. Therefore the calculation of the ´´Stochastic Gradient Descent'' (SGD) is enough to estimate the real required parameter-changes.
 
 \paragraph{Backpropagation} While the SGD is used to calculate each iterative weight according to the falling gradient, the Backpropagation algorithm is used to calculate each weight from the total output of the net and its input. If we have neural network output vector (all output neurons together) \(t_i\), input vector (all input dimensions together) \(x_i\) and current weights \(w_i\) we can calculate \(w_{i+1}\) by calculating the SGD on the function \(w \rightarrow E(w, x_i), y_i)\).
 
+With preceding definitions we can summarize the training algorithm of a DNN as follows:
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+\begin{lstlisting}[label=lst:pseudo:train,caption=Pseudo Code to show the Backpropagation/SGD algorithm in Action,mathescape]
+ $\displaystyle w_0 := rand()$
+  do
+     forEach train-sample s
+        $\displaystyle f(x;w_i)$ = neural-net-output$\displaystyle(w_i, s) $ // Actual calculation using each neurons output -> Forward pass
+        t = pre-classification(s)
+        Error = $\displaystyle E(f(x;w_i), t)$
+         $ \displaystyle w_{i+1}:=  w_i - \eta \nabla E(f(x;w), t) = w_i - \eta \nabla 1/2\sum_{j=1}^M(f(x;w) - t)^2$  //For all Weights and layers -> Backwards pass
+        $\displaystyle w :=w_{i+1}$
+   if ($\Delta E$ <= Threshold) break
+return Net
+\end{lstlisting}
