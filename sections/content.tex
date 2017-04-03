@@ -129,7 +129,7 @@ This chapter deals with the feature preprocessing used to form normal speech int
 %% TODO: references
 The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard Mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
 
-First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal.
+First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal. We then also calculate the tone features of the audio signal by merg
 
 \subsection{ASR BNF network}
 \label{sec:FP:Net}
@@ -155,6 +155,10 @@ The following sections describe different network layouts and changes we made to
 \label{sec:LIDNetwork:Layout}
 
 Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}. The most obvious increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition as:
+
+\section{Finetuning}
+\label{sec:LIDNetwork:Fine}
+As a further experiment, we used the pre-trained nets of the stacked hidden layers of our lecture and euronews data and finetuned them with the cross-set of Euronews/Lecture-Data respectively. This was done by loading net-parameters from pre-training and training the final output layer with a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup to make meaningful learning possible while fine-tuning) using the cross-set. It had the expected result of improving cross-set results for both nets while making the results with the own data set a little worse, which can be seen in Table~\ref{tab:LIDFine} for both-fine-tuning attempts.
 
 \section{Results}
 \label{sec:LIDNetwork:Results}
@@ -227,9 +231,7 @@ proc filter{} {
 The advanced test filter is based on the jrtk's \textit{FILTER} capability. It automatically takes a defined amount of frames and calculates the weighted arithmetic mean with predefined weights for incoming audio. First tries were done using a basic filter setup of:
 \begin{verbatim}
 filter          nnFILTER   nnBNF  {-2 {1 2 3 2 1}}
-\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  It improved the evaluation results, but only by a negligible amount.
-
-It was adjusted to use a 10-frame based approach with descending weights for frames further out:
+\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  It however offered no improvement of results, rather a decline in total correctness so different filter approaches were tried:
 \begin{verbatim}
 filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
