@@ -160,6 +160,10 @@ Different experiments were undertaken with the network layout. This includes a 6
 \label{sec:LIDNetwork:Fine}
 As a further experiment, we used the pre-trained nets of the stacked hidden layers of our lecture and euronews data and finetuned them with the cross-set of Euronews/Lecture-Data respectively. This was done by loading net-parameters from pre-training and training the final output layer with a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup to make meaningful learning possible while fine-tuning) using the cross-set. It had the expected result of improving cross-set results for both nets while making the results with the own data set a little worse, which can be seen in Table~\ref{tab:LIDFine} for both-fine-tuning attempts.
 
+\section{Combining Lecture Data and Euronews}
+\label{sec:LIDNetworkConcat}
+By combining both the lecture data and euronews corpusses, we produced improved results that can be seen in Tab~{ref:tab:resultsConcat}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. However the results provided a surprise, in that they did not improve upon lecture-data finetuning results. 
+
 \section{Results}
 \label{sec:LIDNetwork:Results}
 
@@ -238,12 +242,23 @@ filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 which however did not provide a furhter increase in correctness. The full tcl code for this can be found in the Appendix.
 
 
-\section{Variance Test Filter}
+\section{Difference Test Filter}
 \label{sec:eval:variance}
-As a next approach, the variance between the two most likely outputs was taken into account. This however, did not lead to an improvement in the robustness of the classification on the development set. The reason possibly being that the output of the 2\textsuperscript{nd} most likely neuron is not going to differ from the maximum output on many different language pairs: E.g. French/Italian, Russian/Polish, Italian/Portuguese. The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in Tab.~\ref{tab:eval}
+As a next approach, the difference between the two most likely outputs was taken into account. We filtered the direct output by only changing from the previous output, if the difference (which we implied to be the amount of "sureness" the net had when determining the language) was bigger than 0.1. 
+
+This however, did not lead to an improvement in the robustness of the classification on the development set even with this small threshold, but rather an immense decline. The reason possibly being that the output of the 2\textsuperscript{nd} most likely neuron is not going to differ from the maximum output on many language pairs: E.g. French/Italian, Russian/Polish, Italian/Portuguese,  even if the net predicts one over the other as the difference between the languages is also relatively ``small''. E.g as presented in~\cite{doi:10.1080/14790710508668395}, the difference between English and French is small as the ``linguistic score'' is relatively high with 2.5. 
+
+The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in Tab.~\ref{tab:eval}
+
+\section{Counting Filter}
+This filter included a counting of the occurence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range. The first try was done using a  frame-range of 10, later increased to 50, however both filters showed no improvement, but kept very close to the direct output of the net results, meaning that likely this was an improvement for longer samples but decreased accuracy in smaller samples as the output was likely to jump around anyways. The full code of this filter can be found in the Appendix.
 
 \section{Two-Language setup}
 \label{sec:eval:2L}
 Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (french/italian and english/german). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, as intuition predicted, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the basic approach in Sec.~\ref{sec:eval:basic}.
+
+\section{Lecture Data}
+\label{sec:eval:ld}
+Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}
 
 	
