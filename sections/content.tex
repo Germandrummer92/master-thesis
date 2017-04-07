@@ -27,7 +27,9 @@ This chapter introduces our experimental setup as well as the data sets the expe
 \section{General Setup}
 \label{sec:LITasks:GS}
 
-Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification, or rather Language Feature Vector Extraction using a LID Network in~\cite{Mueller2016b}, used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper. The basic layout of the network used and improved upon by this thesis were input vectors from a multilingual ASR net, further explained in Sec.~\ref{sec:FP:FA}, which we used to generate Bottleneck Features with 966 coefficients. The LID network introduced in the following chapters then uses these BNF vectors to classify the audio input into a language. Different Network Structures and types (DNNs/RNNs) were used that will be further explained in Ch.~\ref{ch:LIDNetwork}
+Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification, or rather Language Feature Vector Extraction using a LID Network in~\cite{Mueller2016b}, used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper for the training of our DNNs. The basic layout of the network used and improved upon by this thesis were input vectors from a multilingual ASR net, further explained in Sec.~\ref{sec:FP:FA}, which we used to generate Bottleneck Features with 966 coefficients. The LID network introduced in the following chapters then uses these BNF vectors to classify the audio input into a language. Different Network Structures and types (DNNs/RNNs) were used that will be further explained in Ch.~\ref{ch:LIDNetwork}. 
+
+As detl does not provide support for RNNs we used Lasagne~\footnote{Lasagne: \url{https://lasagne.readthedocs.io/en/latest/}}, another wrapper around theano, as the framework for our RNN training.
 
 
 \section{Euronews 2014}
@@ -62,7 +64,7 @@ The corpus was broken down to a per-speaker-basis based on its automatic transcr
 	\hline
 	
 \end{tabular}
-\caption{The Euronews corpus speaker breakdown with total utterances length}
+\caption{The euronews corpus speaker breakdown used for most experiments with total utterances length.}
 \end{table}
 
 \begin{table}[h!]
@@ -84,11 +86,36 @@ The speaker list was then split into three smaller datasets: the train set, deve
 
 We also had a second Euronews Corpus available that was much larger. This was used to confirm intuition that a larger data corpus leads to better results which can be seen in Sec.~\ref{sec:LIDNetwork:Results}. The breakdown of the large corpus' data is listed in Table~\ref{tab:spkDataBig}
 
+\begin{table}[h!]
+\label{tab:spkDataBig}
+\centering
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Number of Speakers} & \textbf{Combined Length} \\
+	\hline
+	Arabian & 4401 & 51.13 h \\
+	German & 4436 & 73.21 h \\
+	Spanish & 4464 & 75.71 h \\
+	French & 4434 & 68.14 h \\  
+	Italian & 4464 & 77.22 h \\  
+	Polish & 2625 & 33.15 h \\ 
+	Portuguese & 4430 & 49.07 h \\ 
+	Russian & 4418 & 72.23 h \\ 
+	Turkish & 4385 & 70.42 h \\  
+	English & 4511 & 72.76 h \\ 
+	\hline
+	\textbf{Overall} & 42568 & 643.04 h\\
+	\hline
+	
+\end{tabular}
+\caption{The big Euronews corpus speaker breakdown with total utterances length.}
+\end{table}
+
 \newpage
 \section{Lecture Data}
 \label{sec:LITasks:Lecture}
 
-As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}},  as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition. 
+As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}}, as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition. 
 
 This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
 
@@ -114,15 +141,22 @@ The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. A
 \section{European Parliament}
 \label{sec:LITasks:EU}
 
-As another layer of evaluation we used recordings of the Europen Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}}. The video recordings come with the simultaneous translations into all the official languages of the EU-countries. This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}} and evaluated performance of our Lecture Data as well as Euronews trained nets on this data.
+As another layer of evaluation we used recordings of the Europen Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}}. The video recordings come with the simultaneous translations into all the official languages of the EU-countries. This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}} and evaluated performance of our Lecture Data as well as Euronews trained nets on this data, as well as improve capabilities of our networks with fine-tuning using the euronews data.
+
 
 \section{Feature Preprocessing}
 \label{ch:FP}
 
-This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup we used is based on the standard capabilities of the Janus Recognition Toolkit. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires.
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires. Our experiments used stacked context frames with a context of 33 frames, with a spread (so the difference between each context frame included) of 3, giving us a stacked feature vector of 11 different frames.
+
+Experiments with other context values showed worse result, as can be seen in the next chapter in Tab.~\ref{tab:resCtxt}, so we kept the 33 frame context for all the nets explored.
+
+This data is then written to ``pfiles'' that are then used to train the network using detl, the framework introduced above, or, in the case of RNNs, lasagne.
 
 \subsection{Feature Access}
 \label{sec:FP:FA}
+
+The experiments were all done with audio files in the pcm or wav format that were loaded by janus directly with a sampling rate of 16000. 
 
 \subsection{Feature Description}
 \label{sec:FP:FD}
@@ -143,7 +177,7 @@ This chapter describes the actual Language Identification Neural Network trained
 \section{Basic Setup}
 \label{sec:LIDNetwork:Basic}
 
-The first experimental net setup consisted pof 5 layers of denoising auto-encoders with each 1000 nodes and a tanh activation function using the mean squared error as the loss function. 
+The first experimental net setup consisted of 5 layers of denoising auto-encoders with each 1000 nodes, aside from the input layer using the 966 feature frames that were output by the BNF layer of the asr net, and a tanh activation function using the mean squared error as the loss function. 
 
 The neural net was then trained using mini batches of size 2m and a learning Rate of 0.01. The pretrained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
 
@@ -154,7 +188,22 @@ The following sections describe different network layouts and changes we made to
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
 
-Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen in Table~\ref{tab:LIDLayout}. The most obvious increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition as:
+Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen summarized in Table~\ref{tab:LIDLayout}. 
+
+
+\paragraph{Decreasing Learning Rate} Setting the learning rate of the output layer training to 0.1 instead of the default 1, gave us the first increase in frame-based recognition rates, improving it from an error of 0.274 for the base setup to an error rate of only 0.256, giving an improvement of almost 2\%. 
+
+\paragraph{Adding a 6th pretrain layer} Adding another 1000 neuron pretrain layer did not lead to an increase in recognition and rather gave us an error 
+
+\paragraph{``Tree'' net structure} The biggest increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition of:
+
+\begin{verbatim}'!make da 966,tanh:1000 loss=mse' \
+  '!make da 1000:800' \
+  '!make da 800:600' \
+  '!make da 600:400' \
+  '!make da 400:200' \
+\end{verbatim}
+
 
 \section{Finetuning}
 \label{sec:LIDNetwork:Fine}
@@ -255,10 +304,10 @@ This filter included a counting of the occurence of a certain net output in a fr
 
 \section{Two-Language setup}
 \label{sec:eval:2L}
-Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (french/italian and english/german). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, as intuition predicted, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the basic approach in Sec.~\ref{sec:eval:basic}.
+Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (namely french/italian and english/german). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, as intuition predicted, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the basic approach in Sec.~\ref{sec:eval:basic}.
 
 \section{Lecture Data}
 \label{sec:eval:ld}
-Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}
+Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}. 
 
 	
