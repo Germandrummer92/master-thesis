@@ -187,16 +187,16 @@ The neural net was then trained using mini batches of size 2m and a learning Rat
 
 The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error calculated on training data.
 
-The following sections describe different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
+The following section describes different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
 
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
 
-Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen summarized in Table~\ref{tab:LIDLayout}. 
+Different experiments were undertaken with the network layout. This includes a 6 hidden layer pre-training as well as changes in the geometry. The differences in the frame-based errors can be seen summarized in Table~\ref{tab:resFrameBased}. 
 
 \paragraph{Decreasing Learning Rate} Setting the learning rate of the output layer training to 0.1 instead of the default 1, gave us the first increase in frame-based recognition rates, improving it from an error of 0.274 for the base setup to an error rate of only 0.256, giving an improvement of almost 2\%. 
 
-\paragraph{Adding a 6th pretrain layer} Adding another 1000 neuron pretrain layer did not lead to an increase in recognition and rather gave us an error 
+\paragraph{Adding a 6th hidden layer} Adding another 1000 neuron hidden layer did not lead to an increase in recognition compares to the version using a lower learning rate and rather gave us an decrease of about 2\%, meaning a error rate of 0.275 compared to the 0.256 for the lower learning rate version.
 
 \paragraph{``Tree'' net structure} The biggest increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition of:
 
@@ -207,6 +207,67 @@ Different experiments were undertaken with the network layout. This includes a 6
   '!make da 400:200' \
 \end{verbatim}
 
+This setup improved error rates from 0.256 down to 0.245, a decrease of 1.2 \%.
+
+Adding another 6th hidden layer onto this structure to give a net definition of (tanh being the activation function, mse the loss function of the mean squared error and make da the command for detl to add another hidden layer):
+\begin{verbatim}'!make da 966,tanh:1200 loss=mse' \
+  '!make da 1200:1000' \
+  '!make da 1000:800' \
+  '!make da 800:600' \
+  '!make da 600:400' \
+  '!make da 400:200' \
+\end{verbatim}
+
+ further improved the results, yielding an error rate of only 0.241, perfoming another 0.4 \% better than the 5-layer tree-structure. 
+
+An explanation for the better performance of the tree structure could be, that the farther the layer is removed from the input, it works on recognizing more ``abstract'' patterns, and less of the more abstract classes exist than of basic patterns. E.g. the first layer decides on the values of one certain frequency of the input what language is more likely, with the second layer then taking into account a whole range of frequencies (of which less exist) to further differentiate.
+
+Adding a much larger number of hidden layers into this tree structure did not improve results, as a 10-hidden-layer version with the setup of
+
+\begin{verbatim}
+ '!make da 966,tanh:2000 loss=mse' \
+  '!make da 2000:1800' \
+  '!make da 1800:1600' \
+  '!make da 1600:1400' \
+  '!make da 1400:1200' \
+  '!make da 1200:1000' \
+  '!make da 1000:800' \
+  '!make da 800:600' \
+  '!make da 600:400' \
+  '!make da 400:200' \
+\end{verbatim}
+
+performed not at all featuring an error rate of 90 \%, meaning the net is not classifying at all anymore. 
+
+As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first), our setup did most likely not include enough data for the training of these nets. Another explanation coould be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
+
+\begin{table}[h!]
+\label{tab:resFrameBased}
+\centering
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Net Structure} & \textbf{Train Error} & \textbf{Validation Error}  \\
+	\hline
+	Basic (5 layers 1000 Neurons) & 0.226 &  0.285 \\
+	\hline
+	6-Layers (1000 Neurons) & 0.234 & 0.276 \\
+	\hline
+	Reduced Learning Rate & 0.273 & 0.266 \\ 
+	\hline
+	Tree Structure (5 layers 1000...200 neurons) & 0.221 & 0.245 \\
+	\hline
+	\parbox[t]{5cm}{Tree Structure (5 layers 1000...200 neurons)\\and reduced Learning Rate} & 0.245 & 0.235 \\
+	\hline
+	Tree Structure (6 layers 1200...200 neurons) & 0.211 & 0.242 \\
+	\hline
+	Tree Structure (10 layers 2000...200 neurons) & 0.899 & 0.910 \\
+	\hline
+	\textbf{Best} & 0.211 & 0.242 \\
+	\hline
+\end{tabular}
+\caption{Results of the different net structures on the Euronews corpus. Frame-based errors on train/validation set.}
+\end{table}
+
 
 \section{Finetuning}
 \label{sec:LIDNetwork:Fine}
@@ -215,10 +276,6 @@ As a further experiment, we used the pre-trained nets of the stacked hidden laye
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
 By combining both the lecture data and euronews corpusses, we produced improved results that can be seen in Tab~{ref:tab:resultsConcat}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. However the results provided a surprise, in that they did not improve upon lecture-data finetuning results. 
-
-\section{Results}
-\label{sec:LIDNetwork:Results}
-
 
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
