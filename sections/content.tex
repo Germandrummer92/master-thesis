@@ -220,7 +220,7 @@ Adding another 6th hidden layer onto this structure to give a net definition of 
 
  further improved the results, yielding an error rate of only 0.241, perfoming another 0.4 \% better than the 5-layer tree-structure. 
 
-An explanation for the better performance of the tree structure could be, that the farther the layer is removed from the input, it works on recognizing more ``abstract'' patterns, and less of the more abstract classes exist than of basic patterns. E.g. the first layer decides on the values of one certain frequency of the input what language is more likely, with the second layer then taking into account a whole range of frequencies (of which less exist) to further differentiate.
+An explanation for the better performance of the tree structure could be, that the farther the layer is removed from the input, it works on recognizing more ``abstract'' patterns, and less of the more abstract classes exist than of basic patterns. E.g. the first layer decides on the values of one certain frequency of the input what language is more likely, with the second layer then taking into account a whole range of frequencies (of which less exist) or even more abstract features to further differentiate.
 
 Adding a much larger number of hidden layers into this tree structure did not improve results, as a 10-hidden-layer version with the setup of
 
@@ -280,14 +280,13 @@ By combining both the lecture data and euronews corpusses, we produced improved 
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in.
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:total}.
 
-\section{Basic Test Filter}
-\label{sec:eval:basic}
+\section{Bare net output}
+\label{sec:eval:bare}
 
-The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment. It did however provide no improvement over the bare network output.
+To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this basic filtering approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.
 
-See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this basic filtering approach. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing. Table~\ref{tab:eval} shows a comparison of the basic filter with a bare setup only outputting the direct output of the LID net. Fig.~\ref{fig:lengthBasic} shows a comparison of the length of samples and the amount of correctly classified samples of this length for the LID net with the best evaluation results, the 6-layered geometry-adjusted lower learning rate net (See Sec.~\ref{ch:LIDNetwork:Layout}) 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
 \begin{lstlisting}[label=lst:basic,caption=Most basic filter employed to smooth output]
@@ -296,25 +295,13 @@ proc filter{} {
      for {set i 0} {$i < 10} {incr i} {
         set totalM($i) 0
     }
-    set lastFrameID -1
-    set counter 0
     set currentOutput -1
     #Going through whole sample frame by frame in output layer of nn called nnBNF-> can be changed to work on continuously incoming data easily
     for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
         #we find the current output of the net
         set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
         set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
-        #Actual Filtering: Only count if last 4 frames were also classified to be this language
-        if {$maxFrameID != $lastFrameID} {
-           set lastFrameID $maxFrameID
-           set counter 0
-        #Also filter for the actual output of the neuron
-        } elseif {$maxFrame >= 0.61} {
-           incr counter
-           if {$counter >= 5} {
-              set currentOutput $maxFrameID
-           }
-        }
+        set currentOutput $maxFrameID
         #setting total classification amounts for current sample
         if {$currentOutput != -1} {
              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
@@ -335,8 +322,68 @@ proc filter{} {
     puts [getName $maxID]
     return $maxID
 }
-
 \end{lstlisting}
+
+
+The results of the bare-net evaluation for Euronews can be seen in Table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in Sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net.  Fig.~\ref{fig:lengthBasic} shows a comparison of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net.
+
+\begin{table}[h!]
+\label{tab:bareResults}
+\centering
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error}  \\
+	\hline
+	Arabian & 0.364  \\
+	German & 0.300  \\
+	Spanish & 0.320 \\ 
+	French & 0.300 \\
+	Italian & 0.326  \\
+	Polish & 0.267 \\
+	Portuguese& 0.291  \\
+	Russian&  0.315 \\
+	Turkish&  0.337 \\
+	English&  0.267 \\
+	\hline
+	\textbf{Overall} & 0.267 \\
+	\hline
+\end{tabular}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set.}
+\end{table}
+
+
+
+\section{Basic Test Filter}
+\label{sec:eval:basic}
+
+The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment. It did however provide no improvement over the bare network output.
+
+
+Table~\ref{tab:basic} shows the result of the basic filter. Overall the error went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial.
+
+\begin{table}[h!]
+\label{tab:basic}
+\centering
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error}  \\
+	\hline
+	Arabian & 0.337  \\
+	German & 0.312  \\
+	Spanish & 0.331 \\ 
+	French & 0.313 \\
+	Italian & 0.334  \\
+	Polish & 0.277 \\
+	Portuguese& 0.310  \\
+	Russian&  0.322 \\
+	Turkish&  0.343 \\
+	English&  0.286 \\
+	\hline
+	\textbf{Overall} & 0.318. \\
+	\hline
+\end{tabular}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Basic Filter.}
+\end{table}
 
 
 \section{Advanced Test Filter}
@@ -348,7 +395,7 @@ filter          nnFILTER   nnBNF  {-2 {1 2 3 2 1}}
 \begin{verbatim}
 filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
-which however did not provide a furhter increase in correctness. The full tcl code for this can be found in the Appendix.
+which however did not provide a further increase in correctness. The full tcl code for this can be found in the Appendix. Results are listed in Table
 
 
 \section{Difference Test Filter}
@@ -364,7 +411,30 @@ This filter included a counting of the occurence of a certain net output in a fr
 
 \section{Two-Language Setup}
 \label{sec:eval:2L}
-Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (namely french/italian and english/german). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, as intuition predicted, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the basic approach in Sec.~\ref{sec:eval:basic}.
+Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (namely french/italian and english/german). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, as intuition predicted, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the bare approach in Sec.~\ref{sec:eval:bare}.
+
+\begin{table}[h!]
+\label{tab:eval2L}
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Language} & \textbf{Error}  \\
+	\hline
+	\textbf{French/Italian as input only} & \\
+	 French &  0.186 \\
+	Italian & 0.113 \\
+	\hline
+	\textbf{Overall} & 0.153 \\
+	\hline
+	\textbf{German/English as input only} & \\
+	German & 0.183 \\
+	English & 0.126 \\
+	\hline
+	\textbf{Overall} & 0.156 \\
+	\hline
+\end{tabular}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages from the Development Set.}
+\end{table}
 
 \section{Gaussian Smoothing Filter}
 \label{sec:eval:GSF}
@@ -442,6 +512,29 @@ Once the gaussian function is calculated for the window, the convolution of the 
 
 We tried different window sizes of which the result can be seen in Tab.~\ref{tab:eval:gr}. 
 
+
+\begin{table}[h!]
+\label{tab:evalTotal}
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Filter} & \textbf{Overall Error}  \\
+	\hline
+	 Bare Net & \\
+	\hline
+	Basic Filter &  \\
+	\hline
+	Advanced Filter Small & \\
+	\hline
+	Advanced Filter Big &  \\
+	\hline
+	English &  \\
+	\hline
+	\textbf{Overall} &  \\
+	\hline
+\end{tabular}
+\caption{Results of different filtering approaches on the tree-net 6-layer net.}
+\end{table}
 \section{Lecture Data}
 \label{sec:eval:ld}
 Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}. 
