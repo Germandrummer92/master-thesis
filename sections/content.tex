@@ -141,12 +141,11 @@ The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. A
 \section{European Parliament}
 \label{sec:LITasks:EU}
 
-As another form ofevaluation we used recordings of the Europen Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}}. The video recordings come with the simultaneous translations into all the official languages of the EU-countries. This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. 
+As another form ofevaluation recordings of the Europen Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}} were used. The video recordings come with the simultaneous translations into all the official languages of the EU-countries. This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. 
 
-We used the small corpus to evaluate performance of our Lecture Data as well as Euronews trained nets on this data, as well as improve capabilities of our networks with fine-tuning using the euronews data, of which results can be seen in the following chapter.
+The small corpus was used to evaluate performance of the Lecture-Data- as well as Euronews-trained nets, as well as improve capabilities of the networks with fine-tuning using the euronews data, of which results can be seen in the following chapter.
 
-As each parliament discussion includes the same audio tracks, the length of all the languages in the set is the same, with each being 3.6 hours. 
-
+As each parliament discussion includes the same audio tracks, the length of all the languages in the set is the same, with each language having 3.6 hours of data. 
 
 \section{Feature Preprocessing}
 \label{ch:FP}
@@ -198,7 +197,7 @@ Different experiments were undertaken with the network layout. This includes a 6
 
 \paragraph{Adding a 6th hidden layer} Adding another 1000 neuron hidden layer did not lead to an increase in recognition compares to the version using a lower learning rate and rather gave us an decrease of about 2\%, meaning a error rate of 0.275 compared to the 0.256 for the lower learning rate version.
 
-\paragraph{``Tree'' net structure} The biggest increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition of:
+\paragraph{``Tree'' net structure} The biggest increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition of (tanh being the activation function, mse the loss function of the mean squared error and make da the command for detl to add another hidden layer):
 
 \begin{verbatim}'!make da 966,tanh:1000 loss=mse' \
   '!make da 1000:800' \
@@ -207,9 +206,9 @@ Different experiments were undertaken with the network layout. This includes a 6
   '!make da 400:200' \
 \end{verbatim}
 
-This setup improved error rates from 0.256 down to 0.245, a decrease of 1.2 \%.
+This setup improved error rates from 0.256 down to 0.245, an improvement of 1.2 \%.
 
-Adding another 6th hidden layer onto this structure to give a net definition of (tanh being the activation function, mse the loss function of the mean squared error and make da the command for detl to add another hidden layer):
+Adding another 6th hidden layer onto this structure to give a net definition of
 \begin{verbatim}'!make da 966,tanh:1200 loss=mse' \
   '!make da 1200:1000' \
   '!make da 1000:800' \
@@ -218,7 +217,7 @@ Adding another 6th hidden layer onto this structure to give a net definition of 
   '!make da 400:200' \
 \end{verbatim}
 
- further improved the results, yielding an error rate of only 0.241, perfoming another 0.4 \% better than the 5-layer tree-structure. 
+further improved the results, yielding an error rate of only 0.241, perfoming another 0.4 \% better than the 5-layer tree-structure. 
 
 An explanation for the better performance of the tree structure could be, that the farther the layer is removed from the input, it works on recognizing more ``abstract'' patterns, and less of the more abstract classes exist than of basic patterns. E.g. the first layer decides on the values of one certain frequency of the input what language is more likely, with the second layer then taking into account a whole range of frequencies (of which less exist) or even more abstract features to further differentiate.
 
@@ -239,7 +238,7 @@ Adding a much larger number of hidden layers into this tree structure did not im
 
 performed not at all featuring an error rate of 90 \%, meaning the net is not classifying at all anymore. 
 
-As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first), our setup did most likely not include enough data for the training of these nets. Another explanation coould be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
+As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first, to then affect the deeper layers), our setup did most likely not include enough data for the training of these nets. Another explanation coould be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
 
 \begin{table}[h!]
 \label{tab:resFrameBased}
@@ -262,7 +261,7 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 	\hline
 	Tree Structure (10 layers 2000...200 neurons) & 0.899 & 0.910 \\
 	\hline
-	\textbf{Best} & 0.211 & 0.242 \\
+	\textbf{Best} & 0.245 & 0.235 \\
 	\hline
 \end{tabular}
 \caption{Results of the different net structures on the Euronews corpus. Frame-based errors on train/validation set.}
@@ -271,7 +270,29 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 
 \section{Finetuning}
 \label{sec:LIDNetwork:Fine}
-As a further experiment, we used the pre-trained nets of the stacked hidden layers of our lecture and euronews data and finetuned them with the cross-set of Euronews/Lecture-Data respectively. This was done by loading net-parameters from pre-training and training the final output layer with a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup to make meaningful learning possible while fine-tuning) using the cross-set. It had the expected result of improving cross-set results for both nets while making the results with the own data set a little worse, which can be seen in Table~\ref{tab:LIDFine} for both-fine-tuning attempts.
+As a further experiment, we used the pre-trained nets of the stacked hidden layers of the euronews net and finetuned them with the cross-set of Lecture-Data respectively. This was done by loading net-parameters from pre-training and training the final output layer with a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup to make meaningful learning possible while fine-tuning) using the cross-set. It had the expected result of improving cross-set results for the net, which can be seen in Table~\ref{tab:LIDFine} for the fine-tuning attempts. Since the Lecture Data corpus only has 3 languages, we couldn't evaluate this set using all euronews languages but still gave a figure for the net results with the euronews corpus for English, German and French.
+
+For this experiment we used the tree-net 6-layer structure of the euronews nets, just omitting the output layer, and then used the lecture data corpus to train the output layer with only 3 output neurons. This yielded an improvement of 7.4\% for the error of the tree-net euronews net recognizing the lecture data development set.
+%TODO
+A second experiment was conducted, using the same base euronews net, but adding 2 layers on top for the finetuning with 200 and 100 neurons respectively. Which further improved the results, by another . See~\ref{tab:LIDFIne} for the results.
+
+\begin{table}[h!]
+\label{tab:LIDFine}
+\centering
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Net Structure} & \textbf{Euronews Error} & \textbf{Cross-Set-Error}  \\
+	\hline
+	Tree-net Euronews net w/o finetuning & 0.242 &  0.130 \\
+	Tree-net Euronews net with finetuning & - & 0.105 \\
+	Tree-net Euronews net with finetuning 2 layers & & 0. \\
+	\hline
+	\textbf{Change} & \textcolor{red}{} & \textcolor{green}{0.074} \\
+	\hline
+\end{tabular}
+\caption{Results of the different net structures on the Euronews corpus. Frame-based errors on train/validation set.}
+\end{table}
+
 
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
@@ -350,7 +371,6 @@ The results of the bare-net evaluation for Euronews can be seen in Table~\ref{ta
 \end{tabular}
 \caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set.}
 \end{table}
-
 
 
 \section{Basic Test Filter}
@@ -434,7 +454,7 @@ Table~\ref{tab:eval:2l} shows the result produced by using the LID Euronews net 
 	\textbf{Overall} & 0.156 \\
 	\hline
 \end{tabular}
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages from the Development Set.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages from the Euronews Development Set.}
 \end{table}
 
 \section{Gaussian Smoothing Filter}
@@ -513,7 +533,6 @@ Once the gaussian function is calculated for the window, the convolution of the 
 
 We tried different window sizes of which the result can be seen in Tab.~\ref{tab:eval:gr}. 
 
-
 \begin{table}[h!]
 \label{tab:evalTotal}
 \centering
@@ -548,8 +567,9 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	French/Italian & \\
 	\hline
 \end{tabular}
-\caption{Results of different filtering approaches on the tree-net 6-layer net.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated with all the tried post-filtering approaches.}
 \end{table}
+
 \section{Lecture Data}
 \label{sec:eval:ld}
 Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}. 
