@@ -359,7 +359,7 @@ The results of the bare-net evaluation for Euronews can be seen in Table~\ref{ta
 The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment. It did however provide no improvement over the bare network output.
 
 
-Table~\ref{tab:basic} shows the result of the basic filter. Overall the error went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial.
+Table~\ref{tab:basic} shows the result of the basic filter. Overall the error went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial. 
 
 \begin{table}[h!]
 \label{tab:basic}
@@ -388,14 +388,14 @@ Table~\ref{tab:basic} shows the result of the basic filter. Overall the error we
 
 \section{Advanced Test Filter}
 \label{sec:eval:advanced}
-The advanced test filter is based on the jrtk's \textit{FILTER} capability. It automatically takes a defined amount of frames and calculates the weighted arithmetic mean with predefined weights for incoming audio. First tries were done using a basic filter setup of:
+The advanced test filter is based on the jrtk's \textit{FILTER} capability. It automatically takes a defined amount of frames and calculates the weighted arithmetic mean with predefined weights for incoming audio. First tries were done using a small filter setup of:
 \begin{verbatim}
 filter          nnFILTER   nnBNF  {-2 {1 2 3 2 1}}
 \end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  It however offered no improvement of results, rather a decline in total correctness so different filter approaches were tried:
 \begin{verbatim}
 filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
-which however did not provide a further increase in correctness. The full tcl code for this can be found in the Appendix. Results are listed in Table
+which however did not provide a further increase in correctness. In our tcl filtering, we only then changed the feature to read the frames from, while still then taking the maximum of the filter-feature as the correct id. Results are listed in Table ~\ref{tab:evalTotal}. As for the basic test filter, the bigger advanced filter offered a tiny improvement for some languages, (~0.1\% for both Portuguese and English) but lost out in all other languages. Detailed per-Language results for this and the following filters can be found in App.~\ref{app:sec:res:lid}.
 
 
 \section{Difference Test Filter}
@@ -407,7 +407,8 @@ This however, did not lead to an improvement in the robustness of the classifica
 The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in Tab.~\ref{tab:eval}
 
 \section{Counting Filter}
-This filter included a counting of the occurence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range. The first try was done using a  frame-range of 10, later increased to 50, however both filters showed no improvement, but kept very close to the direct output of the net results, meaning that likely this was an improvement for longer samples but decreased accuracy in smaller samples as the output was likely to jump around anyways. The full code of this filter can be found in the Appendix.
+This filter included a counting of the occurence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range (while still then employing thesame  per-sample smoothing as above). The first try was done using a frame-range of 10, later increased to 50, however both filters showed no improvement, but kept very close to the direct output of the net results, meaning that likely this was an improvement for longer samples but decreased accuracy in smaller samples as the output was likely to jump around anyways. As per-language results did not improve 
+The full code of this filter can be found in the Appendix.
 
 \section{Two-Language Setup}
 \label{sec:eval:2L}
@@ -520,17 +521,31 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	\textbf{Filter} & \textbf{Overall Error}  \\
 	\hline
-	 Bare Net & \\
+	 Bare Net & 0.689 \\
 	\hline
-	Basic Filter &  \\
+	Basic Filter &  0.\\
 	\hline
 	Advanced Filter Small & \\
 	\hline
 	Advanced Filter Big &  \\
 	\hline
-	English &  \\
+	Variance & \\
 	\hline
-	\textbf{Overall} &  \\
+	Gaussian Filter WS 5 & \\
+	\hline
+	Gaussian Filter WS 10 & \\
+	\hline
+	Gaussian Filter WS 15 & \\
+	\hline
+	Gaussian Filter WS 20 & \\
+	\hline
+	Counting Filter FR 10 & \\
+	\hline
+	Counting Filter FR 50 & \\
+	\hline
+	English/German &  \\
+	\hline
+	French/Italian & \\
 	\hline
 \end{tabular}
 \caption{Results of different filtering approaches on the tree-net 6-layer net.}
