@@ -27,6 +27,117 @@ This chapter introduces our experimental setup as well as the data sets the expe
 \section{General Setup}
 \label{sec:LITasks:GS}
 
+Fig.~\ref{fig:overview} gives an overview of our experimental setup to retrieve LIDs from audio samples.
+
+\tikzstyle{layer}=[draw=black,fill=black!30]
+\tikzstyle{layerlid}=[draw=black,fill=green!30]
+\tikzstyle{dots}=[draw=black,fill=black]
+\begin{figure*}[htbp]
+   \centering
+
+   \begin{tikzpicture}[scale=1.0]
+
+   % Acoustic feature stack
+
+   \draw (-1.75, 2.5) node[draw=white,fill=white] {AF stack};
+
+   \fill[layer] (-2,1) coordinate(l0bl) -- (-1.5,1) coordinate(l0br) --
+(-1.5,2) coordinate(l0tr) -- (-2,2) coordinate(l0tl) -- (-2,1);
+
+   \fill[layer] (-2,0) coordinate(l0_1bl) -- (-1.5,0) coordinate(l0_1br)
+-- (-1.5,1) coordinate(l0_1tr) -- (-2,1) coordinate(l0_1tl) -- (-2,0);
+
+   \draw[dots] (-1.75,-0.2) circle (0.045);
+   \draw[dots] (-1.75,-0.375) circle (0.045);
+   \draw[dots] (-1.75,-0.55) circle (0.045);
+
+   \fill[layer] (-2,-1.75) coordinate(l0_2bl) -- (-1.5,-1.75)
+coordinate(l0_2br) -- (-1.5,-0.75) coordinate(l0_2tr) -- (-2,-0.75)
+coordinate(l0_2tl) -- (-2,-1.75);
+
+   % Bottle-neck stack
+
+   \fill[layer] (4,-1.5) coordinate(l5_1bl) -- (4.5,-1.5)
+coordinate(l5_1br) -- (4.5,-0.5) coordinate(l5_1tr) -- (4,-0.5)
+coordinate(l5_1tl) -- (4,-1.5);
+
+   \draw[dots] (4.25,-1.7) circle (0.045);
+   \draw[dots] (4.25,-1.875) circle (0.045);
+   \draw[dots] (4.25,-2.05) circle (0.045);
+
+   \fill[layer] (4,-3.25) coordinate(l5_2bl) -- (4.5,-3.25)
+coordinate(l5_2br) -- (4.5,-2.25) coordinate(l5_2tr) -- (4,-2.25)
+coordinate(l5_2tl) -- (4,-3.25);
+
+   \draw (1.5,-2.25) node {DBNF};
+
+   \draw (4.25,2.5) node[draw=white,fill=white] {BNF stack};
+
+   % BNF Layers
+
+   \fill[layer] (4,-0.5) coordinate(l5bl) -- (4.5,-0.5) coordinate(l5br)
+-- (4.5,0.5) coordinate(l5tr) -- (4,0.5) coordinate(l5tl) -- (4,-0.5);
+   \fill[layer] (2.5,-1.5) coordinate(l4bl) -- (3,-1.5) coordinate(l4br)
+-- (3,1.5) coordinate(l4tr) -- (2.5,1.5) coordinate(l4tl) -- (2.5,-1.5);
+
+   \draw[dots] (2,0) circle (0.045);
+   \draw[dots] (2.175,0) circle (0.045);
+   \draw[dots] (1.825,0) circle (0.045);
+
+   \fill[layer] (1,-1.5) coordinate(l2bl) -- (1.5,-1.5) coordinate(l2br)
+-- (1.5,1.5) coordinate(l2tr) -- (1,1.5) coordinate(l2tl) -- (1,-1.5);
+   \fill[layer] (0,-1.5) coordinate(l1bl) -- (0.5,-1.5) coordinate(l1br)
+-- (0.5,1.5) coordinate(l1tr) -- (0,1.5) coordinate(l1tl) -- (0,-1.5);
+
+   \draw (l0tr) -- (l1bl);
+   \draw (l0_2br) -- (l1tl);
+   \draw (l1tr) -- (l2bl);
+   \draw (l1br) -- (l2tl);
+   \draw (l4tr) -- (l5bl);
+   \draw (l4br) -- (l5tl);
+
+
+   % DNN Layers
+
+   \fill[layer] (6,-3) coordinate(l6bl) -- (6.5,-3) coordinate(l6br) --
+(6.5,0) coordinate(l6tr) -- (6,0) coordinate(l6tl) -- (6,-3);
+   \fill[layer] (7,-3) coordinate(l7bl) -- (7.5,-3) coordinate(l7br) --
+(7.5,0) coordinate(l7tr) -- (7,0) coordinate(l7tl) -- (7,-3);
+
+   \draw[dots] (8,-1.5) circle (0.045);
+   \draw[dots] (8.175,-1.5) circle (0.045);
+   \draw[dots] (7.825,-1.5) circle (0.045);
+
+   \fill[layer] (8.5,-3) coordinate(l11bl) -- (9,-3) coordinate(l11br)
+-- (9,0) coordinate(l11tr) -- (8.5,0) coordinate(l11tl) -- (8.5,-3);
+   \fill[layer] (10.5,-2) coordinate(l12bl) -- (11,-2) coordinate(l12br)
+-- (11,-1) coordinate(l12tr) -- (10.5,-1) coordinate(l12tl) -- (10.5,-1);
+
+   \draw (10.75,2.5) node[draw=white,fill=white] {LID};
+
+   \draw (l5tr) -- (l6bl);
+   \draw (l5_2br) -- (l6tl);
+
+   \draw (l6tr) -- (l7bl);
+   \draw (l6br) -- (l7tl);
+   \draw (l11tr) -- (l12bl);
+   \draw (l11br) -- (l12tl);
+
+   \draw (l12tl) -- (l12bl);
+
+   \draw (7.5,-3.75) node {Language Identity Network};
+
+   \end{tikzpicture}
+   \caption{Overview of the network architecture used to extract
+the Language Identity (LID). The acoustic features (AF) are being
+pre-processed in a DBNF in order to extract BNFs. These BNFs are being
+stacked and fed into the second network to extract the LID.}
+   \label{fig:overview}
+\end{figure*}
+
+\section{Tooling}
+\label{sec:tooling}
+
 Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification, or rather Language Feature Vector Extraction using a LID Network in~\cite{Mueller2016b}, used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper for the training of our DNNs. The basic layout of the network used and improved upon by this thesis were input vectors from a multilingual ASR net, further explained in Sec.~\ref{sec:FP:FA}, which we used to generate Bottleneck Features with 966 coefficients. The LID network introduced in the following chapters then uses these BNF vectors to classify the audio input into a language. Different Network Structures and types (DNNs/RNNs) were used that will be further explained in Ch.~\ref{ch:LIDNetwork}. 
 
 As detl does not provide support for RNNs we used Lasagne~\footnote{Lasagne: \url{https://lasagne.readthedocs.io/en/latest/}}, another wrapper around theano, as the framework for our RNN training.
@@ -313,7 +424,25 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 \section{Big Euronews Corpus}
 \label{sec:IDNetworkBig}
 
-As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to test out our network structure. The big net was trained with the same tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. 
+As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to test out our network structure. The big net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. It only improved the per-sample error (as further introduced in the next chapter), by about 4\% however, suggesting that a suitable post-net filtering approach and net setup is even more important than the amount of train data, as the data corpus was more than trippled in size but did not improve the results in the same way.
+
+%TODO%
+\begin{table}[h!]
+\label{tab:resBigNet}
+\centering
+\begin{tabular}{| l | c | c | r | }
+	\hline
+	\textbf{Data Corpus} & \textbf{Train Error} & \textbf{Validation Error} & \textbf{Sample Error} \\
+	\hline
+	Small (17h/Language) & 0.251 &  0.238 &  \\
+	\hline
+	Big (70h/Language) & 0.204 & 0.169 &  0.276 \\
+	\hline
+	\textbf{Change} & \color{green}{\textbf{0.047}} & \color{green}{\textbf{0.069}} & \color{green}{\textbf{}} \\
+	\hline
+\end{tabular}
+\caption{Comparison of the big and small Euronews data corpus. Frame-based errors on train/validation set, as well as Sample-based Error.}
+\end{table}
 
 \section{Finetuning}
 \label{sec:LIDNetwork:Fine}
@@ -321,10 +450,10 @@ As a further experiment, we used the pre-trained nets of the stacked hidden laye
 
 For this experiment we used the tree-net 6-layer structure of the Euronews nets, just omitting the output layer, and then used the lecture data corpus to train the output layer with only 3 output neurons. This yielded an improvement of 4.9\% for the error of the tree-net Euronews net recognizing the lecture data development set on a per-sample basis (for which the test setup is introduced in the next chapter).
 
-A second experiment was conducted, using the same base Euronews net, but adding 2 layers on top for the fine-tuning with 200 and 100 neurons respectively. Which further improved the Frame-based results, by another 1.4\%., and sample-based results by another 1.8\%. See Tab.~\ref{tab:LIDFine} for the results.
+A second experiment was conducted, using the same base Euronews net, but adding 2 layers on top for the fine-tuning with 200 and 100 neurons respectively, instead of only one output layer with 200:10 neurons. This further improved the Frame-based results, by another 1.4\%., and sample-based results by another 1.8\%. This gives us a total improvement of 6.7\% for the Fine-tuning compared to the base Euronews net. See Tab.~\ref{tab:LIDFine} for the detailed results.
 
 
-Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fine-tuned nets using all Euronews languages but still gave a figure for the net results with the Euronews corpus for English, German and French. These results are obviously much worse than pure-Euronews-trained nets.
+Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fine-tuned nets using all Euronews languages but still gave a figure for the net results with the Euronews corpus for English, German and French. These results are obviously much worse than pure-Euronews-trained nets, as the two output layers have never seen euronews data, that while similiar, is obviously still sufficiently different, as the performance suffered by 12.1\%.
 
 
 %TODO
@@ -332,19 +461,22 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 
 \begin{tabular}{| l | c | c | c | r | }
 	\hline
-	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} & \textbf{LD Train Error} & \textbf{LD Val. Error} & \textbf{LD Sample Error}  \\
+	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Train Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Val. Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Sample Error}}  \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\
+	\parbox[t]{5cm}{Tree-net Euronews net \\
 	 w/o fine-tuning}  & 0.291 & - & - & 0.179 \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\ with fine-tuning } & & 0.075 & 0.116 & 0.130 \\
+	\parbox[t]{4.2cm}{Tree-net Euronews net \\ with fine-tuning } & 0.456 & 0.075 & 0.116 & 0.130 \\
+	\hdashline
+	\parbox[t]{4.2cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.587 & 0.073 & 0.102 & 0.112 \\
+	\textbf{Change} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.067}} \\
 	\hline
 \end{tabular}
 \label{tab:LIDFine}
 \caption{Results of the fine-tuning attempts of the Euronews-trained 6-layer tree-net with lecture data corpus.}
 \end{table}
+
 
 
 
@@ -374,12 +506,16 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hline
 	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} & \textbf{LD Train Error} & \textbf{LD Val. Error} & \textbf{LD Sample Error}  \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\
+	\parbox[t]{5cm}{Tree-net Euronews net \\
 	 w/o fine-tuning}  & 0.291 & - & - & 0.179 \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\ with fine-tuning } & & 0.075 & 0.116 & 0.130 \\
+	\parbox[t]{5cm}{Concatenated \\ Euronews/LD-trained net } & & & & \\
+	\hdashline
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } & 0.456 & 0.075 & 0.116 & 0.130 \\
+	\hdashline
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hline
-	\parbox[t]{4cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & & 0.073 & 0.102 & 0.112 \\
+	\textbf{Change} & \color{green}{\textbf{0.043}} & \color{green}{\textbf{0.002}} & \color{green}{\textbf{0.014}} & \color{green}{\textbf{0.018}} \\
 	\hline
 \end{tabular}
 \label{tab:resultsLD}
@@ -428,7 +564,7 @@ proc filter{} {
     }
     #print out the total classification for the entire sample
     puts -nonewline "Overall we have classified as: "
-    #help function to print language name not id.
+    #help function to print language name not id.0
     puts [getName $maxID]
     return $maxID
 }
@@ -437,7 +573,7 @@ proc filter{} {
 
 The results of the bare-net evaluation for Euronews can be seen in Table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in Sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net.  Fig.~\ref{fig:lengthBasic} shows the relation of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net. It shows the intuitive results of a longer length of a sample coinciding with a higher recognition rate through the net, as more frames can be used for the recognition task in the context produced by the ASR BNF net.
 
-As one can see a length of around 100 frames (stacked with the 33 frames context as described earlier), meaning a sample length of: \(100*33 / 1000 \approx 3.3s \) is sufficient to be able to recognize the language with a correctness of \(\approx\)70 \%. This means online recognition of language is possible with a relatively small warm-up time of 3.3 seconds (or around 5 seconds with a higher correctness of about 80 \%).
+As one can see a length of around 100 frames (stacked with the 33 frames context as described earlier), meaning a sample length of: \(100*33 / 1000 \approx 3.3s \) is sufficient to be able to recognize the language with a correctness of \(\approx\)70 \%. This means online recognition of language is possible with a relatively small warm-up time of 3.3 seconds (or around 5 seconds with a higher correctness of then about 80 \%).
 \begin{figure}
 \label{fig:lengthBasic}
 \begin{tikzpicture}
@@ -657,35 +793,38 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	\textbf{Filter} & \textbf{Overall Error}  \\
 	\hline
-	 Bare Net & 0.689 \\
+	 Bare Net & 0.311 \\
 	\hline
-	Basic Filter &  0.\\
+	Basic Filter &  0.318\\
 	\hline
-	Advanced Filter Small & \\
+	Advanced Filter Small & 0.313 \\
 	\hline
-	Advanced Filter Big &  \\
+	Advanced Filter Big & 0.316\\
 	\hline
-	Variance & \\
+	Difference & 0.436 \\
 	\hline
-	Gaussian Filter WS 5 & \\
+	Gaussian Filter WS 5 & 0.313 \\
 	\hline
-	Gaussian Filter WS 10 & \\
+	Gaussian Filter WS 10 & 0.313 \\
 	\hline
-	Gaussian Filter WS 15 & \\
+	Gaussian Filter WS 15 & 0.313 \\
 	\hline
-	Gaussian Filter WS 20 & \\
+	Gaussian Filter WS 20 & 0. 313\\
 	\hline
-	Counting Filter FR 10 & \\
+	Counting Filter FR 10 & 0.316 \\
 	\hline
-	Counting Filter FR 50 & \\
+	Counting Filter FR 50 & 0.316 \\
 	\hline
-	Counting Filter FR 100 & \\
+	Counting Filter FR 100 & 0.313\\
+	\hline
+	Counting Filter FR 150 & 0.313\\
 	\hline
 	Speech/Noise Filter  & \\
 	\hline
-	English/German &  \\
+	Speech/Noise Filter
+	English/German &  0.116 \\
 	\hline
-	French/Italian & \\
+	French/Italian & 0.207\\
 	\hline
 \end{tabular}
 \caption{Results of the 6-layer tree-structure evaluated with all the tried post-filtering approaches.}
