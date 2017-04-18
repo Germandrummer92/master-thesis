@@ -19,15 +19,19 @@
 \label{ch:LITasks}
 
 This chapter lays out the experimental setup used in this thesis. While Language Identification is applicable in many different scenarios, here the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard, the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
+This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator. The test setup will be introduced in the next setup
 
-This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator.
 
-This chapter introduces our experimental setup as well as the data sets the experiments were conducted on.
+This chapter introduces our experimental setup and tooling, and gives an overview of the used data sets.
 
-\section{General Setup}
+\section{Language Identity Neural Networks}
 \label{sec:LITasks:GS}
 
-Fig.~\ref{fig:overview} gives an overview of our experimental setup to retrieve LIDs from audio samples.
+As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly the same. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer. It was trained using 6 layers of each 1000 neurons.
+
+The second last layer is the bottleneck layer with a size of 42 we then use in training for the LID Neural Network. This BNF Vectors are stacked with a context to provide the input for the 2\textsuperscript{nd} LID network, as language identity is considered to be a long-term property of the audio data. We tried different context sizes (see Sec.~\ref{sec:LIDNetwork:Input}), choosing the most robust one.  In opposition to the previous work mentioned, we then use the output layer of the 2\textsuperscript{2nd} layer to determine the language of the audio, meaning the output layer consists of as many output neurons as available languages.
+
+ Fig.~\ref{fig:overview} gives an overview of this setup.
 
 \tikzstyle{layer}=[draw=black,fill=black!30]
 \tikzstyle{layerlid}=[draw=black,fill=green!30]
@@ -140,8 +144,7 @@ stacked and fed into the second network to extract the LID.}
 
 Many different tools exist for deep learning, the most acclaimed being Tensorflow~\cite{DBLP:journals/corr/AbadiABBCCCDDDG16}, DL4J/ND4j\footnote{DL4J:~\url{https://deeplearning4j.org/index.html}} and Theano~\cite{bergstra2011theano}. Pre-existing work on Language Identification, or rather Language Feature Vector Extraction using a LID Network in~\cite{Mueller2016b}, used a python wrapper around Theano for training, that was developed by Jonas Gehring~\cite{gehringMA}. This thesis continues the use of this wrapper for the training of our DNNs. The basic layout of the network used and improved upon by this thesis were input vectors from a multilingual ASR net, further explained in Sec.~\ref{sec:FP:FA}, which we used to generate Bottleneck Features with 966 coefficients. The LID network introduced in the following chapters then uses these BNF vectors to classify the audio input into a language. Different Network Structures and types (DNNs/RNNs) were used that will be further explained in Ch.~\ref{ch:LIDNetwork}. 
 
-As detl does not provide support for RNNs we used Lasagne~\footnote{Lasagne: \url{https://lasagne.readthedocs.io/en/latest/}}, another wrapper around theano, as the framework for our RNN training.
-
+As detl does not provide support for RNNs we used Lasagne~\footnote{Lasagne: \url{https://lasagne.readthedocs.io/en/latest/}}, another wrapper around Theano, as the framework for our RNN training.
 
 \section{Euronews 2014}
 \label{sec:LITasks:Euronews}
@@ -258,29 +261,24 @@ The small corpus was used to evaluate performance of the Lecture-Data- as well a
 
 As each parliament discussion includes the same audio tracks, the length of all the languages in the set is the same, with each language having 3.6 hours of data. 
 
-\section{Feature Preprocessing}
+\chapter{Feature Preprocessing}
 \label{ch:FP}
 
-This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. It is then run through a six layer Automatic Speech Recognition network that was pre-trained on 10 languages. The 2\textsuperscript{nd} last layer of the ASR net is a Bottleneck feature layer, where the feature vectors are extracted and then used as input for the trained Language Identification Network. The following sections describe this Feature Preprocessing for data as well as the first ASR network used to create the BNF features the LID net requires. Our experiments used stacked context frames with a context of 33 frames, with a spread (so the difference between each context frame included) of 3, giving us a stacked feature vector of 11 different frames.
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously used to create the BNF features the LID net requires. 
+Features produced by this preprocessing setup are then written to ``pfiles'' together with their labels (the target language). The pfiles are then used to train the network using detl, or, in the case of RNNs, lasagne by supervised training using the Stochastic Gradient Descent with newbob scheduling.
 
-Experiments with other context values showed worse result, as can be seen in Tab.~\ref{tab:resCtxt} in the next chapter, so we kept the 33 frame context for all the nets explored.
-
-
-This data is then written to ``pfiles'' that are then used to train the network using detl, the framework introduced above, or, in the case of RNNs, lasagne.
-
-\subsection{Feature Access}
+\section{Feature Retrieval}
 \label{sec:FP:FA}
+The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz
 
-The experiments were all done with audio files in the pcm or wav format that were loaded by janus directly with a sampling rate of 16000. 
-
-\subsection{Feature Description}
+\section{Feature Description}
 \label{sec:FP:FD}
 %% TODO: references
 The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard Mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
 
 First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal. We then also calculate the tone features of the audio signal by merg
 
-\subsection{ASR BNF network}
+\section{ASR BNF network}
 \label{sec:FP:Net}
 
 
@@ -303,11 +301,11 @@ The following section describes different network layouts and changes we made to
 \section{Changing the Input Features}
 \label{sec:LIDNetwork:Input}
 
-As one of the first experiments we increased the Context that was stacked in the input feature vector from 33 to 44 and 55 frames, while still keeping the original spread of 11. This however proved not successful, as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter.
+Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the 2\textsuperscript{2nd} LID net of 2,3 and 6. So, as one of the first experiments we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 880ms and 1100ms respectively). This however proved not successful, as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
 
-For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 11 frames.
+For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 3 frames.
 
-Table~\ref{tab:resCtxt} at the end of the chapter shows the results for different net structures, as introduced in the following section with different contexts.
+Table~\ref{tab:resCtxt} at the end of the chapter shows the results for different net structures, as introduced in the following section, with different contexts.
 
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
@@ -782,8 +780,41 @@ Once the Gaussian function is calculated for the window, the convolution of the 
 \end{lstlisting}
 
 
-We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalTotal}. 
+We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalTotal}.  To show the correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has occurred.
 
+\begin{figure}
+\label{fig:gaussWS10}
+\begin{tikzpicture}
+\begin{axis}[
+	title={Coefficients for Gaussian window},
+	xlabel={Window position},
+	ylabel={Coefficient for one Language},
+	xmin=-10, xmax=10,
+	ymin=0, ymax=0.01,
+	xtick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
+	ytick={0,0.002,0.004,0.006,0.008,0.01},
+	legend pos=north west,
+	ymajorgrids=true,
+	grid style=dashed,
+	legend entries = {Smoothed, Original}
+]
+\addplot[
+	color=blue,
+	mark=square,
+	]
+	coordinates {
+	(-9,0.000000000000981436047264734)(-8,0.000000000146530269711589)(-7,0.0000000141764935038566)(-6,0.000000861340018697172)(-5,0.0000102217155818498)(-4,0.000240166306972279)(-3,0.002856375317948)(-2,0.006821435047423)(-1,0.007091839168043)(0,0.008949052879339)(1,0.000628630253053)(2,0.001394595714444)(3,0.000234592882892)(4,3.42E-06)(5,1.56E-06)(6,9.24E-08)(7,4.50E-09)(8,1.41E-10)(9,2.07E-13)
+	};
+\addplot[
+	color=red,
+	mark=square,
+	]
+	coordinates {
+	(-9,3.493900E-03)(-8,2.499977E-03)(-7,2.172766E-03)(-6,2.222949E-03)(-5,8.326542E-04)(-4,1.157482E-03)(-3,1.526701E-03)(-2,7.579251E-04)(-1,3.070411E-04)(0,2.829939E-04)(1,2.721654E-05)(2,1.549526E-04)(3,1.253873E-04)(4,1.650676E-05)(5,1.267841E-04)(6,2.384537E-04)(7,6.895550E-04)(8,2.413667E-03)(9,7.368696E-04)
+	};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 
 
 \begin{table}[h!]
@@ -809,7 +840,7 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	Gaussian Filter WS 15 & 0.313 \\
 	\hline
-	Gaussian Filter WS 20 & 0. 313\\
+	Gaussian Filter WS 20 & 0.313\\
 	\hline
 	Counting Filter FR 10 & 0.316 \\
 	\hline
@@ -821,7 +852,6 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	Speech/Noise Filter  & \\
 	\hline
-	Speech/Noise Filter
 	English/German &  0.116 \\
 	\hline
 	French/Italian & 0.207\\
