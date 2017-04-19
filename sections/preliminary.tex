@@ -28,10 +28,10 @@ Developed to be flexible and extensible, the jrtk can be seen as a programmable 
 This thesis makes extensive use of the jrtk's and tcl/tk's scripting capabilities to be able to pre-process speech audio files for further use by our experimental setup. It also uses tcl/tk scripts and it's janus API functionality in the development of our smoothing and evaluation scripts as can be seen in Ch.~\ref{ch:eval}.
 \section{Neural Networks}
 \label{sec:fund:NN}
-Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which will be described in Sec.~\ref{sec:fund:work}. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader. The information in this section is based mostly on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}
+Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which has been described in the previous chapter. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader. The information in this section is based mostly on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}
 
 
-\subsection{General Setup}
+\subsection{Neural Networks}
 \label{sec:fund:general}
 Neural Networks are based on collections of small ''neural units``  working together in tandem. The neuron's behavior can be loosely linked to the brain's axons. Each neuron is connected with others and a neuron is ''stimulated`` by input on these connections and then decides on its own activation, or stimulation, by using a summation, or threshold, function with a certain limit to decide if the neuron ''fires`` and its own activation is propagated through the network to adjacent units. By changing weigths and activation thresholds in the network its output changes, therefore the possible adjustable parameter set \(\Theta\) for a neural network includes all the weights for all neurons as well as all thresholds for the activation functions in each neuron.
 
@@ -64,14 +64,67 @@ y_k = \varphi(\sum_{j=0}^{m} w_{kj}x_j) - \theta_j
 \label{sec:fund:netSetup}
 
 A basic neural network consists of three layers: the input, a hidden layer of neurons and the output layer. Hereby, the output layer consists of as many neurons as classes that the network is trying to classify against and the one with the highest activation after entering input, is the classification output of the net.  A basic, fully-connected (referring to the connections between neurons, so fully-connected means each neuron is connected to each possible other neuron) net can be seen in Fig.~\ref{fig:net}.
+\tikzstyle{layer}=[draw=black,fill=black!30]
+\tikzstyle{layerlid}=[draw=black,fill=green!30]
+\tikzstyle{dots}=[draw=black,fill=black]
+\begin{figure*}[htbp]
+   \centering
 
-\begin{figure}
-\label{fig:net}
-\caption{A schematic drawing of a neural network}
-\centering
-\includegraphics{images/net.png}
-\end{figure}
+   \begin{tikzpicture}[scale=1.0]
 
+   % Input Layer
+
+   \draw (-1.75, 2.5) node[draw=white,fill=white] {Input Features};
+
+   \fill[layer] (-2,0.5) coordinate(l0bl) -- (-1.5,0.5) coordinate(l0br) --
+(-1.5,1.5) coordinate(l0tr) -- (-2,1.5) coordinate(l0tl) -- (-2,0.5);
+
+   \fill[layer] (-2,-0.5) coordinate(l0_1bl) -- (-1.5,-0.5) coordinate(l0_1br)
+-- (-1.5,0.5) coordinate(l0_1tr) -- (-2,0.5) coordinate(l0_1tl) -- (-2,-0.5);
+
+   \draw[dots] (-1.75,-0.7) circle (0.045);
+   \draw[dots] (-1.75,-0.875) circle (0.045);
+   \draw[dots] (-1.75,-1.05) circle (0.045);
+
+   \fill[layer] (-2,-2.25) coordinate(l0_2bl) -- (-1.5,-2.25)
+coordinate(l0_2br) -- (-1.5,-1.25) coordinate(l0_2tr) -- (-2,-1.25)
+coordinate(l0_2tl) -- (-2,-2.25);
+
+   % Output Stack
+   \fill[layer] (4,0.5) coordinate(l5bl) -- (4.5,0.5) coordinate(l5br)
+-- (4.5,1.5) coordinate(l5tr) -- (4,1.5) coordinate(l5tl) -- (4,0.5);
+   \fill[layer] (4,-0.5) coordinate(l5_1bl) -- (4.5,-0.5)
+coordinate(l5_1br) -- (4.5,0.5) coordinate(l5_1tr) -- (4,0.5)
+coordinate(l5_1tl) -- (4,-0.5);
+
+   \draw[dots] (4.25,-0.7) circle (0.045);
+   \draw[dots] (4.25,-0.875) circle (0.045);
+   \draw[dots] (4.25,-1.05) circle (0.045);
+
+   \fill[layer] (4,-2.25) coordinate(l5_2bl) -- (4.5,-2.25)
+coordinate(l5_2br) -- (4.5,-1.25) coordinate(l5_2tr) -- (4,-1.25)
+coordinate(l5_2tl) -- (4,-2.25);
+
+   \draw (1.5,-2.7) node {Hidden Layer};
+
+   \draw (4.25,2.5) node[draw=white,fill=white] {Output Classes};
+
+   % Hidden layer
+
+   \fill[layer] (1.0,-2.25) coordinate(l4bl) -- (1.5,-2.25) coordinate(l4br)
+-- (1.5,1.5) coordinate(l4tr) -- (1.0,1.5) coordinate(l4tl) -- (1,-2.25);
+
+
+  
+   \draw (l0tr) -- (l4bl);
+   \draw (l0_2br) -- (l4tl);
+   \draw (l4tr) -- (l5_2bl);
+   \draw (l4br) -- (l5tl);
+
+   \end{tikzpicture}
+   \caption{Basic Feed-Forward fully-connected Neural Network.}
+   \label{fig:net}
+\end{figure*}
 \subsection{Network Types}
 \label{sec:fund:types}
 
@@ -112,6 +165,7 @@ Then one run of the Network with parameter set \(\Theta\) gives the mapping \(y 
 
 Data for training is generally split into three sets: the training set with a size of about \(80\%\) of the total available data which is then used for the training, the development set with a size of about \(10\%\) used for evaluation of the net and adjusting different parameters without ``distorting'' the last test set which also has a size of around \(10\%\) and is used for final ``clean'' validation of the net performance.
 
+%TODO
 Sampling is most commonly, as in this thesis, done using the 
 
 \subsubsection{Supervised Training}

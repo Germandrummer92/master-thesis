@@ -29,7 +29,7 @@ This chapter introduces our experimental setup and tooling, and gives an overvie
 
 As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly the same. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer. It was trained using 6 layers of each 1000 neurons.
 
-The second last layer is the bottleneck layer with a size of 42 we then use in training for the LID Neural Network. This BNF Vectors are stacked with a context to provide the input for the 2\textsuperscript{nd} LID network, as language identity is considered to be a long-term property of the audio data. We tried different context sizes (see Sec.~\ref{sec:LIDNetwork:Input}), choosing the most robust one.  In opposition to the previous work mentioned, we then use the output layer of the 2\textsuperscript{2nd} layer to determine the language of the audio, meaning the output layer consists of as many output neurons as available languages.
+The second last layer is the bottleneck layer (referring to a layer with a much smaller size than the previous and following one) with a size of 42. We then use the Bottleneck activations in training for the LID Neural Network. These BNF Vectors are stacked with a context to provide the input for the 2\textsuperscript{nd} LID network, as language identity is considered to be a long-term property of the audio data. We tried different context sizes (see Sec.~\ref{sec:LIDNetwork:Input}), choosing the most robust one.  In opposition to the previous work mentioned where another BNF layer was introduced in the LID network to reuse the BNF vector in speech recognition tasks, we then use the output layer of the 2\textsuperscript{2nd} layer to determine the language of the audio. This means the output layer consists of as many output neurons as available languages.
 
  Fig.~\ref{fig:overview} gives an overview of this setup.
 
@@ -424,7 +424,6 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 
 As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to test out our network structure. The big net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. It only improved the per-sample error (as further introduced in the next chapter), by about 4\% however, suggesting that a suitable post-net filtering approach and net setup is even more important than the amount of train data, as the data corpus was more than trippled in size but did not improve the results in the same way.
 
-%TODO%
 \begin{table}[h!]
 \label{tab:resBigNet}
 \centering
@@ -432,11 +431,11 @@ As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was use
 	\hline
 	\textbf{Data Corpus} & \textbf{Train Error} & \textbf{Validation Error} & \textbf{Sample Error} \\
 	\hline
-	Small (17h/Language) & 0.251 &  0.238 &  \\
+	Small (17h/Language) & 0.251 &  0.238 & 0.318 \\
 	\hline
 	Big (70h/Language) & 0.204 & 0.169 &  0.276 \\
 	\hline
-	\textbf{Change} & \color{green}{\textbf{0.047}} & \color{green}{\textbf{0.069}} & \color{green}{\textbf{}} \\
+	\textbf{Change} & \color{green}{\textbf{0.047}} & \color{green}{\textbf{0.069}} & \color{green}{\textbf{0.042}} \\
 	\hline
 \end{tabular}
 \caption{Comparison of the big and small Euronews data corpus. Frame-based errors on train/validation set, as well as Sample-based Error.}
@@ -796,7 +795,7 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	legend pos=north west,
 	ymajorgrids=true,
 	grid style=dashed,
-	legend entries = {Smoothed, Original}
+	legend entries = {Convoluted, Original}
 ]
 \addplot[
 	color=blue,
@@ -850,7 +849,7 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	Counting Filter FR 150 & 0.313\\
 	\hline
-	Speech/Noise Filter  & \\
+	Speech/Noise Filter  & 0.313 \\
 	\hline
 	English/German &  0.116 \\
 	\hline
@@ -859,6 +858,7 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \end{tabular}
 \caption{Results of the 6-layer tree-structure evaluated with all the tried post-filtering approaches.}
 \end{table}
+
 
 \section{Lecture Data}
 \label{sec:eval:ld}
