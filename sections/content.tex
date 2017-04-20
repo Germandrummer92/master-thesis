@@ -301,7 +301,7 @@ The following section describes different network layouts and changes we made to
 \section{Changing the Input Features}
 \label{sec:LIDNetwork:Input}
 
-Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the 2\textsuperscript{2nd} LID net of 2,3 and 6. So, as one of the first experiments we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 880ms and 1100ms respectively). This however proved not successful, as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
+Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the 2\textsuperscript{nd} LID net of 2,3 and 6. So, as one of the first experiments we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 880ms and 1100ms respectively). This however proved not successful, as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
 
 For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 3 frames.
 
