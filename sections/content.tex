@@ -229,7 +229,7 @@ The complete Euronews Corpus available was much larger. This was used to confirm
 \section{Lecture Data}
 \label{sec:LITasks:Lecture}
 
-As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}}, as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition. 
+As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}}, as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition.
 
 This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
 
@@ -255,7 +255,7 @@ The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. A
 \section{European Parliament}
 \label{sec:LITasks:EU}
 
-As another form of evaluation recordings of the European Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}} were used. The video recordings come with the simultaneous translations into all the official languages of the EU-countries. This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. 
+As another form of evaluation recordings of the European Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}} were used. The video recordings come with the simultaneous translations into all the official languages of the EU-countries.  This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. The audio extracted is of the simultaneous translations with an underlying audio track of the original speaker, which adds noise, but is similar in nature to the Euronews recordings that often feature an underlying audio track in a different language.
 
 The small corpus was used to evaluate performance of the Lecture-Data- as well as Euronews-trained nets, as well as improve capabilities of the networks with fine-tuning using the Euronews data, of which results can be seen in the following chapter.
 
@@ -269,14 +269,70 @@ Features produced by this preprocessing setup are then written to ``pfiles'' tog
 
 \section{Feature Retrieval}
 \label{sec:FP:FA}
-The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz
+The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz. European Parliament data we collected ourselves were recorded with a samplerate of 44.1 kHz. We downsampled the data using soX\footnote{soX Sound eXchange: \url{http://sox.sourceforge.net/}}. 
+\paragraph{Feature Window Size Discrepancy} As pitch feature were calculated on 16ms windows while intonation was calculated on 32 ms we had to shorten the length of the section the 32ms features are calculated one by 16ms so the number of frames match and the features can be merged. This was done by removing  0.008 s from the beginning and end of the audio file. This was also done to any evaluation audio used with the small Euronews nets.
+\paragraph{Big Euronews Corpus} As the Big Euronews corpus as introduced already had training pfiles existing from previous work~\cite{Mueller2016b}, we reused them. This meant that the features here were completely based on 32ms windows and no pre-calculation cutting of the audio was necessary.
+
 
 \section{Feature Description}
 \label{sec:FP:FD}
-%% TODO: references
-The extracted ADC features from the audio files are then used for further preprocessing. We first use a standard Mel filter bank to extract only the necessary coefficients from the ADC0 feature. 
+For the DBNF network, a combination of lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung}. Tonal features has shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated.
+Using the sound power feature that is part of janus' standard capabilities, we also added a speech-detection feature as when the power of the sound transmitted reaches a threshold we consider it speech, otherwise noise. Calculations were done by calculating the Log on the power feature, filtering it with a context of 2, normalizing it between -0.1 and 0.5 and then using a threshold of 0 in the normalized spectrum to consider it speech. We do not discard those parts weigh the combined feature vector less if the threshold of 0 was not reached.   Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
 
-First a spectrum is applied to the ADC0 Feature, therefore calculating the Fast Fourier Transformation of the Digitalized Signal. We then also calculate the tone features of the audio signal by merg
+These feature vectors are stacked with a context of 6 adjacent frames and then passes to the DBNF net as introduced in the next section.
+
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+\begin{lstlisting}[label=lst:features,caption=The feature description as used by our pre-BNF-preprocessing]
+puts "start featDesc"
+
+#-----------------speech detection------------------
+$fes   adc2pow         POWER   ADC    16ms #Extract Sound Power
+$fes   alog            POWER   POWER  1 4 #Log on Sound Power
+$fes   filter          POWER   POWER  {-2 {1 2 3 2 1}} #Filter
+$fes   normalize       POWER   POWER  -min -0.1 -max 0.5 #Normalize
+$fes   thresh          SPEECH  POWER  1.0 0 upper #> 0 -> Speech
+$fes   thresh          SPEECH  SPEECH 0   0 lower #< 0 -> No Speech
+
+#----------------- mel filter bank------------------
+$fes   spectrum        FFT0            ADC             16ms
+set WARP 1.0
+        
+### computing log-mel
+#Help Check to not allocate melcoefficient matrix twice (will lead to tcl error)
+if { [llength [objects FBMatrix matrixMEL]] != 1} {
+        set melN 40
+        set points [$fes:FFT0 configure -coeffN]
+        set rate   [expr 1000 * [$fes:FFT0 configure -samplingRate]]
+        [FBMatrix matrixMEL] mel -N $melN -p $points -rate $rate
+}
+
+$fes   VTLN             FFT             FFT0           $WARP -mod lin -edge 0.8
+$fes   filterbank       MEL             FFT            matrixMEL
+$fes   log              lMEL            MEL            1.0 1.0 #Log-Mel
+
+ # Computing Tonal feature
+# Pitch
+$fes pitch              PITCH  ADC  16ms
+$fes delta              dPITCH1 PITCH -delta 1
+$fes delta              ddPITCH1 dPITCH1 -delta 1
+$fes delta              dPITCH2 PITCH -delta 2
+$fes delta              ddPITCH2 dPITCH2 -delta 2
+$fes delta              dPITCH3 PITCH -delta 3
+$fes delta              ddPITCH3 dPITCH3 -delta 3
+$fes merge              P16 PITCH dPITCH1 ddPITCH1 dPITCH2 ddPITCH2 dPITCH3 ddPITCH3
+
+# Calculating FFV
+$fes intonation         FFV  ADCffv 32ms -tint 11ms -text 9ms -tsep 14ms # On 32 ms Windows!
+$fes merge              TONE FFV  P16
+
+$fes   merge           mergedFEAT           lMEL      TONE
+$fes   meansub         FEAT                 mergedFEAT      -a 2 -weight SPEECH #Weight with the Speech feature.
+
+$fes   adjacent        FEATSPR              FEAT            -delta 6 #Stack Context of 6 frames
+\end{lstlisting}
+
+
 
 \section{ASR BNF network}
 \label{sec:FP:Net}
@@ -453,7 +509,6 @@ A second experiment was conducted, using the same base Euronews net, but adding 
 Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fine-tuned nets using all Euronews languages but still gave a figure for the net results with the Euronews corpus for English, German and French. These results are obviously much worse than pure-Euronews-trained nets, as the two output layers have never seen euronews data, that while similiar, is obviously still sufficiently different, as the performance suffered by 12.1\%.
 
 
-%TODO
 \begin{table}
 
 \begin{tabular}{| l | c | c | c | r | }
