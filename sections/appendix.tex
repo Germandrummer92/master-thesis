@@ -19,3 +19,166 @@ In this Appendix we present images, data that did not make it into the main matt
 \section{Complete Source Code Listings}
 
 As mentioned in Ch.~\ref{ch:eval}, we are listing the complete source code for all the different smoothing algorithms tried here.
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+
+\begin{lstlisting}[label=lst:BasicFilter,caption=Basic (first try) Filter employed to smooth/improve output]
+proc filter {} {
+    for {set i 0} {$i < 10} {incr i} {
+    set total($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+    if {$maxFrameID != $lastFrameID} {
+       set lastFrameID $maxFrameID
+       set counter 0
+    } elseif {$maxFrame >= 0.61} {
+       incr counter
+       if {$counter >= 5} {
+          set currentOutput $maxFrameID
+       }
+    }
+    if {$currentOutput != -1} {
+          incr total($currentOutput)
+    }
+    }
+    set maxOverall -1
+    set maxID -1
+    for {set i 0} {$i < 10} {incr i} {
+    if {$total($i) > $maxOverall} {
+        set maxOverall $total($i)
+        set maxID $i
+    }
+    }
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[label=lst:CountingFilter,caption=Counting Filter employed to smooth/improve output]
+proc filter {} {
+    for {set i 0} {$i < 10} {incr i} {
+    set totalM($i) 0
+    set count($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+    for {set j 0} {$j < 10 && $i < [featureSetLID frameN nnBNF]} {incr j} {
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        set count($maxFrameID) [expr {[set count($maxFrameID)] + 1}]
+        incr i
+    }
+    set maxAvg -1
+    set maxID -1
+    for {set k 0} {$k < 10} {incr k} {
+        if {[set count($k)] > $maxAvg} {
+            set maxAvg [set count($k)]
+            set maxID $k
+        }
+    }
+    set currentOutput $maxID
+    if {$currentOutput != -1} {
+              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+    }
+    }
+    set maxOverall -1
+    set maxID -1
+    for {set i 0} {$i < 10} {incr i} {
+    if {[set totalM($i)] > $maxOverall} {
+        set maxOverall [set totalM($i)]
+        set maxID $i
+    }
+    }
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    return $maxID
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[label=lst:DifferenceFilter,caption=Difference Filter employed to smooth/improve output]
+proc filter {} {
+    for {set i 0} {$i < 10} {incr i} {
+    set totalM($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+    set max2Frame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 1]
+    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+    set max2FrameID [lsearch -real [featureSetLID frame nnBNF $i] $max2Frame]
+    if {$maxFrameID != $lastFrameID} {
+       set lastFrameID $maxFrameID
+       set counter 0
+    } elseif {[expr {$maxFrame - $max2Frame >= 0.1}]} {
+       incr counter
+       if {$counter >= 5} {
+          set currentOutput $maxFrameID
+       }
+    }
+    if {$currentOutput != -1} {
+              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+    }
+    }
+    set maxOverall -1
+    set maxID -1
+    for {set i 0} {$i < 10} {incr i} {
+    if {[set totalM($i)] > $maxOverall} {
+        set maxOverall [set totalM($i)]
+        set maxID $i
+    }
+    }
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    return $maxID
+}
+\end{lstlisting}
+\begin{lstlisting}[label=lst:SpeechFilter,caption=Speech Filter employed to smooth/improve output]
+proc filter {} {
+    for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        set currentOutput $maxFrameID
+        if {$currentOutput != -1 && [featureSetLID frame SPEECH $i] == "1.000000e+00"} {
+            set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+            set lastFrameID $currentOutput
+        } elseif {$lastFrameID != -1} {
+            set totalM($lastFrameID) [expr {[set totalM($lastFrameID)] + 1}]
+        }
+    }
+
+    set maxOverall -1
+    set maxID -1
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+    }
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    puts -nonewline "Length of sample: "
+    puts [featureSetLID frameN nnBNF]
+    return $maxID
+}
+\end{lstlisting}
+
+

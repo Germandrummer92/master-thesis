@@ -27,7 +27,7 @@ This chapter introduces our experimental setup and tooling, and gives an overvie
 \section{Language Identity Neural Networks}
 \label{sec:LITasks:GS}
 
-As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly the same. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer. It was trained using 6 layers of each 1000 neurons.
+As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly the same. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer.
 
 The second last layer is the bottleneck layer (referring to a layer with a much smaller size than the previous and following one) with a size of 42. We then use the Bottleneck activations in training for the LID Neural Network. These BNF Vectors are stacked with a context to provide the input for the 2\textsuperscript{nd} LID network, as language identity is considered to be a long-term property of the audio data. We tried different context sizes (see Sec.~\ref{sec:LIDNetwork:Input}), choosing the most robust one.  In opposition to the previous work mentioned where another BNF layer was introduced in the LID network to reuse the BNF vector in speech recognition tasks, we then use the output layer of the 2\textsuperscript{2nd} layer to determine the language of the audio. This means the output layer consists of as many output neurons as available languages.
 
@@ -264,7 +264,7 @@ As each parliament discussion includes the same audio tracks, the length of all 
 \chapter{Feature Preprocessing}
 \label{ch:FP}
 
-This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously used to create the BNF features the LID net requires. 
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously used to create the BNF features the LID net requires.  It is based on preprocessing introduced in~\cite{Mueller2016b}.
 Features produced by this preprocessing setup are then written to ``pfiles'' together with their labels (the target language). The pfiles are then used to train the network using detl, or, in the case of RNNs, lasagne by supervised training using the Stochastic Gradient Descent with newbob scheduling.
 
 \section{Feature Retrieval}
@@ -273,23 +273,30 @@ The audio files available to us in the Euronews and Lecture Data corpus were rec
 \paragraph{Feature Window Size Discrepancy} As pitch feature were calculated on 16ms windows while intonation was calculated on 32 ms we had to shorten the length of the section the 32ms features are calculated one by 16ms so the number of frames match and the features can be merged. This was done by removing  0.008 s from the beginning and end of the audio file. This was also done to any evaluation audio used with the small Euronews nets.
 \paragraph{Big Euronews Corpus} As the Big Euronews corpus as introduced already had training pfiles existing from previous work~\cite{Mueller2016b}, we reused them. This meant that the features here were completely based on 32ms windows and no pre-calculation cutting of the audio was necessary.
 
-
 \section{Feature Description}
 \label{sec:FP:FD}
-For the DBNF network, a combination of lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung}. Tonal features has shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated.
-Using the sound power feature that is part of janus' standard capabilities, we also added a speech-detection feature as when the power of the sound transmitted reaches a threshold we consider it speech, otherwise noise. Calculations were done by calculating the Log on the power feature, filtering it with a context of 2, normalizing it between -0.1 and 0.5 and then using a threshold of 0 in the normalized spectrum to consider it speech. We do not discard those parts weigh the combined feature vector less if the threshold of 0 was not reached.   Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
+For the DBNF network as input, a combination of sound power, lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung} was used. Tonal features have shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated. Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
 
-These feature vectors are stacked with a context of 6 adjacent frames and then passes to the DBNF net as introduced in the next section.
+Using the sound power feature that is part of janus' standard capabilities, we added a speech-detection feature as when the power of the sound in the recording reaches a threshold we consider it speech, otherwise noise. Calculations were done by calculating the Log on the current sound power, calculating the weighted average with a context of 2 frames on each side on this, normalizing the resulting value between -0.1 and 0.5 and then using a threshold of 0 in the normalized spectrum to consider it speech. We do not discard the non-speech marked parts but weigh the combined feature vector less for the total input if the threshold of 0 was not reached.  
+
+The log Mel features are calculated the following way: We calculate the spectrum of the audio waveform using the Fast Fourier Transformation on 16 ms windows, calculate the Mel Coefficients, apply Vocal Tract Length Normalization (VTLN) on the spectrum in the linear domain and then multiply the Mel-Filterbank coefficients with the normalized coefficients. We apply a logarithm to this to get the lMEL features.
+
+From janus' standard pitch capability, calculated on 16 ms windows, we calculate the symmetric delta coefficients \(((f(t+\delta) - f(t-\delta))\) on the pitch for \(\delta=1,2,3\) and the same deltas on those results and merge to give us a coefficients for frame t:
+\((PITCH(t), f(t):=PITCH(t+1)-PITCH(t-1),f(t+1)-f(t-1),g(t):=PITCH(t+2)-PITCH(t-2),g(t+2)-g(t-2),h(t):=PITCH(t+3)-PITCH(t-3),h(t+3)-h(t-3))\)
+
+The FFV is calculated on 32 ms windows, to then be merged  with the pitch feature we just defined to make up the TONE feature. lMEL coefficients and TONE coefficients are then merged. These feature vectors are stacked with a context of 6 adjacent frames and then passed to the DBNF net as introduced in the next section.
+\paragraph{Big Euronews Corpus} The big Euronews corpus used 32 ms for all feature calculations, so the sound power, FFT/lMEL and Pitch were calculated on 32ms windows, but used the same features aside from this.
+\paragraph{Lecture Data/European Parliament} For the other two data corpusses we kept the 16ms windows for Power and lMEL, but changed the Pitch to be calculated on 32 ms windows.
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
-\begin{lstlisting}[label=lst:features,caption=The feature description as used by our pre-BNF-preprocessing]
+\begin{lstlisting}[label=lst:features,caption=The feature description as used by our pre-DBNF-preprocessing]
 puts "start featDesc"
 
 #-----------------speech detection------------------
 $fes   adc2pow         POWER   ADC    16ms #Extract Sound Power
 $fes   alog            POWER   POWER  1 4 #Log on Sound Power
-$fes   filter          POWER   POWER  {-2 {1 2 3 2 1}} #Filter
+$fes   filter          POWER   POWER  {-2 {1 2 3 2 1}} #Weighted Average with context of 2
 $fes   normalize       POWER   POWER  -min -0.1 -max 0.5 #Normalize
 $fes   thresh          SPEECH  POWER  1.0 0 upper #> 0 -> Speech
 $fes   thresh          SPEECH  SPEECH 0   0 lower #< 0 -> No Speech
@@ -299,7 +306,7 @@ $fes   spectrum        FFT0            ADC             16ms
 set WARP 1.0
         
 ### computing log-mel
-#Help Check to not allocate melcoefficient matrix twice (will lead to tcl error)
+#Help Check to not allocate mel filterbank coefficient matrix twice (will lead to tcl error)
 if { [llength [objects FBMatrix matrixMEL]] != 1} {
         set melN 40
         set points [$fes:FFT0 configure -coeffN]
@@ -327,16 +334,27 @@ $fes intonation         FFV  ADCffv 32ms -tint 11ms -text 9ms -tsep 14ms # On 32
 $fes merge              TONE FFV  P16
 
 $fes   merge           mergedFEAT           lMEL      TONE
-$fes   meansub         FEAT                 mergedFEAT      -a 2 -weight SPEECH #Weight with the Speech feature.
+$fes   meansub         FEAT                 mergedFEAT      -a 2 -weight SPEECH #Weigh with the Speech feature.
 
 $fes   adjacent        FEATSPR              FEAT            -delta 6 #Stack Context of 6 frames
 \end{lstlisting}
 
-
-
 \section{ASR BNF network}
 \label{sec:FP:Net}
 
+The DBNF use was trained as part of~\cite{Mueller2016b}. It is trained using the input features as just presented with a context of 6. The targets are Context-Dependent phoneme states, so a similar setup to how an ASR neural network would look. The network has 6 layers of 1000 neurons each plus a bottleneck layer of only 42 neurons before the final output layer. 
+
+The activations of the bottleneck layer are extracted, the context of 11 frames applied and used as the input features for the LID network on which the following chapter will elaborate.
+
+
+\section{Changing the Input Features}
+\label{sec:LIDNetwork:Input}
+
+Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the LID net of 2,3 and 6. So, as one of the first experiments on the Euronews corpus we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 44 Frames (880ms) and 55 Frames (1100ms) respectively). This however proved not successful as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
+
+For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 3 frames.
+
+Table~\ref{tab:resCtx} at the end of the next chapter shows the results for different net structures, as introduced in the following, with different contexts.
 
 \chapter{LID Network Structure}
 \label{ch:LIDNetwork}
@@ -346,22 +364,13 @@ This chapter describes the actual Language Identification Neural Network trained
 \section{Basic Setup}
 \label{sec:LIDNetwork:Basic}
 
-The first experimental net setup consisted of 5 layers of denoising auto-encoders with each 1000 nodes, aside from the input layer using the 966 feature frames that were output by the BNF layer of the ASR net, and a tanh activation function using the mean squared error as the loss function. 
+The first experimental net setup consisted of 5 layers of denoising auto-encoders with each 1000 nodes, aside from the input layer using the 966 feature frames that is the input vector whose contents were described in the previous chapter, and a tanh activation function using the mean squared error as the loss function. 
 
 The neural net was then trained using mini batches of size 2m and a learning Rate of 0.01. The pre-trained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
 
 The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error calculated on training data.
 
 The following section describes different network layouts and changes we made to the training of the neural network and the improvements we managed to make upon our initial result.
-
-\section{Changing the Input Features}
-\label{sec:LIDNetwork:Input}
-
-Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the 2\textsuperscript{nd} LID net of 2,3 and 6. So, as one of the first experiments we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 880ms and 1100ms respectively). This however proved not successful, as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
-
-For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 3 frames.
-
-Table~\ref{tab:resCtxt} at the end of the chapter shows the results for different net structures, as introduced in the following section, with different contexts.
 
 \section{Improving Network Layout}
 \label{sec:LIDNetwork:Layout}
@@ -416,7 +425,7 @@ performed not at all featuring an error rate of 90 \%, meaning the net is not cl
 As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first, to then affect the deeper layers), our setup did most likely not include enough data for the training of these nets. Another explanation could be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
 
 \begin{table}[h!]
-\label{tab:resCtx}
+\caption{Results of the different Context sizes on the Euronews corpus for the first 3 introduced net structures. Frame-based errors on train/validation set.}
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
@@ -441,12 +450,12 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 	Reduced Learning Rate (55) & 0.276 & 0.268 \\ 
 	\hline
 \end{tabular}
-\caption{Results of the different Context sizes on the Euronews corpus for the first 3 introduced net structures. Frame-based errors on train/validation set.}
+\label{tab:resCtx}
 \end{table}
 
 
 \begin{table}[h!]
-\label{tab:resFrameBased}
+
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
@@ -473,6 +482,7 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 	\hline
 \end{tabular}
 \caption{Results of the different net structures on the Euronews corpus. Frame-based errors on train/validation set.}
+\label{tab:resFrameBased}
 \end{table}
 
 \section{Big Euronews Corpus}
@@ -481,7 +491,6 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to test out our network structure. The big net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. It only improved the per-sample error (as further introduced in the next chapter), by about 4\% however, suggesting that a suitable post-net filtering approach and net setup is even more important than the amount of train data, as the data corpus was more than trippled in size but did not improve the results in the same way.
 
 \begin{table}[h!]
-\label{tab:resBigNet}
 \centering
 \begin{tabular}{| l | c | c | r | }
 	\hline
@@ -495,6 +504,7 @@ As introduced in Sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was use
 	\hline
 \end{tabular}
 \caption{Comparison of the big and small Euronews data corpus. Frame-based errors on train/validation set, as well as Sample-based Error.}
+\label{tab:resBigNet}
 \end{table}
 
 \section{Finetuning}
@@ -530,8 +540,6 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 \end{table}
 
 
-
-
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
 By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. However the results provided a surprise, in that they did not improve upon lecture-data fine tuning results. 
@@ -553,7 +561,6 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 
 %TODO%TODO
 \begin{table}
-
 \begin{tabular}{| l | c | c | c | r | }
 	\hline
 	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} & \textbf{LD Train Error} & \textbf{LD Val. Error} & \textbf{LD Sample Error}  \\
@@ -567,7 +574,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hdashline
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hline
-	\textbf{Change} & \color{green}{\textbf{0.043}} & \color{green}{\textbf{0.002}} & \color{green}{\textbf{0.014}} & \color{green}{\textbf{0.018}} \\
+	\textbf{Change} & \color{red}{\textbf{0.121}} & \color{green}{\textbf{0.002}} & \color{green}{\textbf{0.014}} & \color{green}{\textbf{0.018}} \\
 	\hline
 \end{tabular}
 \label{tab:resultsLD}
