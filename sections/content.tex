@@ -234,6 +234,8 @@ As part of the development of the KIT's Lecture Translator, German lectures at t
 This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
 
 The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. As the main work was done on the Euronews corpus this data corpus is considerably smaller and was mostly just used as a proof-of-concept for a possible integration of a LID-Net into the Lecture Translator. 
+
+The development set for the LD corpus consisted of 1.5h of Lecture Data per each of the three languages with one speaker for German/English (one class' recording) and 5 french speakers from DGA talks.
 \begin{table}[h!]
 \label{tab:spkDataLD}
 \centering
@@ -264,7 +266,7 @@ As each parliament discussion includes the same audio tracks, the length of all 
 \chapter{Feature Preprocessing}
 \label{ch:FP}
 
-This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously used to create the BNF features the LID net requires.  It is based on preprocessing introduced in~\cite{Mueller2016b}.
+This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously, used to create the BNF features the LID net requires.  It is based on preprocessing introduced in~\cite{Mueller2016b}.
 Features produced by this preprocessing setup are then written to ``pfiles'' together with their labels (the target language). The pfiles are then used to train the network using detl, or, in the case of RNNs, lasagne by supervised training using the Stochastic Gradient Descent with newbob scheduling.
 
 \section{Feature Retrieval}

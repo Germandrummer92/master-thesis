@@ -77,7 +77,7 @@ Developed to be flexible and extensible, the jrtk can be seen as a programmable 
 This thesis makes extensive use of the jrtk's and tcl/tk's scripting capabilities to be able to pre-process speech audio files for further use by our experimental setup. It also uses tcl/tk scripts and it's janus API functionality in the development of our smoothing and evaluation scripts as can be seen in Ch.~\ref{ch:eval}.
 \section{Neural Networks}
 \label{sec:fund:NN}
-Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which has been described in the previous chapter. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader. The information in this section is based mostly on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}
+Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which has been described in the previous chapter. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader. The information in this section is based on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}, if not otherwise sourced.
 
 
 \subsection{Neural Networks}
@@ -190,6 +190,8 @@ A common description of this phenomen is, that each hidden layer increases the l
 \subsubsection{Deep Recurrent Neural Networks}
 \textit{Deep Recurrent Neural Networks}, RNNs, refer to neural networks that are DNN's but cyclic connections are allowed. This means the network can have temporal behavior, so its performance changes dynamically over time, when the state of later neurons changes and affects the neurons in previous layers.
 
+\paragraph{Long-Short-Term-Memory} The most common RNNs are based on Long-Short-Term-Memory units, artificial neurons that can remember values for a short or long duration, thus having an internal state that changes over time and does not have an activation function like normal artificial neurons. Normally, RNNs then include LSTM blocks of multiple LSTM units. The LSTM blocks then control the change of memory through ``gates''. The input gate to control when a new value is entered into memory, the forget gate to control if a value remains in memory and the output gate which controls the calculation of the activation of the entire block. The weights that are learned for LSTM blocks are then used in front of the gates. That means the weight determines the values of the memory in the block and therefore the activation. RNNs are trained with a similar algorithm as introduced in the next section for non-recurrrent networks, called Backpropagation through time. A detailled explanation of this can be found in~\cite{58337}.
+
 
 \subsection{Learning}
 \label{sec:fund:Learn}
@@ -214,8 +216,8 @@ Then one run of the Network with parameter set \(\Theta\) gives the mapping \(y 
 
 Data for training is generally split into three sets: the training set with a size of about \(80\%\) of the total available data which is then used for the training, the development set with a size of about \(10\%\) used for evaluation of the net and adjusting different parameters without ``distorting'' the last test set which also has a size of around \(10\%\) and is used for final ``clean'' validation of the net performance.
 
-%TODO
-Sampling is most commonly, as in this thesis, done using the 
+
+Sampling for the three sets is most commonly, as in this thesis, done using Simple Random Sampling (SRS), where each set is chosen randomly and completely by chance so that each sample has the same chance to be part of any of the three sets, and furthermore any combination of \(n\) samples has the same probablity to be in any of the sets~\cite{meng2013scalable}
 
 \subsubsection{Supervised Training}
 \label{sec:fund:ST}
