@@ -407,7 +407,7 @@ further improved the results, yielding an error rate of only 0.241, performing a
 
 An explanation for the better performance of the tree structure could be, that the farther the layer is removed from the input, it works on recognizing more ``abstract'' patterns, and less of the more abstract classes exist than of basic patterns. E.g. the first layer decides on the values of one certain frequency of the input what language is more likely, with the second layer then taking into account a whole range of frequencies (of which less exist) or even more abstract features to further differentiate.
 
-Adding a much larger number of hidden layers into this tree structure did not improve results, as a 10-hidden-layer version with the setup of
+Adding a larger number of hidden layers into this tree structure did not improve results, as a 10-hidden-layer version with the setup of
 
 \begin{verbatim}
  '!make da 966,tanh:2000 loss=mse' \
@@ -422,7 +422,7 @@ Adding a much larger number of hidden layers into this tree structure did not im
   '!make da 400:200' \
 \end{verbatim}
 
-performed not at all featuring an error rate of 90 \%, meaning the net is not classifying at all anymore. 
+performed not at all featuring an error rate of 90 \%, meaning the net is not classifying at all anymore.  
 
 As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first, to then affect the deeper layers), our setup did most likely not include enough data for the training of these nets. Another explanation could be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
 
@@ -477,6 +477,8 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 	\hline
 	\parbox[t]{5cm}{Tree Structure (6 layers 1200...200 neurons) \\
 	and reduced Learning Rate} & 0.251 & 0.238 \\
+	\hline
+	Tree Structure (7 layers 1400...200 neurons) & 0.206 & 0.247 \\
 	\hline
 	Tree Structure (10 layers 2000...200 neurons) & 0.899 & 0.910 \\
 	\hline
@@ -534,7 +536,7 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 	\hdashline
 	\parbox[t]{4.2cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hline
-	\textbf{Change} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.067}} \\
+	\textbf{Change (total)} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.067}} \\
 	\hline
 \end{tabular}
 \label{tab:LIDFine}
@@ -557,7 +559,7 @@ After trying fine-tuning and concatenation for the lecture data corpus, we also 
   '!make da 400:200' \
 \end{verbatim}
 
-The 6-layer net did prove to perform better than the 4-layer one, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate. 
+The 6-layer net did prove to perform better than the 4-layer one, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate.  Suprisingly, the ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in comparison with the fine-tuned versions.
 
 Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments.
 
@@ -575,8 +577,14 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } & 0.456 & 0.075 & 0.116 & 0.130 \\
 	\hdashline
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
+	\hdashline
+	\parbox[t]{5cm}{LD-Trained Net 4 layers} & & 0.076 & 0.109 & \\
+	\hdashline
+	LD-Trained-Net 6 layers & & 0.026 & 0.093 & \\
+	\hdashline
+	\parbox[t]{5cm}{LD-Trained Net 6 layers \\ \& lowered learning rate} & & 0.066 & 0.100 & 0.150 \\
 	\hline
-	\textbf{Change} & \color{red}{\textbf{0.121}} & \color{green}{\textbf{0.002}} & \color{green}{\textbf{0.014}} & \color{green}{\textbf{0.018}} \\
+	\parbox[t]{5cm}{\textbf{Change} \\\textbf{(between LD-approaches)}} & \color{red}{\textbf{0.121}} & \color{green}{\textbf{0.049}} & \color{green}{\textbf{0.023}} & \color{green}{\textbf{0.018}} \\
 	\hline
 \end{tabular}
 \label{tab:resultsLD}
@@ -587,7 +595,20 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:total}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for frames, but gave us the best results on sample-basis.
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:total}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but gave us the best results on sample-basis.
+
+\section{Analyzing Outputs}
+\label{sec:outputs}
+
+We started by evaluating a few samples manually by looking at the output. As expected activations for random noise/music as in \ref{fig:noise} are smooth over all the neurons and do not show any language (as is correct) as being predominant.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{images/noise.png}
+\caption{Activation of Output Neurons for Random non-speech (jingles/noise)}
+\label{fig:noise}
+\end{figure}
+
+%TODO
 
 \section{Bare net output}
 \label{sec:eval:bare}
@@ -683,7 +704,6 @@ As one can see a length of around 100 frames (stacked with the 33 frames context
 \end{tabular}
 \caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set.}
 \end{table}
-
 
 \section{Basic Test Filter}
 \label{sec:eval:basic}
