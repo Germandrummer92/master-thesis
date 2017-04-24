@@ -536,7 +536,7 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 	\hdashline
 	\parbox[t]{4.2cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hline
-	\textbf{Change (total)} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.067}} \\
+	\textbf{Change (best)} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.067}} \\
 	\hline
 \end{tabular}
 \label{tab:LIDFine}
@@ -559,9 +559,11 @@ After trying fine-tuning and concatenation for the lecture data corpus, we also 
   '!make da 400:200' \
 \end{verbatim}
 
-The 6-layer net did prove to perform better than the 4-layer one, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate.  Suprisingly, the ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in comparison with the fine-tuned versions.
+The 6-layer net did prove to perform better than the 4-layer one in the frame-based metric, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate for the LD Evaluation.  Overall however, the LD-Trained Net with 4 layers performed the best on samples, the metric most that can be most related to performance in an online fashion.
 
-Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments.
+Suprisingly, the other ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in sample-evaluation in comparison with the fine-tuned versions. Possibly, this can be attributed to the fact that the lecture data corpus overall is much smaller than the Euronews one, on which the fine-tuned version were pre-trained on, and therefore have less transferabilty.
+
+Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the 4-layer LD-trained net with an improvement of 9.1\% in the sample-error compared to the plain Euronews net.
 
 %TODO%TODO
 \begin{table}
@@ -578,13 +580,13 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hdashline
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.413 & 0.073 & 0.102 & 0.112 \\
 	\hdashline
-	\parbox[t]{5cm}{LD-Trained Net 4 layers} & & 0.076 & 0.109 & \\
+	\parbox[t]{5cm}{LD-Trained Net 4 layers} & 0.438 & 0.076 & 0.109 & 0.088 \\
 	\hdashline
-	LD-Trained-Net 6 layers & & 0.026 & 0.093 & \\
+	LD-Trained-Net 6 layers & 0.439 & 0.026 & 0.093 & 0.150 \\
 	\hdashline
-	\parbox[t]{5cm}{LD-Trained Net 6 layers \\ \& lowered learning rate} & & 0.066 & 0.100 & 0.150 \\
+	\parbox[t]{5cm}{LD-Trained Net 6 layers \\ \& lowered learning rate} & 0.417 & 0.066 & 0.100 & 0.112 \\
 	\hline
-	\parbox[t]{5cm}{\textbf{Change} \\\textbf{(between LD-approaches)}} & \color{red}{\textbf{0.121}} & \color{green}{\textbf{0.049}} & \color{green}{\textbf{0.023}} & \color{green}{\textbf{0.018}} \\
+	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.091}} \\
 	\hline
 \end{tabular}
 \label{tab:resultsLD}
@@ -595,25 +597,45 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:total}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but gave us the best results on sample-basis.
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. Unfortunately only the 2-language filter and the basic counting smoothing wrapper applied in all filters can be seen as an improvement. The summarized results are listed in Tab.~\ref{tab:evalTotal}, ~ref{tab:evalTotal2}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but gave us the best results on a sample basis.
 
 \section{Analyzing Outputs}
 \label{sec:outputs}
 
-We started by evaluating a few samples manually by looking at the output. As expected activations for random noise/music as in \ref{fig:noise} are smooth over all the neurons and do not show any language (as is correct) as being predominant.
+We started by evaluating a few samples manually by looking at the output. As expected activations (black meaning a higher activation value) for random noise/music as in Fig.~\ref{fig:noise} are smooth over all the frames (x-scale) and do not show any language as being predominant. 
+
+Also, for a 800 ms polish sample, Fig.~\ref{fig:polish} shows the output activations for a correctly recognized sample. It is clear, that the language with ID 5 is the one being spoken in the sample as the 5th row in the picture has the highest activations. This is equal to polish (as arbitrarily defined in the pfiles writing script). 
+
+An incorrectly classified sample can be seen in Fig.~\ref{fig:incorrect}. The language of the sample is English (ID 9), but from frame 50 on it is being (mostly) classfied as Arabian (ID 0). However, one can also see, that the activations of the network are not smooth and tend to jump around as different languages appear as the maximum in this sample, e.g. also German (ID 1) appears to have high activations at different times. 
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.7\textwidth]{images/noise.png}
-\caption{Activation of Output Neurons for Random non-speech (jingles/noise)}
+\caption{Activation of output neurons for random non-speech (jingles/noise)}
 \label{fig:noise}
 \end{figure}
 
-%TODO
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{images/polishCorrect.png}
+\caption{Activation of output neurons for a correctly recognized Polish sample}
+\label{fig:polish}
+\end{figure}
+
+\begin{figure}[h!!]
+\centering
+\includegraphics[width=0.7\textwidth]{images/incorrect.png}
+\caption{Activation of output neurons for an incorrectly recognized English sample}
+\label{fig:polish}
+\end{figure}
+\newpage
 
 \section{Bare net output}
 \label{sec:eval:bare}
 
-To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this basic filtering approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.
+To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.
+
+Also, this additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incure delay, window size and then counting the occurence of outputs to give the same effect as used here. 
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -653,10 +675,10 @@ proc filter{} {
 \end{lstlisting}
 
 
-The results of the bare-net evaluation for Euronews can be seen in Table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in Sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net.  Fig.~\ref{fig:lengthBasic} shows the relation of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net. It shows the intuitive results of a longer length of a sample coinciding with a higher recognition rate through the net, as more frames can be used for the recognition task in the context produced by the ASR BNF net.
+The results of the bare-net evaluation for Euronews can be seen in Table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in Sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net.  Fig.~\ref{fig:lengthBasic} shows the relation of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net. It shows the intuitive results of a longer length of a sample coinciding with a higher recognition rate through the net, as more frames can be used for the recognition task in the context produced by the ASR BNF net. However, it is also evident that already for samples with a length of only 17 frames (~200 ms), the net already categorizes the sample better than guessing a language (which on average would yield a correctness of 0.1), as for 17, the net produces a correctness of 0.1896.
 
-As one can see a length of around 100 frames (stacked with the 33 frames context as described earlier), meaning a sample length of: \(100*33 / 1000 \approx 3.3s \) is sufficient to be able to recognize the language with a correctness of \(\approx\)70 \%. This means online recognition of language is possible with a relatively small warm-up time of 3.3 seconds (or around 5 seconds with a higher correctness of then about 80 \%).
-\begin{figure}
+As one can see a length of around 100 frames, meaning a sample length of: \(100*10 / 1000 = 1s \) is sufficient to be able to recognize the language with a correctness of \(\approx\)70 \%. This means online recognition of language is possible with a relatively small warm-up time of 1 second (or around 2 seconds with a higher correctness of then well over 80 \%).
+\begin{figure}[h!]
 \label{fig:lengthBasic}
 \begin{tikzpicture}
 \begin{axis}[
@@ -900,6 +922,9 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \end{figure}
 
 
+\section{Speech Filter}
+\label{sec:speech}
+
 \begin{table}[h!]
 \label{tab:evalTotal}
 \centering
@@ -909,11 +934,11 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	 Bare Net & 0.311 \\
 	\hline
-	Basic Filter &  0.318\\
+	Basic Filter & 0.318\\
 	\hline
 	Advanced Filter Small & 0.313 \\
 	\hline
-	Advanced Filter Big & 0.316\\
+	Advanced Filter Big & 0.316 \\
 	\hline
 	Difference & 0.436 \\
 	\hline
@@ -923,29 +948,50 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 	\hline
 	Gaussian Filter WS 15 & 0.313 \\
 	\hline
-	Gaussian Filter WS 20 & 0.313\\
+	Gaussian Filter WS 20 & 0.313 \\
 	\hline
 	Counting Filter FR 10 & 0.316 \\
 	\hline
 	Counting Filter FR 50 & 0.316 \\
 	\hline
-	Counting Filter FR 100 & 0.313\\
+	Counting Filter FR 100 & 0.313 \\
 	\hline
-	Counting Filter FR 150 & 0.313\\
+	Counting Filter FR 150 & 0.313 \\
 	\hline
 	Speech/Noise Filter  & 0.313 \\
 	\hline
 	English/German &  0.116 \\
 	\hline
-	French/Italian & 0.207\\
+	French/Italian & 0.207 \\
 	\hline
 \end{tabular}
 \caption{Results of the 6-layer tree-structure evaluated with all the tried post-filtering approaches.}
 \end{table}
 
+\begin{table}[h!]
+\label{tab:evalTotal2}
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Filter} & \textbf{Error (>50)}  \\
+	\hline
+	 Bare Net & 0.162 \\
+	\hline
+	Counting Filter FR 10 & 0.178\\
+	\hline
+	Speech/Noise Filter & 0.163\\
+	\hline
+\end{tabular}
+\caption{Results of the 6-layer tree-structure evaluated on samples longer than 50 frames (~500 ms)}
+\end{table}
 
-\section{Lecture Data}
+
+\section{Lecture Data-Filter}
 \label{sec:eval:ld}
-Of course, all the nets were tested against the lecture data corpus, as this is the closest to an actual possible integration into the KIT's lecture Translator. We added the same filtering as for the 2-language setup, ignoring non-available languages which brought the recognition rate up to about 90 \%. These results for different net setups are summarized in Tab.~\ref{tab:res:ld_eval}. 
+Of course, we also evaluated the tree-net against the Lecture Data corpus as this is the closest metric for performance into the KIT's lecture Translator. These results were already presented in Sec.~{sec:LIDNetwork:Fine} 
+
+We added the same filtering as for the 2-language setup, ignoring non-available languages which improved the error by about 0.5 \% for the tree-net, giving an overall error of 0.175 instead of the 0.179 as introduced in the previous section.
+
+
 
 	
