@@ -524,7 +524,6 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 
 
 \begin{table}
-
 \begin{tabular}{| l | c | c | c | r | }
 	\hline
 	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Train Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Val. Error}} &  \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Sample Error}}  \\
@@ -563,7 +562,7 @@ The 6-layer net did prove to perform better than the 4-layer one in the frame-ba
 
 Suprisingly, the other ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in sample-evaluation in comparison with the fine-tuned versions. Possibly, this can be attributed to the fact that the lecture data corpus overall is much smaller than the Euronews one, on which the fine-tuned version were pre-trained on, and therefore have less transferabilty.
 
-Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the 4-layer LD-trained net with an improvement of 9.1\% in the sample-error compared to the plain Euronews net.
+Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the 4-layer LD-trained net with an improvement of 9.1\% in the sample-error compared to the plain Euronews net. The obvious and expected results of the fine-tuned versions performing better on the Euronews corpus than the ld-only trained ones was confirmed, however the difference in error was smaller than expected with only 2.6\% between the best-performing LD-net and the fine-tuned 2-layer net in Euronews error.
 
 %TODO%TODO
 \begin{table}
@@ -590,9 +589,39 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hline
 \end{tabular}
 \label{tab:resultsLD}
-\caption{Results of the fine-tuning attempts of the Euronews-trained 6-layer tree-net with lecture data corpus.}
+\caption{Results of the different lecture data approaches}
 \end{table}
 
+\section{European Parliament}
+\label{sec:EP}
+
+As to further test the conclusions made about net-structure/fine-tuning we also trained data on the small European Parliament corpus we collected. The setup was very similar to the Lecture Data tests as introduced in the previous section.  We however did not try to concat the train data with the other corpusses available.
+
+The two fine-tuning attempts had the same setup. For the EP-only training we confirmed the finding that the 6-layer tree-net strcuture performs better than the base setup (5 layers with 1000 neurons each). Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still substantial, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See Table ~\ref{tab:resultsEP} for the summarized results.
+
+%TODO%TODo
+\begin{table}
+\begin{tabular}{| l | c | c | c | r | }
+	\hline
+	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN/} \\ \textbf{ES/PO/PT/IT Error}} & \textbf{EP Train Error} & \textbf{EP Val. Error} & \textbf{EP Sample Error}  \\
+	\hline
+	\parbox[t]{5cm}{Tree-net Euronews net \\
+	 w/o fine-tuning}  &  & - & - &  \\
+	\hline
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } &  & 0.230 & 0.292 & 0.456 \\
+	\hdashline
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } &  & 0.267 & 0.310 &  \\
+	\hdashline
+	\parbox[t]{5cm}{EP-Trained Net 5 layers } &  & 0.155 & 0.333 & 0.357 \\
+	\hdashline
+	EP-Trained-Net 6 layers &  & 0.061 & 0.361 & 0.392 \\
+	\hline
+	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.091}} \\
+	\hline
+\end{tabular}
+\label{tab:resultsEP}
+\caption{Results of the different European parliament approaches.}
+\end{table}
 
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
@@ -609,24 +638,24 @@ Also, for a 800 ms polish sample, Fig.~\ref{fig:polish} shows the output activat
 An incorrectly classified sample can be seen in Fig.~\ref{fig:incorrect}. The language of the sample is English (ID 9), but from frame 50 on it is being (mostly) classfied as Arabian (ID 0). However, one can also see, that the activations of the network are not smooth and tend to jump around as different languages appear as the maximum in this sample, e.g. also German (ID 1) appears to have high activations at different times. 
 
 \begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{images/noise.png}
 \caption{Activation of output neurons for random non-speech (jingles/noise)}
 \label{fig:noise}
+\centering
+\includegraphics[width=0.7\textwidth]{images/noise.png}
 \end{figure}
 
 \begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{images/polishCorrect.png}
 \caption{Activation of output neurons for a correctly recognized Polish sample}
 \label{fig:polish}
+\centering
+\includegraphics[width=0.7\textwidth]{images/polishCorrect.png}
 \end{figure}
 
 \begin{figure}[h!!]
+\caption{Activation of output neurons for an incorrectly recognized English sample}
+\label{fig:incorrect}
 \centering
 \includegraphics[width=0.7\textwidth]{images/incorrect.png}
-\caption{Activation of output neurons for an incorrectly recognized English sample}
-\label{fig:polish}
 \end{figure}
 \newpage
 
@@ -708,23 +737,23 @@ As one can see a length of around 100 frames, meaning a sample length of: \(100*
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
-	\textbf{Language} & \textbf{Error}  \\
+	\textbf{Language} & \textbf{Error (total)}  & \textbf{Error (samples >500 ms)} \\
 	\hline
-	Arabian & 0.364  \\
-	German & 0.300  \\
-	Spanish & 0.320 \\ 
-	French & 0.300 \\
-	Italian & 0.326  \\
-	Polish & 0.267 \\
-	Portuguese& 0.291  \\
-	Russian&  0.315 \\
-	Turkish&  0.337 \\
-	English&  0.267 \\
+	Arabian & 0.364 &  0.235 \\
+	German & 0.300 &  0.155 \\
+	Spanish & 0.320 & 0.155 \\ 
+	French & 0.300  & 0.138 \\
+	Italian & 0.326  & 0.174 \\
+	Polish & 0.267 & 0.111 \\
+	Portuguese& 0.291 & 0.161 \\
+	Russian&  0.315 & 0.148 \\
+	Turkish&  0.337 & 0.182 \\
+	English&  0.267 &0.145\\
 	\hline
-	\textbf{Overall} & 0.267 \\
+	\textbf{Overall} & 0.267 & 0.162\\
 	\hline
 \end{tabular}
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with only bare net output.}
 \end{table}
 
 \section{Basic Test Filter}
@@ -740,7 +769,7 @@ Table~\ref{tab:basic} shows the result of the basic filter. Overall the error we
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
-	\textbf{Language} & \textbf{Error}  \\
+	\textbf{Language} & \textbf{Error (total)}  \\
 	\hline
 	Arabian & 0.337  \\
 	German & 0.312  \\
@@ -793,7 +822,7 @@ Table~\ref{tab:eval2L} shows the result produced by using the LID Euronews net f
 \centering
 \begin{tabular}{| l | r |}
 	\hline
-	\textbf{Language} & \textbf{Error}  \\
+	\textbf{Language} & \textbf{Error (total)}  \\
 	\hline
 	\textbf{French/Italian as input only} & \\
 	 French &  0.186 \\
@@ -925,6 +954,8 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \section{Speech Filter}
 \label{sec:speech}
 
+As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the Sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This however did not prove succesful and rather gave an error 0.02\% higher.
+
 \begin{table}[h!]
 \label{tab:evalTotal}
 \centering
@@ -973,7 +1004,7 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \centering
 \begin{tabular}{| l | r |}
 	\hline
-	\textbf{Filter} & \textbf{Error (>50)}  \\
+	\textbf{Filter} & \textbf{Error (>500 ms)}  \\
 	\hline
 	 Bare Net & 0.162 \\
 	\hline
