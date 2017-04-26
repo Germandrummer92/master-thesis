@@ -13,19 +13,19 @@
 
 \chapter{Related Work}
 \label{ch:Related Work}
-This chapter introduces related and previous works in the realm of Language Identification (LID) and how their approaches differ from the ones employed in the following chapters.
+This chapter introduces related and previous works in the realm of Language Identification (LID) and how those approaches differ from the ones employed in the following chapters.
 
 \section{Historically}
 
 As presented in~\cite{zissman1996comparison} by Zissman, Language Identification has historically been the most successful using single-language phone recognition followed by language-dependent, interpolated n-gram language modeling (PRLM) or multiple single-language phone recognizers and language-dependent parallel phone recognition (PPRM). Zissman evaluates PRLM and PPRM as well as the worse performing Gaussian Mixture Models (GMM) on the Oregon Graduate Institute Multi-Language Telephone Speech Corpus (OGI)~\cite{muthusamy1992ogi}. 
-In his results on the relatively limited speech corpus of only 90 minutes per language, the PRR perform the best with an 2-Language Average Error of 8 \% and the GMM falling down to an error of 23 \%.
+In his results on the relatively limited speech corpus of only 90 minutes per language, the PPRM perform the best with an 2-Language average error of 8 \% and the GMM falling down to an error of 23 \%.
 
-In ~\cite{torres2002approaches}, Torres-Carrasqiullo et al. present two GMM-based approaches to LID that use shifted-delta- cepstral (SDC) coefficients as the feature input vectors to achieve comparable LID (and computationally much faster) results. In opposition to PRLM and PPRM, GMM use the acoustic content of the speech signal to classify languages. The GMM with SDC inputs fare the same as PPRM on the CallFriend Corpus~\cite{callfriend1996}. The same OGI test set as~\cite{zissman1996comparison} for 10-second utterances, is only about 9 \% worse for GMM. However they start being greatly outperformed by PPRM in longer 45 second utterances. GMM do have a significant lesser computational overhead~\cite{zissman1996comparison}~\cite{torres2002approaches}, and do not require \textit{a priori} information (phonetic transcriptions) to be available~\cite{zissman2001automatic},~\cite{zissman1996comparison} making their research still worthwhile, however.
+In ~\cite{torres2002approaches}, Torres-Carrasqiullo et al. present two GMM-based approaches to LID that use shifted-delta-cepstral (SDC) coefficients as the feature input vectors to achieve comparable LID (and computationally much faster) results. In opposition to PRLM and PPRM, GMM use the acoustic content of the speech signal to classify languages. The GMM with SDC inputs fare the same as PPRM on the CallFriend Corpus~\cite{callfriend1996}. The same OGI test set as~\cite{zissman1996comparison} for 10-second utterances is only about 9 \% worse for GMM. However they start being greatly outperformed by PPRM in longer 45 second utterances. GMM do have a significant lesser computational overhead~\cite{zissman1996comparison}~\cite{torres2002approaches}, and do not require \textit{a priori} information (phonetic transcriptions) to be available~\cite{zissman2001automatic},~\cite{zissman1996comparison} making their research still worthwhile.
 
 \section{Recent Approaches}
 Li et al. in \cite{4032773}, used vector space modeling (VSM) in combination with the already presented PPRM to calculate the distance between different languages more easily thus making classification easier. By determining the top most occurring words in a language, they rely on these statistics to distance languages from each other, then applying a language-dependent language model on top to classify. A similar approach is proven to be successful with support vector machines (SVM) in~\cite{4590023},~\cite{6289007} and further substantiated in~\cite{ma2006comparative} where the SVM approach performs the best out of a comparison with the older PPRM and VSM methods.
 \par
-Recently with the advance of Neural Networks in Machine Learning, many different approaches have been tried. Leena et al. in~\cite{1529486} present a Feed-Forward Neural Network that is trained using both phonotactic (syllable occurrence, co-occurrence of syllables, unique syllables and pronunciation variations) and prosodic (rhythm and intonation of speech) features, giving a feature vector of 33 dimensions, to recognize the Language. Leena et al also use autoassociative neural networks and spectral similarity approaches in~\cite{1287674} to recognize language reasonably well using only a few seconds of the speech as input.
+Recently with the advance of neural networks in machine learning, many different approaches have been tried. Leena et al. in~\cite{1529486} present a Feed-Forward Neural Network that is trained using both phonotactic (syllable occurrence, co-occurrence of syllables, unique syllables and pronunciation variations) and prosodic (rhythm and intonation of speech) features, giving a feature vector of 33 dimensions, to recognize the language. Leena et al. also use autoassociative neural networks and spectral similarity approaches in~\cite{1287674} to recognize language reasonably well using only a few seconds of the speech as input.
 
 \par
 
@@ -34,7 +34,7 @@ I-vector approaches as in~\cite{6680440},~\cite{d2012phonotactic} have also rece
 \section{Similar Approaches}
 Matejka et al.~\cite{matejka2014neural} present an approach very similar to the one introduced in this thesis using Bottleneck Features (BNF) from an ASR trained neural network as input for a LID neural network. Here however a much bigger train data of about 400 hours per language is available in the RATS LID Data Corpus, than was available to us, with fewer target languages and a setup where the output of 5 neural networks is averaged, a setup most likely occurring a higher delay than feasible in an online-setting as the focus lies on for us.
 
-\cite{6854622} uses Deep Neural Networks without the previous ASR net setup to identify Language. They compare the approach to state-of-the art i-vector as presented above.
+\cite{6854622} uses Deep Neural Networks without the previous ASR net setup to identify Language. They compare the approach to the state-of-the art i-vectors as presented above.
 
 
 
@@ -47,7 +47,7 @@ The following chapter will define and explain terms and concepts used throughout
 
 \section{Theory of Language Identification}
 
-Language Identification, or Recognition, as loosely taken from~\cite{6451097}, can be formulated in the following way: Assuming we have an audio recording of unknown source language, we convert it into a sequence of acoustic vectors \(S = \{ s(1), s(2), \dots , s(T)\}\), where \(s(t)\) refers to frame extracted from the audio at frame number \(t\). If we have a set of possible equally-probable Languages \(\{L_1,L_2,\dots,L_N\}\), with one of the targets being a combining class for non-target languages as to not limit the approach, Language Identification is the task of finding optimal Language \(L^O\) given audio sequence \(S\) , such that:
+Language Identification or Recognition, as loosely taken from~\cite{6451097}, can be formulated in the following way: Assuming we have an audio recording of unknown source language, we convert it into a sequence of acoustic vectors \(S = \{ s(1), s(2), \dots , s(T)\}\), where \(s(t)\) refers to frame extracted from the audio at frame number \(t\). If we have a set of possible equally-probable Languages \(\{L_1,L_2,\dots,L_N\}\), with one of the targets being a combining class for non-target languages as to not limit the approach, Language Identification is the task of finding optimal Language \(L^O\) given audio sequence \(S\) , such that:
 \begin{equation}
 L^O = \argmax_I p(S|L_I)
 \end{equation}
