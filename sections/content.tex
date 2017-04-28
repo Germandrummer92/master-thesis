@@ -272,12 +272,11 @@ Features produced by this preprocessing setup are then written to ``pfiles'' tog
 \section{Feature Retrieval}
 \label{sec:FP:FA}
 The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz. European Parliament data we collected ourselves were recorded with a samplerate of 44.1 kHz. We downsampled the data using soX\footnote{soX Sound eXchange: \url{http://sox.sourceforge.net/}}. 
-\paragraph{Feature Window Size Discrepancy} As pitch feature were calculated on 16ms windows while intonation was calculated on 32 ms we had to shorten the length of the section the 32ms features are calculated one by 16ms so the number of frames match and the features can be merged. This was done by removing  0.008 s from the beginning and end of the audio file. This was also done to any evaluation audio used with the small Euronews nets.
-\paragraph{Big Euronews Corpus} As the Big Euronews corpus as introduced already had training pfiles existing from previous work~\cite{Mueller2016b}, we reused them. This meant that the features here were completely based on 32ms windows and no pre-calculation cutting of the audio was necessary.
+\paragraph{Big Euronews Corpus} As the Big Euronews corpus as introduced already had training pfiles existing from previous work~\cite{Mueller2016b}, we reused them. This meant that the features here were completely based on 32ms windows and not a combination of 16ms and 32ms windows as for the rest of the corpora.
 
 \section{Feature Description}
 \label{sec:FP:FD}
-For the DBNF network as input, a combination of sound power, lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung} was used. Tonal features have shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated. Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
+For the DBNF network as input, a combination of sound power, lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental}, \cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung} was used. Tonal features have shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated. Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
 
 Using the sound power feature that is part of janus' standard capabilities, we added a speech-detection feature as when the power of the sound in the recording reaches a threshold we consider it speech, otherwise noise. Calculations were done by calculating the Log on the current sound power, calculating the weighted average with a context of 2 frames on each side on this, normalizing the resulting value between -0.1 and 0.5 and then using a threshold of 0 in the normalized spectrum to consider it speech. We do not discard the non-speech marked parts but weigh the combined feature vector less for the total input if the threshold of 0 was not reached.  
 
@@ -286,9 +285,9 @@ The log Mel features are calculated the following way: We calculate the spectrum
 From janus' standard pitch capability, calculated on 16 ms windows, we calculate the symmetric delta coefficients \(((f(t+\delta) - f(t-\delta))\) on the pitch for \(\delta=1,2,3\) and the same deltas on those results and merge to give us a coefficients for frame t:
 \((PITCH(t), f(t):=PITCH(t+1)-PITCH(t-1),f(t+1)-f(t-1),g(t):=PITCH(t+2)-PITCH(t-2),g(t+2)-g(t-2),h(t):=PITCH(t+3)-PITCH(t-3),h(t+3)-h(t-3))\)
 
-The FFV is calculated on 32 ms windows, to then be merged  with the pitch feature we just defined to make up the TONE feature. lMEL coefficients and TONE coefficients are then merged. These feature vectors are stacked with a context of 6 adjacent frames and then passed to the DBNF net as introduced in the next section.
+The FFV is calculated on 32 ms windows, to then be merged  with the pitch feature we just defined to make up the TONE feature. lMEL coefficients and TONE coefficients are then merged. See~\cite{laskowski2009modeling},  \cite{laskowski2008fundamental}These feature vectors are stacked with a context of 6 adjacent frames and then passed to the DBNF net as introduced in the next section.
 \paragraph{Big Euronews Corpus} The big Euronews corpus used 32 ms for all feature calculations, so the sound power, FFT/lMEL and Pitch were calculated on 32ms windows, but used the same features aside from this.
-\paragraph{Lecture Data/European Parliament} For the other two data corpusses we kept the 16ms windows for Power and lMEL, but changed the Pitch to be calculated on 32 ms windows.
+\paragraph{Lecture Data/European Parliament} For the other two data corpora we kept the 16ms windows for Power and lMEL, but changed the Pitch to be calculated on 32 ms windows.
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -568,7 +567,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 \begin{table}
 \begin{tabular}{| l | c | c | c | r | }
 	\hline
-	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} & \textbf{LD Train Error} & \textbf{LD Val. Error} & \textbf{LD Sample Error}  \\
+	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN Error}} & \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Train Error}} & \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Val. Error}} & \parbox[t]{2.5cm}{\textbf{LD} \\ \textbf{Sample Error}} \\
 	\hline
 	\parbox[t]{5cm}{Tree-net Euronews net \\
 	 w/o fine-tuning}  & 0.291 & - & - & 0.179 \\
@@ -595,28 +594,30 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 \section{European Parliament}
 \label{sec:EP}
 
-As to further test the conclusions made about net-structure/fine-tuning we also trained data on the small European Parliament corpus we collected. The setup was very similar to the Lecture Data tests as introduced in the previous section.  We however did not try to concat the train data with the other corpusses available.
+As to further test the conclusions made about net-structure/fine-tuning we also trained data on the small European Parliament corpus we collected. The setup was very similar to the Lecture Data tests as introduced in the previous section.  We however did not try to concatenate the train data with the other corpora available.
 
-The two fine-tuning attempts had the same setup. For the EP-only training we confirmed the finding that the 6-layer tree-net strcuture performs better than the base setup (5 layers with 1000 neurons each). Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still substantial, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See Table ~\ref{tab:resultsEP} for the summarized results.
+The two fine-tuning attempts had the same setup. For the EP-only training we actually found that the 6-layer tree-net structure performs worse than the base setup (5 layers with 1000 neurons each). This however could be due to the minimal data available in the EP corpus and the fact that less layers in this case would always perform better.
 
-%TODO%TODo
+Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still better by 2.6\%, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See Table ~\ref{tab:resultsEP} for the summarized results. Overall it's clear, that the European parliament data is substantially different from the Euronews set up as the Euronews trained net performs worse even with finetuning than a net trained on the small Europearn Parliament corpus itself directly.
+
+
 \begin{table}
 \begin{tabular}{| l | c | c | c | r | }
 	\hline
-	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN/} \\ \textbf{ES/PO/PT/IT Error}} & \textbf{EP Train Error} & \textbf{EP Val. Error} & \textbf{EP Sample Error}  \\
+	\textbf{Net Structure} & \parbox[t]{2.5cm}{\textbf{Euronews} \\ \textbf{DE/FR/EN/} \\ \textbf{ES/PO/PT/} \\ \textbf{IT Error}} & \parbox[t]{2.5cm}{\textbf{EP} \\ \textbf{Train Error}} & \parbox[t]{2.5cm}{\textbf{EP} \\ \textbf{Val. Error}} & \parbox[t]{2.5cm}{\textbf{EP} \\ \textbf{Sample Error}}  \\
 	\hline
 	\parbox[t]{5cm}{Tree-net Euronews net \\
-	 w/o fine-tuning}  &  & - & - &  \\
+	 w/o fine-tuning} & 0.297 & - & - & 0.383 \\
 	\hline
-	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } &  & 0.230 & 0.292 & 0.456 \\
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } & 0.676 & 0.230 & 0.292 & 0.456 \\
 	\hdashline
-	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } &  & 0.267 & 0.310 &  \\
+	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning 2 layers } & 0.676 & 0.267 & 0.310 & 0.391 \\
 	\hdashline
-	\parbox[t]{5cm}{EP-Trained Net 5 layers } &  & 0.155 & 0.333 & 0.357 \\
+	\parbox[t]{5cm}{EP-Trained Net 5 layers } & 0.679 & 0.155 & 0.333 & 0.357 \\
 	\hdashline
-	EP-Trained-Net 6 layers &  & 0.061 & 0.361 & 0.392 \\
+	EP-Trained-Net 6 layers & 0.691 & 0.061 & 0.361 & 0.392 \\
 	\hline
-	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.091}} \\
+	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.379}} & - & - & \color{green}{\textbf{0.026}} \\
 	\hline
 \end{tabular}
 \label{tab:resultsEP}
@@ -662,9 +663,10 @@ An incorrectly classified sample can be seen in Fig.~\ref{fig:incorrect}. The la
 \section{Bare net output}
 \label{sec:eval:bare}
 
-To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.
+To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.  This additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incur delay, window size and then counting the occurence of outputs to give the same effect as used here. 
 
-Also, this additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incure delay, window size and then counting the occurence of outputs to give the same effect as used here. 
+
+As the first correctness metric proved to be too restrictive, as filters might reduce the count of the correct language while making the total number of wrong outputs less we present another metric to present filter effectiveness. We count the total number of wrongly classified frames/output per sample divided by the number of total frames/outputs and average them on a per-sample basis to see if filters actually work in filtering out wrong outputs when used in an online-fashion. This second metric evaluation for well-performing filters can be found in~\ref{tab:ooe}.
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -765,7 +767,6 @@ The first filter tried was a basic 5-Frame smoothing: It saves the value of the 
 Table~\ref{tab:basic} shows the result of the basic filter. Overall the error went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial, as apparently some languages will benefit from a certain type of filter while another will not. 
 
 \begin{table}[h!]
-\label{tab:basic}
 \centering
 \begin{tabular}{| l | c | r | }
 	\hline
@@ -786,6 +787,7 @@ Table~\ref{tab:basic} shows the result of the basic filter. Overall the error we
 	\hline
 \end{tabular}
 \caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Basic Filter.}
+\label{tab:basic}
 \end{table}
 
 
@@ -798,7 +800,22 @@ filter          nnFILTER   nnBNF  {-2 {1 2 3 2 1}}
 \begin{verbatim}
 filter          nnFILTERREAL nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
-which however did not provide a further increase in correctness. In our tcl filtering, we only then changed the feature to read the frames from, while still then taking the maximum of the filter-feature as the correct id. Results are listed in Table ~\ref{tab:evalTotal}. As for the basic test filter, the bigger advanced filter offered a tiny improvement for some languages, (~0.1\% for both Portuguese and English) but lost out in all other languages. Detailed per-Language results for this and the following filters can be found in App.~\ref{app:sec:res:lid}.
+which however did not provide a further increase in correctness. In our tcl filtering, we only then changed the feature to read the frames from, while still then taking the maximum of the filter-feature as the output. Comparison of the two filter can be seen  in Table ~\ref{tab:evalAdvanced} for evaluation on the DEV set. As compared to the bare net output, the bigger advanced filter offered a tiny improvement for some languages, (~0.1\% for both Portuguese and English) in correctness but lost out in all other languages. Detailed per-Language results for this and the following filters can be found in App.~\ref{app:sec:res:lid}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Filter} & \textbf{Overall Error}  \\
+	\hline
+	Small FILTER  &  0.313 \\
+	\hline
+	Large FILTER & 0.316 \\
+	\hline
+\end{tabular}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Advanced FILTER}
+\label{tab:evalAdvanced}
+\end{table}
 
 
 \section{Difference Test Filter}
@@ -810,8 +827,30 @@ This however, did not lead to an improvement in the robustness of the classifica
 The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in Tab.~\ref{tab:evalTotal}
 
 \section{Counting Filter}
-This filter included a counting of the occurrence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range (while still then employing the same  per-sample smoothing as above). The first try was done using a frame-range of 10, later increased to 50, however both filters showed no improvement, but kept very close to the direct output of the net results, meaning that likely this was an improvement for longer samples but decreased accuracy in smaller samples as the output was likely to jump around anyways. As per-language results did not improve 
+This filter included a counting of the occurrence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range (while still then employing the same  per-sample smoothing as above). The first try was done using a frame-range of 10, later increased further. We listed the results of this filter with different ranges on the DEV set in \ref{tab:counting}. As a further experiment we also used overlapping windows (meaning we count the occurrence in 10 frames and the next 10 frames are not 10 frames further but starts at the 8th frame of the previous window -> Overlap of 3 frames).
+
 The full code of this filter can be found in the Appendix.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Filter} & \textbf{Overall Error}  \\
+	\hline
+	Counting Filter FR 10  & 0.313 \\
+	\hline
+	Counting Filter FR 10, overlap 3 &  0.323\\
+	\hline
+	Counting Filter FR 50 & 0.316 \\
+	\hline
+	Counting Filter FR 100 & 0.313\\
+	\hline
+	Counting Filter FR 150 & 0.314\\
+	\hline
+\end{tabular}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Counting Window Filter}
+\label{tab:counting}
+\end{table}
 
 \section{Two-Language Setup}
 \label{sec:eval:2L}
@@ -837,7 +876,7 @@ Table~\ref{tab:eval2L} shows the result produced by using the LID Euronews net f
 	\textbf{Overall} & 0.156 \\
 	\hline
 \end{tabular}
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages from the Euronews Development Set.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages with the 2-language filter from the Euronews Development Set.}
 \end{table}
 
 \section{Gaussian Smoothing Filter}
@@ -914,7 +953,7 @@ Once the Gaussian function is calculated for the window, the convolution of the 
 \end{lstlisting}
 
 
-We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalTotal}.  To show the correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has occurred.
+We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalGauss} on the Development Set. As can be seen, the Window size of 15 performed the best out of the tried window sizes.  To showcase a correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has occurred.
 
 \begin{figure}
 \label{fig:gaussWS10}
@@ -950,6 +989,24 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \end{tikzpicture}
 \end{figure}
 
+\begin{table}[h!]
+\label{tab:evalGauss}
+\centering
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Filter} & \textbf{Overall Error}  \\
+	\hline
+	Gaussian Filter WS 10 & 0.3128 \\
+	\hline
+	Gaussian Filter WS 15 & 0.3125 \\
+	\hline
+	Gaussian Filter WS 17 & 0.3126 \\
+	\hline
+	Gaussian Filter WS 20 & 0.3130 \\
+	\hline
+\end{tabular}
+\caption{Results of the 6-layer tree-structure evaluated with different Gauss filters on the DEV set.}
+\end{table}
 
 \section{Speech Filter}
 \label{sec:speech}
@@ -957,7 +1014,6 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the Sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This however did not prove succesful and rather gave an error 0.02\% higher.
 
 \begin{table}[h!]
-\label{tab:evalTotal}
 \centering
 \begin{tabular}{| l | r |}
 	\hline
@@ -967,27 +1023,11 @@ As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input a
 	\hline
 	Basic Filter & 0.318\\
 	\hline
-	Advanced Filter Small & 0.313 \\
-	\hline
-	Advanced Filter Big & 0.316 \\
-	\hline
 	Difference & 0.436 \\
 	\hline
-	Gaussian Filter WS 5 & 0.313 \\
-	\hline
-	Gaussian Filter WS 10 & 0.313 \\
-	\hline
-	Gaussian Filter WS 15 & 0.313 \\
-	\hline
-	Gaussian Filter WS 20 & 0.313 \\
-	\hline
-	Counting Filter FR 10 & 0.316 \\
-	\hline
-	Counting Filter FR 50 & 0.316 \\
+	Gaussian Filter (WS 15) & 0.313 \\
 	\hline
 	Counting Filter FR 100 & 0.313 \\
-	\hline
-	Counting Filter FR 150 & 0.313 \\
 	\hline
 	Speech/Noise Filter  & 0.313 \\
 	\hline
@@ -997,6 +1037,7 @@ As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input a
 	\hline
 \end{tabular}
 \caption{Results of the 6-layer tree-structure evaluated with all the tried post-filtering approaches.}
+\label{tab:evalTotal}
 \end{table}
 
 \begin{table}[h!]

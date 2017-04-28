@@ -31,12 +31,16 @@ Recently with the advance of neural networks in machine learning, many different
 
 I-vector approaches as in~\cite{6680440},~\cite{d2012phonotactic} have also recently shown success, and have been used in conjunction with neural networks as in~\cite{song2015deep}.
 
+At the Interspeech 2016, Shivakumar et al.~\cite{Shivakumar+2016} present an approach to Language Identification using a combination of i-vectors, probabilistic linear discrimnant analysis, SVM and  and Maximum Likelihood Lexcial Classification to achieve an acurracy up to 76 \% on 12 languages, a result comparable to our results.
+
 \section{Similar Approaches}
 Matejka et al.~\cite{matejka2014neural} present an approach very similar to the one introduced in this thesis using Bottleneck Features (BNF) from an ASR trained neural network as input for a LID neural network. Here however a much bigger train data of about 400 hours per language is available in the RATS LID Data Corpus, than was available to us, with fewer target languages and a setup where the output of 5 neural networks is averaged, a setup most likely occurring a higher delay than feasible in an online-setting as the focus lies on for us.
 
 \cite{6854622} uses Deep Neural Networks without the previous ASR net setup to identify Language. They compare the approach to the state-of-the art i-vectors as presented above.
 
+\cite{K.V.+2016} uses DNNs to recognize different Indian languages that are very similar in nature. They use DNNs with attention in lieu of the recently successful but computational RNNs. They evaluate different net structures and with the best structure find and error rate of only 8\%.
 
+Ghahabi et al.~in \cite{Ghahabi+2016} use DNNs to recognize the language of short speech samples of below 4 seconds length. They compare their approach to GMM and i-vector systems achieving a relative improvement of around 30 \%.
 
 This work is based on previous work done using LID information to extract another BNF vector to then aid in multilingual ASR~\cite{Mueller2016b}. More on this can be found in Chapter~\ref{ch:LITasks}.
 
