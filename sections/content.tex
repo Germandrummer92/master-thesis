@@ -627,7 +627,7 @@ Surprisingly, even though the train data available was very small, the improveme
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. Unfortunately only the 2-language filter and the basic counting smoothing wrapper applied in all filters can be seen as an improvement. The summarized results are listed in Tab.~\ref{tab:evalTotal}, ~ref{tab:evalTotal2}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but gave us the best results on a sample basis.
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Sec.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Sec.~\ref{sec:FP:Net} $\rightarrow$ LID network Sec.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated ``on-the-fly'' while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:evalTotal}, ~ref{tab:evalTotal2}. We evaluated different net structures, however the results presented here are mostly based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but gave us the best results on a sample basis.
 
 \section{Analyzing Outputs}
 \label{sec:outputs}
@@ -660,13 +660,15 @@ An incorrectly classified sample can be seen in Fig.~\ref{fig:incorrect}. The la
 \end{figure}
 \newpage
 
-\section{Bare net output}
+\section{Evaluation Metric}
 \label{sec:eval:bare}
 
-To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire development set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.  This additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incur delay, window size and then counting the occurence of outputs to give the same effect as used here. 
+To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See Lst.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire set of samples and counts the correctly/wrongly classified samples for each Language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.  This additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incur delay, window size and then counting the occurence of outputs to give the same effect as used here. 
 
+\subsection{Out-Of-Language Error (OLE)}
+\label{sec:eval:ole}
 
-As the first correctness metric proved to be too restrictive, as filters might reduce the count of the correct language while making the total number of wrong outputs less we present another metric to present filter effectiveness. We count the total number of wrongly classified frames/output per sample divided by the number of total frames/outputs and average them on a per-sample basis to see if filters actually work in filtering out wrong outputs when used in an online-fashion. This second metric evaluation for well-performing filters can be found in~\ref{tab:ooe}.
+As the first correctness metric proved to be too restrictive, as filters might reduce the count of the correct language while making the total number of wrong outputs less we present another metric to evaluate filter effectiveness. We count the total number of wrongly (as in not-equal to the maximum output) classified frames/output per sample divided by the number of total frames/outputs and average them on a per-sample basis to see if filters actually work in filtering out wrong outputs. Arguably this would be even more important in an online-fashion in the lecture translator as wrong outputs/filters would be passed on to the speech recognition/translation part. This second metric evaluation for well-performing filters can be found at the end of the chapter in Table~\ref{tab:ooe}.
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -761,10 +763,10 @@ As one can see a length of around 100 frames, meaning a sample length of: \(100*
 \section{Basic Test Filter}
 \label{sec:eval:basic}
 
-The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment. It did however provide no improvement over the bare network output.
+The first filter tried was a basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than that. This of course means that the approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment.
 
 
-Table~\ref{tab:basic} shows the result of the basic filter. Overall the error went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial, as apparently some languages will benefit from a certain type of filter while another will not. 
+Table~\ref{tab:basic} shows the result of the basic filter. Overall the error (for our defined metric) went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial, as apparently some languages will benefit from a certain type of filter while another will not. 
 
 \begin{table}[h!]
 \centering
@@ -876,7 +878,7 @@ Table~\ref{tab:eval2L} shows the result produced by using the LID Euronews net f
 	\textbf{Overall} & 0.156 \\
 	\hline
 \end{tabular}
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages with the 2-language filter from the Euronews Development Set.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages with the 2-language filter on the DEV set.}
 \end{table}
 
 \section{Gaussian Smoothing Filter}
@@ -953,7 +955,7 @@ Once the Gaussian function is calculated for the window, the convolution of the 
 \end{lstlisting}
 
 
-We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalGauss} on the Development Set. As can be seen, the Window size of 15 performed the best out of the tried window sizes.  To showcase a correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has occurred.
+We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalGauss} on the Development Set.  As can be seen, the Window size of 15 performed the best out of the tried window sizes. To showcase a correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has occurred. With smoothing of the output evident, we were surprised by the sample-error being worse for the Gauss Filter.  As it turns out the Gauss Filter indeed performs much better even on the correctness-metric on small samples with a size under 50 frames (=500ms). Tab.~\ref{tab:50Gauss} showcases this in comparison to the bare net output, which shows a very significant improvement of 16\%.
 
 \begin{figure}
 \label{fig:gaussWS10}
@@ -1008,32 +1010,49 @@ We tried different window sizes of which the result can be seen in Tab.~\ref{tab
 \caption{Results of the 6-layer tree-structure evaluated with different Gauss filters on the DEV set.}
 \end{table}
 
-\section{Speech Filter}
-\label{sec:speech}
-
-As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the Sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This however did not prove succesful and rather gave an error 0.02\% higher.
-
 \begin{table}[h!]
+\label{tab:evalGauss}
 \centering
 \begin{tabular}{| l | r |}
 	\hline
-	\textbf{Filter} & \textbf{Overall Error}  \\
+	\textbf{Filter} & \textbf{Overall Error (< 500 ms)}  \\
 	\hline
-	 Bare Net & 0.311 \\
+	Bare Net Output & 0.590 \\
 	\hline
-	Basic Filter & 0.318\\
+	Gaussian Filter WS 15 & 0.439 \\
 	\hline
-	Difference & 0.436 \\
+\end{tabular}
+\caption{Comparison of results of the 6-layer tree-structure evaluated on DEV set for small samples.}
+\end{table}
+
+\section{Speech Filter}
+\label{sec:speech}
+
+As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the Sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This only gave us an error of around 0.02\% higher compared to the bare net output, however the filtering effectiveness (OLE) was worse than for the other filters as can be seen in \ref{tab:evalTotal}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{| l | c | r |}
 	\hline
-	Gaussian Filter (WS 15) & 0.313 \\
+	\textbf{Filter} & \textbf{Overall Error} & \textbf{Out-of-Language-Error (OLE)}  \\
 	\hline
-	Counting Filter FR 100 & 0.313 \\
+	Bare Net & 0.311 & 0.202 \\
 	\hline
-	Speech/Noise Filter  & 0.313 \\
+	Advanced Filter (small) & 0.318 & 0.185 \\
 	\hline
-	English/German &  0.116 \\
+	Difference & 0.436 & \\
 	\hline
-	French/Italian & 0.207 \\
+	Gaussian Filter (WS 15) & 0.313 & \\
+	\hline
+	Counting Filter FR 100 & 0.313 & 0.007 \\
+	\hline
+	Speech/Noise Filter  & 0.313 & 0.187 \\
+	\hline
+	English/German &  0.116 & 0.145 \\
+	\hline
+	French/Italian & 0.207 & 0.158 \\
+	\hline
+	Sequence Filter & & \\
 	\hline
 \end{tabular}
 \caption{Results of the 6-layer tree-structure evaluated with all the tried post-filtering approaches.}

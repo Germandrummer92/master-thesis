@@ -23,9 +23,9 @@ In his results on the relatively limited speech corpus of only 90 minutes per la
 In ~\cite{torres2002approaches}, Torres-Carrasqiullo et al. present two GMM-based approaches to LID that use shifted-delta-cepstral (SDC) coefficients as the feature input vectors to achieve comparable LID (and computationally much faster) results. In opposition to PRLM and PPRM, GMM use the acoustic content of the speech signal to classify languages. The GMM with SDC inputs fare the same as PPRM on the CallFriend Corpus~\cite{callfriend1996}. The same OGI test set as~\cite{zissman1996comparison} for 10-second utterances is only about 9 \% worse for GMM. However they start being greatly outperformed by PPRM in longer 45 second utterances. GMM do have a significant lesser computational overhead~\cite{zissman1996comparison}~\cite{torres2002approaches}, and do not require \textit{a priori} information (phonetic transcriptions) to be available~\cite{zissman2001automatic},~\cite{zissman1996comparison} making their research still worthwhile.
 
 \section{Recent Approaches}
-Li et al. in \cite{4032773}, used vector space modeling (VSM) in combination with the already presented PPRM to calculate the distance between different languages more easily thus making classification easier. By determining the top most occurring words in a language, they rely on these statistics to distance languages from each other, then applying a language-dependent language model on top to classify. A similar approach is proven to be successful with support vector machines (SVM) in~\cite{4590023},~\cite{6289007} and further substantiated in~\cite{ma2006comparative} where the SVM approach performs the best out of a comparison with the older PPRM and VSM methods.
+In \cite{4032773} Li et al. used vector space modeling (VSM) in combination with the already presented PPRM to calculate the distance between different languages more easily thus making classification easier. They determine the top most occurring words in a language, then rely on these statistics to distance languages from each other. After they apply a language-dependent language model on top for classification. A similar approach is proven to be successful with support vector machines (SVM) in~\cite{4590023},~\cite{6289007} and further substantiated in~\cite{ma2006comparative} where the SVM approach performs the best out of a comparison with the older PPRM and VSM methods.
 \par
-Recently with the advance of neural networks in machine learning, many different approaches have been tried. Leena et al. in~\cite{1529486} present a Feed-Forward Neural Network that is trained using both phonotactic (syllable occurrence, co-occurrence of syllables, unique syllables and pronunciation variations) and prosodic (rhythm and intonation of speech) features, giving a feature vector of 33 dimensions, to recognize the language. Leena et al. also use autoassociative neural networks and spectral similarity approaches in~\cite{1287674} to recognize language reasonably well using only a few seconds of the speech as input.
+Recently with the advance of neural networks in machine learning, many different approaches have been tried. In Leena et al.~\cite{1529486} present a Feed-Forward Neural Network that is trained using both phonotactic (syllable occurrence, co-occurrence of syllables, unique syllables and pronunciation variations) and prosodic (rhythm and intonation of speech) features, giving a feature vector of 33 dimensions, to recognize the language. Leena et al. also use autoassociative neural networks and spectral similarity approaches in~\cite{1287674} to recognize language reasonably well using only a few seconds of the speech as input.
 
 \par
 
@@ -51,11 +51,11 @@ The following chapter will define and explain terms and concepts used throughout
 
 \section{Theory of Language Identification}
 
-Language Identification or Recognition, as loosely taken from~\cite{6451097}, can be formulated in the following way: Assuming we have an audio recording of unknown source language, we convert it into a sequence of acoustic vectors \(S = \{ s(1), s(2), \dots , s(T)\}\), where \(s(t)\) refers to frame extracted from the audio at frame number \(t\). If we have a set of possible equally-probable Languages \(\{L_1,L_2,\dots,L_N\}\), with one of the targets being a combining class for non-target languages as to not limit the approach, Language Identification is the task of finding optimal Language \(L^O\) given audio sequence \(S\) , such that:
+Language Identification or Recognition, as loosely taken from~\cite{6451097}, can be formulated in the following way: Assuming we have an audio recording of unknown source language, we convert it into a sequence of acoustic vectors \(S = \{ s(1), s(2), \dots , s(T)\}\), where \(s(t)\) refers to the frame \(s\) extracted from the audio at frame number \(t\). If we have a set of possible equally-probable Languages \(\{L_1,L_2,\dots,L_N\}\), with one of the targets being a combining class for non-target languages as to not limit the approach, Language Identification is the task of finding optimal Language \(L^O\) given audio sequence \(S\) , such that:
 \begin{equation}
 L^O = \argmax_I p(S|L_I)
 \end{equation}
-Using phones and phonotactic knowledge sources, or a tokenizer or similar approaches before trying to identify the language, we assume that each speech sequence can be segmented into a sequence \(\Upsilon\) of phones \(\upsilon\) which means:
+Using phones and phonotactic knowledge sources, a tokenizer or similar approaches before trying to identify the language, we assume that each speech sequence can be segmented into a sequence \(\Upsilon\) of phones \(\upsilon\) which means:
 \begin{equation}
 \label{eq:phones}
 L^O = \argmax_I P(\Upsilon|L_I)
@@ -74,17 +74,17 @@ L^O = \argmax_{I}\sum_{\forall \Upsilon}P(S|\Upsilon, M)P(\Upsilon|L_I)
 
 \section{Janus Recognition Toolkit (jrtk)}
 \label{sec:fund:jrtk}
-The Janus Recognition Toolkit (jrtk) also known as just ``Janus'' is a general-purpose speech recognition toolkit developed in joint cooperation by both the Carnegie Mellon University Interactive Systems Lab and the Karlsruhe Institute of Technology Interactive Systems Lab~\cite{lavie1997janus}. Part of janus and the jrtk are a speech-to-speech translation system which includes Janus-SR the speech recognition component, the main part of janus used in this thesis. 
+The Janus Recognition Toolkit (jrtk) also known as just ``Janus'' is a general-purpose speech recognition toolkit developed in joint cooperation by both the Carnegie Mellon University Interactive Systems Lab and the Karlsruhe Institute of Technology Interactive Systems Lab~\cite{lavie1997janus}. Part of janus and the jrtk are a speech-to-speech translation system, which includes Janus-SR, the speech recognition component, the main part of janus used in this thesis. 
 
 Developed to be flexible and extensible, the jrtk can be seen as a programmable shell with janus functionality being accessible through objects in the tcl/tk scripting language. It features the IBIS decoder, that uses Hidden Markov Models for acoustic modeling in general, although in this thesis we used a neural network as our speech recognizer to generate the input features required by our Language ID network.
 
-This thesis makes extensive use of the jrtk's and tcl/tk's scripting capabilities to be able to pre-process speech audio files for further use by our experimental setup. It also uses tcl/tk scripts and it's janus API functionality in the development of our smoothing and evaluation scripts as can be seen in Ch.~\ref{ch:eval}.
+This thesis makes extensive use of the jrtk's and tcl/tk's scripting capabilities to be able to pre-process speech audio files for further use by our experimental setup. It also uses tcl/tk scripts and its janus API functionality in the development of our smoothing and evaluation scripts as can be seen in Ch.~\ref{ch:eval}.
 \section{Neural Networks}
 \label{sec:fund:NN}
-Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition and very successfully as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which has been described in the previous chapter. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier for the reader. The information in this section is based on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}, if not otherwise sourced.
+Artificial Neural Networks today are used in many different fields: from image recognition/face recognition in~\cite{lawrence1997face} to Natural Language Processing in~\cite{collobert2008unified} and, as relevant to this thesis, to Speech Recognition with very successful examples as in~\cite{hinton2012deep}. It has also been used in the realm of Language Identification, which has been described in the previous chapter. This section will provide fundamental knowledge of how neural networks work and how to train them, to make the understanding of later chapters easier. The information in this section is based on~\cite{haykin2004comprehensive}, ~\cite{Goodfellow-et-al-2016} and~\cite{deeplearning-online}, if not otherwise sourced.
 
 
-\subsection{Neural Networks}
+\subsection{Setup}
 \label{sec:fund:general}
 Neural Networks are based on collections of small ''neural units``  working together in tandem. The neuron's behavior can be loosely linked to the brain's axons. Each neuron is connected with others and a neuron is ''stimulated`` by input on these connections and then decides on its own activation, or stimulation, by using a summation, or threshold, function with a certain limit to decide if the neuron ''fires`` and its own activation is propagated through the network to adjacent units. By changing weigths and activation thresholds in the network its output changes, therefore the possible adjustable parameter set \(\Theta\) for a neural network includes all the weights for all neurons as well as all thresholds for the activation functions in each neuron.
 
@@ -113,10 +113,10 @@ y_k = \varphi(\sum_{j=0}^{m} w_{kj}x_j) - \theta_j
 \includegraphics[width=0.7\textwidth]{images/neuron.png}
 \end{figure}
 
-\subsection{General Network Setup}
+\subsection{A Generic Neural Network}
 \label{sec:fund:netSetup}
 
-A basic neural network consists of three layers: the input, a hidden layer of neurons and the output layer. Hereby, the output layer consists of as many neurons as classes that the network is trying to classify against and the one with the highest activation after entering input, is the classification output of the net.  A basic, fully-connected (referring to the connections between neurons, so fully-connected means each neuron is connected to each possible other neuron) net can be seen in Fig.~\ref{fig:net}.
+A basic neural network consists of three layers: the input, a hidden layer of neurons and the output layer. Hereby, the output layer consists of as many neurons as classes that the network is trying to classify against and the one with the highest activation after input has propagated, is the classification output of the net.  A basic, fully-connected (referring to the connections between neurons, so fully-connected means each neuron is connected to each possible other neuron) net can be seen in Fig.~\ref{fig:net}.
 \tikzstyle{layer}=[draw=black,fill=black!30]
 \tikzstyle{layerlid}=[draw=black,fill=green!30]
 \tikzstyle{dots}=[draw=black,fill=black]
@@ -182,26 +182,27 @@ coordinate(l5_2tl) -- (4,-2.25);
 \label{sec:fund:types}
 
 \subsubsection{Feed-Forward Neural Networks}
-A basic (non-deep) \textit{Feed-Forward Neural Network} consists of three layers: the input, a hidden layer of neurons and the output layer. Feed-Forward refers to the fact, in opposition to \textit{Recurrent Neural Networks}, that connections between the neural units are not cyclic. 
+A basic (non-deep) \textit{Feed-Forward Neural Network} consists of three layers: the input, a hidden layer of neurons and the output layer. Feed-Forward refers to the fact, as opposed to \textit{Recurrent Neural Networks}, connections between the neural units are not cyclic. 
 
-In such a basic network, the output layer consists of as many neurons as classes that the network is trying to classify against and the neuron with the highest activation after entering input, is the classification output of the net.
+Basic non-deep neural networks were the first ones employed in machine learning, especially since computational power at the time was not good enough for the training of multi-layered neural networks and were (erroneously) believed to have limits~\cite{minsky1988perceptrons}
+
 
 \subsubsection{Deep Feed-Forward Neural Networks}
 \textit{Deep Feed-Forward Neural Networks}, DNNs, the net-type most used in this thesis, refer to Networks that have more than one hidden layer between input and output, but still feature non-cyclic connections between neurons. DNNs have a better performance than single-hidden-layer-networks in general, but require different techniques for training. 
 
-A common description of this phenomen is, that each hidden layer increases the level of abstraction the network can manage. E.g, in image processing, if the first layer recognizes a color in a certain pixel, then the next layer can infer more abstract characteristics from the output of the first layer. For example, after knowing a certain pixel is dark the next layer can derive that area might be the eye in a picture of a face, etc. This obviously makes more complicated classification tasks possible but also makes learning algorithms more difficult.
+A common description of this phenomen is, that each hidden layer increases the level of abstraction the network can manage. E.g, in image processing, if the first layer recognizes a color in a certain pixel, then the next layer can infer more abstract characteristics from the output of the first layer. For example, after knowing that a certain pixel is dark, the next layer can derive that area might be the eye in a picture of a face, etc. This obviously makes more complicated classification tasks possible but also makes learning algorithms more difficult.
 
 \subsubsection{Deep Recurrent Neural Networks}
 \textit{Deep Recurrent Neural Networks}, RNNs, refer to neural networks that are DNN's but cyclic connections are allowed. This means the network can have temporal behavior, so its performance changes dynamically over time, when the state of later neurons changes and affects the neurons in previous layers.
 
-\paragraph{Long-Short-Term-Memory} The most common RNNs are based on Long-Short-Term-Memory units, artificial neurons that can remember values for a short or long duration, thus having an internal state that changes over time and does not have an activation function like normal artificial neurons. Normally, RNNs then include LSTM blocks of multiple LSTM units. The LSTM blocks then control the change of memory through ``gates''. The input gate to control when a new value is entered into memory, the forget gate to control if a value remains in memory and the output gate which controls the calculation of the activation of the entire block. The weights that are learned for LSTM blocks are then used in front of the gates. That means the weight determines the values of the memory in the block and therefore the activation. RNNs are trained with a similar algorithm as introduced in the next section for non-recurrrent networks, called Backpropagation through time. A detailled explanation of this can be found in~\cite{58337}.
+\paragraph{Long-Short-Term-Memory} The most common RNNs are based on Long-Short-Term-Memory units, artificial neurons that can remember values for a short or long duration. They thus have an internal state that changes over time and do not not have an activation function like normal artificial neurons. Normally, RNNs then include LSTM blocks of multiple LSTM units. The LSTM blocks then control the change of memory through ``gates''. The input gate, to control when a new value is entered into memory, the forget gate, to control if a value remains in memory, and the output gate, which controls the calculation of the activation of the entire block. The weights that are learned for LSTM blocks are then used in front of the gates. That means the weight determines the values of the memory in the block and therefore the activation. RNNs are trained with a similar algorithm as introduced in the next section for non-recurrrent networks, called Backpropagation through time. A detailled explanation of this can be found in~\cite{58337}.
 
 
 \subsection{Learning}
 \label{sec:fund:Learn}
 The interesting part about Neural Networks is their ability to learn from data and improve their own performance. Improving performance in this case means that by adjusting the available parameters of the neurons part of the network, we minimize a cost function that describes the difference between an optimal output and the actual output. 
 
-A Network can be seen to be an approximation of a function \(f^*\). So, a network trying to classify an input \(x\) into a class \(y\) approximates:
+A Network can be seen as an approximation of a function \(f^*\). So, a network trying to classify an input \(x\) into a class \(y\) approximates:
 \begin{equation}
 \label{eq:learn}
 y=f^*(x)
@@ -210,7 +211,7 @@ Then one run of the Network with parameter set \(\Theta\) gives the mapping \(y 
 
 \paragraph{Three basic approaches exist for training a network:} \hspace{0pt} \\
 \begin{itemize}
-\item \textit{Supervised Training}, where the optimal output for input train data is known. This means, the train data has been pre-classified by a ``teacher''. This is the method we use in this thesis and further explained below.
+\item \textit{Supervised Training}, where the optimal output for train data is known. This means, the train data has been pre-classified by a ``teacher''. This is the method we use in this thesis and further explained below.
 \item \textit{Reinforcement Training}, where the optimal input for train data is not known prior to training, but the environment gives the net feedback about its own output and good output is ``reinforced'' while bad output is discouraged.
 \item \textit{Unsupervised Training}, where nothing is known about the environment and the net (often) just tries to learn the probabilistic distribution of the data.
 \end{itemize}
@@ -218,10 +219,10 @@ Then one run of the Network with parameter set \(\Theta\) gives the mapping \(y 
 \subsubsection{Sampling}
 \label{sec:fund:Sampling}
 
-Data for training is generally split into three sets: the training set with a size of about \(80\%\) of the total available data which is then used for the training, the development set with a size of about \(10\%\) used for evaluation of the net and adjusting different parameters without ``distorting'' the last test set which also has a size of around \(10\%\) and is used for final ``clean'' validation of the net performance.
+Data for training is generally split into three sets: the training set with a size of about \(80\%\) of the total available data, which is then used for the training, the development set with a size of about \(10\%\) used for evaluation of the net and adjusting different parameters without ``distorting'' the last test set which also has a size of around \(10\%\) and is used for final ``clean'' validation of the net performance.
 
 
-Sampling for the three sets is most commonly, as in this thesis, done using Simple Random Sampling (SRS), where each set is chosen randomly and completely by chance so that each sample has the same chance to be part of any of the three sets, and furthermore any combination of \(n\) samples has the same probablity to be in any of the sets~\cite{meng2013scalable}
+Sampling for the three sets is most commonly, as in this thesis, done using Simple Random Sampling (SRS), where each set is chosen randomly without bias, so that each sample has the same chance to be part of any of the three sets, and furthermore any combination of \(n\) samples has the same probability to be in any of the sets~\cite{meng2013scalable}
 
 \subsubsection{Supervised Training}
 \label{sec:fund:ST}
@@ -229,7 +230,7 @@ Supervised Training refers to training where the optimal output for the training
 
 \paragraph{Mean Squared Error Function}
 
-One way to calculate the difference between the net and the teacher-classification is by using the mean squared error, as is used in the training of nets in this thesis. If  \(t\) is the expected output and \(f(x;\Theta)\) is the actual predicted output and \(M\) the number of output neurons/classes, we define the Mean Squared Error (MSE) as:
+One way to calculate the difference between the net and the teacher-classification is by using the mean squared error, as is used in the training of nets in this thesis. If \(t\) is the expected output, \(f(x;\Theta)\) is the actual predicted output and \(M\) the number of output neurons/classes, we define the Mean Squared Error (MSE) as:
 \begin{equation}
 E = 1 / 2 \sum_{j=1}^{M}(f(x;\Theta) - t)^2
 \end{equation}
