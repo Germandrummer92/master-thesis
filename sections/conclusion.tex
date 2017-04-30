@@ -12,3 +12,12 @@
 
 \chapter{Conclusion}
 \label{ch:Conclusion}
+
+Overall, we have shown a feasible approach to Language Identification (LID) in an online-environment. Our setup included a DNBF net to preprocess stacked AFs. The extracted BNFs were stacked with a context and then fed into our LID DNN.  We tried DNNs in different setups and net layouts. In general, we can conclude that DNNs are a feasible solution to the LID problem. On our Euronews corpus, for samples longer than 500ms, we achieved an adjusted error rate of 16 \% for the tree-net structure with 6 layers that performed the best. This means usage of the net in an online-environment like the lecture translator is feasible.
+
+In a further step we also tried out different net structures on our two other copora: the European Parliament speeches and Lecture Recordings. It was confirmed that the net structure appears to fare the best to identify languages. We also found, that even with a minimal training corpus, as in the case of European Parliament, DNNs are still a feasible classification mechanism, featuring an error of (on samples of any length), only 35 \% for a corpus of only 1.5h per language.
+
+Afterwards we evaluated different filtering approaches to be able to further smooth out our LID net output 
+
+\section{Future Work}
+\label{sec:fw}
