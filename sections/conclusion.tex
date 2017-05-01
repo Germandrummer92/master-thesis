@@ -13,11 +13,21 @@
 \chapter{Conclusion}
 \label{ch:Conclusion}
 
-Overall, we have shown a feasible approach to Language Identification (LID) in an online-environment. Our setup included a DNBF net to preprocess stacked AFs. The extracted BNFs were stacked with a context and then fed into our LID DNN.  We tried DNNs in different setups and net layouts. In general, we can conclude that DNNs are a feasible solution to the LID problem. On our Euronews corpus, for samples longer than 500ms, we achieved an adjusted error rate of 16 \% for the tree-net structure with 6 layers that performed the best. This means usage of the net in an online-environment like the lecture translator is feasible.
+This thesis' aim was to present an Approach to Language Identification (LID) in an online-environment based on Neural Networks. We used three different corpora: The Euronews 2014 corpus, the Lecture Data corpus as collected from the KIT's lecture recordings and talks at interact, dga and a small corpus we collected of European Parliament speeched with their simultaneous translations.
+
+Overall, we have found a feasible approach to Language Identification (LID) in an online-environment. Our setup included a DNBF net to preprocess stacked AFs. The extracted BNFs were stacked with a context and then fed into our LID DNN.  We tried DNNs in different setups and net layouts. In general, we can conclude that DNNs are a feasible solution to the LID problem. On our Euronews corpus, for samples longer than 500ms, we achieved an adjusted error rate of 16 \% for the tree-net structure with 6 layers that performed the best. This means usage of the net in an online-environment like the lecture translator is feasible.
 
 In a further step we also tried out different net structures on our two other copora: the European Parliament speeches and Lecture Recordings. It was confirmed that the net structure appears to fare the best to identify languages. We also found, that even with a minimal training corpus, as in the case of European Parliament, DNNs are still a feasible classification mechanism, featuring an error of (on samples of any length), only 35 \% for a corpus of only 1.5h per language.
 
-Afterwards we evaluated different filtering approaches to be able to further smooth out our LID net output 
+Afterwards we evaluated different filtering approaches to be able to further smooth out our LID net output in an online-environment. Overall a counting filter, sequence and gauss filter appear to be the best faring filters. We defined our own metric the Out-of-Language Filter as to rate the ``noisiness'' of a filter. The counting filter features a relative improvement of the Out-Of-Language-Error of 97 \% compared to not using a filter.
 
 \section{Future Work}
 \label{sec:fw}
+
+Future work to further improve the results and findings of this thesis could include:
+
+\begin{enumerate}
+\item RNNs have recently outperformed DNNs in Language Identification~\cite{gonzalez2014automatic}, so further experiments with the presented pre- /post-processing setup and RNNs instead of DNNs could improve upon our results.
+\item While our findings in regards to the network architecture and setup have been shown to be generic enough to be applicable to three different data corpora, further work should be done to confirm especially the post-processing findings on other (larger) corpora.
+\item Post-Processing in an online-environment has been found to be a non-trivial problem, as can be seen on our two filter metrics diverging. As post-processing is often not the content of other works, future work could focus on finding a suitable online usage of our LID nets with a suitable post-processing
+\end{enumerate}

@@ -16,14 +16,186 @@
 \label{chap:appendix}
 In this Appendix we present images, data that did not make it into the main matter, complete source code listings as well as a Glossary at the end.
 
+\section{Detailed Error rates for Filters}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Advanced small Filter.}
+\label{tab:advanced}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total)}  \\
+	\hline
+	Arabian & 0.365  \\
+	German & 0.303  \\
+	Spanish & 0.321 \\ 
+	French & 0.304 \\
+	Italian & 0.327  \\
+	Polish & 0.270 \\
+	Portuguese& 0.293  \\
+	Russian&  0.316 \\
+	Turkish&  0.338 \\
+	English&  0.265 \\
+	\hline
+	\textbf{Overall} & 0.313 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Difference Filter.}
+\label{tab:difference}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.367  \\
+	German & 0.305  \\
+	Spanish & 0.327 \\ 
+	French & 0.306 \\
+	Italian & 0.332  \\
+	Polish & 0.276 \\
+	Portuguese& 0.299  \\
+	Russian&  0.323 \\
+	Turkish&  0.341 \\
+	English&  0.269 \\
+	\hline
+	\textbf{Overall} & 0.317 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Gaussian Filter (WS 15).}
+\label{tab:gauss}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.366  \\
+	German & 0.303  \\
+	Spanish & 0.321 \\ 
+	French & 0.303 \\
+	Italian & 0.325  \\
+	Polish & 0.271 \\
+	Portuguese& 0.292 \\
+	Russian&  0.315 \\
+	Turkish&  0.338 \\
+	English&  0.265 \\
+	\hline
+	\textbf{Overall} & 0.313 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Counting Filter (WS 100).}
+\label{tab:gauss}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.362  \\
+	German & 0.300  \\
+	Spanish & 0.319 \\ 
+	French & 0.302 \\
+	Italian & 0.330  \\
+	Polish & 0.270 \\
+	Portuguese& 0.294 \\
+	Russian&  0.317 \\
+	Turkish&  0.340 \\
+	English&  0.270 \\
+	\hline
+	\textbf{Overall} & 0.313 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Sequence Filter}
+\label{tab:sequence}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.401  \\
+	German & 0.359  \\
+	Spanish & 0.388 \\ 
+	French & 0.368 \\
+	Italian & 0.427  \\
+	Polish & 0.346 \\
+	Portuguese& 0.394 \\
+	Russian&  0.422 \\
+	Turkish&  0.445 \\
+	English&  0.370 \\
+	\hline
+	\textbf{Overall} & 0.393 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Speech/Noise Filter}
+\label{tab:speech}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.366  \\
+	German & 0.301  \\
+	Spanish & 0.320 \\ 
+	French & 0.304 \\
+	Italian & 0.330  \\
+	Polish & 0.268 \\
+	Portuguese& 0.295 \\
+	Russian&  0.315 \\
+	Turkish&  0.336 \\
+	English&  0.272 \\
+	\hline
+	\textbf{Overall} & 0.313 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Gaussian Filter (WS 15).}
+\label{tab:gauss}
+\begin{tabular}{| l | c | r | }
+	\hline
+	\textbf{Language} & \textbf{Error (total) }  \\
+	\hline
+	Arabian & 0.366  \\
+	German & 0.303  \\
+	Spanish & 0.321 \\ 
+	French & 0.303 \\
+	Italian & 0.325  \\
+	Polish & 0.271 \\
+	Portuguese& 0.292 \\
+	Russian&  0.315 \\
+	Turkish&  0.338 \\
+	English&  0.265 \\
+	\hline
+	\textbf{Overall} & 0.313 \\
+	\hline
+\end{tabular}
+\end{table}
+
+\FloatBarrier
 \section{Complete Source Code Listings}
 
 As mentioned in Ch.~\ref{ch:eval}, we are listing the complete source code for all the different smoothing algorithms tried here.
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
 
-\begin{lstlisting}[label=lst:BasicFilter,caption=Basic (first try) Filter employed to smooth/improve output]
+\begin{lstlisting}[label=lst:BasicFilter,caption=Basic (first try) Filter employed to smooth/improve output][!htbp]
 proc filter {} {
+    global totalE
     for {set i 0} {$i < 10} {incr i} {
     set total($i) 0
     }
@@ -31,83 +203,83 @@ proc filter {} {
     set counter 0
     set currentOutput -1
     for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
-    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
-    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
-    if {$maxFrameID != $lastFrameID} {
-       set lastFrameID $maxFrameID
-       set counter 0
-    } elseif {$maxFrame >= 0.61} {
-       incr counter
-       if {$counter >= 5} {
-          set currentOutput $maxFrameID
-       }
-    }
-    if {$currentOutput != -1} {
-          incr total($currentOutput)
-    }
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        if {$maxFrameID != $lastFrameID} {
+           set lastFrameID $maxFrameID
+           set counter 0
+        } elseif {$maxFrame >= 0.61} {
+           incr counter
+           if {$counter >= 5} {
+              set currentOutput $maxFrameID
+           }
+        }
+        if {$currentOutput != -1} {
+            incr total($currentOutput)
+        }
     }
     set maxOverall -1
     set maxID -1
+    set totalN 0
     for {set i 0} {$i < 10} {incr i} {
-    if {$total($i) > $maxOverall} {
-        set maxOverall $total($i)
-        set maxID $i
+        if {$total($i) > $maxOverall} {
+            set maxOverall $total($i)
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
     }
-    }
+    set wrongN [expr $totalN - $maxOverall]
+    set totalE [expr {(double($wrongN) / $totalN)}]
     puts -nonewline "Overall we have classified as: "
     puts [getName $maxID]
 }
 \end{lstlisting}
 
-
-\begin{lstlisting}[label=lst:CountingFilter,caption=Counting Filter employed to smooth/improve output]
+\begin{lstlisting}[label=lst:AdvancedFilter,caption=Advanced FILTER employed to smooth/improve output]
 proc filter {} {
+    global totalE
+
     for {set i 0} {$i < 10} {incr i} {
-    set totalM($i) 0
-    set count($i) 0
+        set totalM($i) 0
     }
     set lastFrameID -1
     set counter 0
     set currentOutput -1
-    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
-    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
-    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
-    for {set j 0} {$j < 10 && $i < [featureSetLID frameN nnBNF]} {incr j} {
-        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
-        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
-        set count($maxFrameID) [expr {[set count($maxFrameID)] + 1}]
-        incr i
-    }
-    set maxAvg -1
-    set maxID -1
-    for {set k 0} {$k < 10} {incr k} {
-        if {[set count($k)] > $maxAvg} {
-            set maxAvg [set count($k)]
-            set maxID $k
+    for {set i 0} { $i < [featureSetLID frameN nnFILTER]} {incr i} {
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnFILTER $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnFILTER $i] $maxFrame]
+        set currentOutput $maxFrameID
+        if {$currentOutput != -1} {
+
+            set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
         }
-    }
-    set currentOutput $maxID
-    if {$currentOutput != -1} {
-              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
-    }
     }
     set maxOverall -1
     set maxID -1
+    set totalN 0
     for {set i 0} {$i < 10} {incr i} {
-    if {[set totalM($i)] > $maxOverall} {
-        set maxOverall [set totalM($i)]
-        set maxID $i
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
     }
-    }
+    puts "totalN $totalN"
+    puts "maxOverall $maxOverall"
+    set wrongN [expr $totalN - $maxOverall]
+    puts "wrongN $wrongN"
+    set totalE [expr {(double($wrongN) / $totalN)}]
+
+    puts "totalE $totalE"
     puts -nonewline "Overall we have classified as: "
     puts [getName $maxID]
     return $maxID
 }
 \end{lstlisting}
 
-
 \begin{lstlisting}[label=lst:DifferenceFilter,caption=Difference Filter employed to smooth/improve output]
 proc filter {} {
+    global totalE
     for {set i 0} {$i < 10} {incr i} {
     set totalM($i) 0
     }
@@ -122,7 +294,7 @@ proc filter {} {
     if {$maxFrameID != $lastFrameID} {
        set lastFrameID $maxFrameID
        set counter 0
-    } elseif {[expr {$maxFrame - $max2Frame >= 0.1}]} {
+    } elseif {[expr {$maxFrame - $max2Frame >= 0.01}]} {
        incr counter
        if {$counter >= 5} {
           set currentOutput $maxFrameID
@@ -132,21 +304,79 @@ proc filter {} {
               set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
     }
     }
-    set maxOverall -1
+   set maxOverall -1
     set maxID -1
+    set totalN 0
     for {set i 0} {$i < 10} {incr i} {
-    if {[set totalM($i)] > $maxOverall} {
-        set maxOverall [set totalM($i)]
-        set maxID $i
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
+
     }
-    }
+    set wrongN [expr $totalN - $maxOverall]
+    set totalE [expr {(double($wrongN) / $totalN)}]
     puts -nonewline "Overall we have classified as: "
     puts [getName $maxID]
     return $maxID
 }
 \end{lstlisting}
+
+\begin{lstlisting}[label=lst:CountingFilter,caption=Counting Filter employed to smooth/improve output]
+proc filter {} {
+    global totalE
+    for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+        set count($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        for {set j 0} {$j < 10 && $i < [featureSetLID frameN nnBNF]} {incr j} {
+            set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+            set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+            set count($maxFrameID) [expr {[set count($maxFrameID)] + 1}]
+            incr i
+        }
+       set maxAvg -1
+       set maxID -1
+       for {set k 0} {$k < 10} {incr k} {
+          if {[set count($k)] > $maxAvg} {
+              set maxAvg [set count($k)]
+              set maxID $k
+         }
+       }
+      set currentOutput $maxID
+      if {$currentOutput != -1} {
+              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+      }
+    }
+    set maxOverall -1
+    set maxID -1
+    set totalN 0
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
+
+    }
+    set wrongN [expr $totalN - $maxOverall]
+    set totalE [expr {(double($wrongN) / $totalN)}]
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    return $maxID
+}
+\end{lstlisting}
+
 \begin{lstlisting}[label=lst:SpeechFilter,caption=Speech Filter employed to smooth/improve output]
 proc filter {} {
+    global totalE
     for {set i 0} {$i < 10} {incr i} {
         set totalM($i) 0
     }
@@ -167,12 +397,17 @@ proc filter {} {
 
     set maxOverall -1
     set maxID -1
+    set totalN 0
     for {set i 0} {$i < 10} {incr i} {
         if {[set totalM($i)] > $maxOverall} {
             set maxOverall [set totalM($i)]
             set maxID $i
         }
+        set totalN [expr $totalN + [set totalM($i)]]
+
     }
+    set wrongN [expr $totalN - $maxOverall]
+    set totalE [expr {(double($wrongN) / $totalN)}]
     puts -nonewline "Overall we have classified as: "
     puts [getName $maxID]
     puts -nonewline "Length of sample: "
@@ -181,4 +416,125 @@ proc filter {} {
 }
 \end{lstlisting}
 
+\begin{lstlisting}[label=lst:2LFilter,caption=2-Language Filter (For DE/EN) employed to smooth/improve output]
+proc filter {} {
+    global totalE
 
+    for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+    set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+    set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+    if {$maxFrameID != $lastFrameID} {
+       if {($maxFrameID == 1 || $maxFrameID == 9)} {
+        set lastFrameID $maxFrameID
+        set currentOutput $maxFrameID
+      } elseif {$lastFrameID  == 1 || $lastFrameID == 9} {
+        set currentOutput $lastFrameID
+       }
+    } else {
+       set currentOutput $lastFrameID
+    }
+
+    if {$currentOutput != -1 && ($currentOutput == 1 || $currentOutput == 9)}  {
+              set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+        }
+    }
+    set maxOverall -1
+    set maxID -1
+    set totalN 0
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
+    }
+    puts "totalN $totalN"
+    puts "maxOverall $maxOverall"
+    set wrongN [expr $totalN - $maxOverall]
+    puts "wrongN $wrongN"
+    if {$totalN != 0} {
+        set totalE [expr {(double($wrongN) / $totalN)}]
+    } else {
+        set totalE 1
+    }
+    puts "totalE $totalE"
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    puts -nonewline "Length of sample: "
+    puts [featureSetLID frameN nnBNF]
+    return $maxID
+}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:SequenceFilter,caption=Sequence Filter employed to smooth/improve output]
+proc getMax {} {
+    global totalE
+
+    for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+        set countM($i) 0
+    }
+    set lastFrameID -1
+    set counter 0
+    set currentOutput -1
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {set i [expr $i + 100]} {
+        set curID -1
+        set curCount 0
+        set currentOutput -1
+        for {set j 0} {[expr $i + $j] < [featureSetLID frameN nnBNF] && $j < 100} {incr j} {
+            set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF [expr $i + $j]]] 0]
+            set maxFrameID [lsearch -real [featureSetLID frame nnBNF [expr $i + $j]] $maxFrame]
+            if {$maxFrameID != $curID} {
+                set curID $maxFrameID
+                set curCount 1
+            } elseif {$maxFrameID != -1} {
+                incr curCount
+            }
+            if {$curCount > [set countM($curID)]} {
+                set countM($curID) $curCount
+            }
+        }
+
+        set currentMax -1
+        for {set k 0} {$k < 10} {incr k}    {
+            if {[set countM($k)] > $currentMax} {
+                set currentMax [set countM($k)]
+                set currentOutput $k
+            }
+        }
+        if {$currentOutput != -1}  {
+            set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+        }
+    }
+
+    set maxOverall -1
+    set maxID -1
+    set totalN 0
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+     set totalN [expr $totalN + [set totalM($i)]]
+    }
+    puts "totalN $totalN"
+    puts "maxOverall $maxOverall"
+    set wrongN [expr $totalN - $maxOverall]
+    puts "wrongN $wrongN"
+    set totalE [expr {(double($wrongN) / $totalN)}]
+
+    puts "totalE $totalE"
+
+    puts -nonewline "Overall we have classified as: "
+    puts [getName $maxID]
+    puts -nonewline "Length of sample: "
+    puts [featureSetLID frameN nnBNF]
+    return $maxID
+}
+\end{lstlisting}
