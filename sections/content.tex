@@ -19,7 +19,7 @@
 \label{ch:LITasks}
 
 This chapter lays out the experimental setup used in this thesis. While Language Identification is applicable in many different scenarios, here the focus lies on trying to establish a low-latency online approach for recognizing the spoken language in a university-lecture environment. Because finding a suitable test setup for online data retrieval is hard, the data used was cut to short lengths to make an evaluation as to correctness of the recognition possible in an ''online-like'' scenario. 
-This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator. The test setup will be introduced in the next setup
+This means that the output of the net is evaluated after short samples of speech and therefore can be seen as indicative of online performance of the net in the lecture translator. The test setup will be introduced in chapter~\ref{ch:eval}
 
 
 This chapter introduces our experimental setup and tooling, and gives an overview of the used data sets.
@@ -27,7 +27,7 @@ This chapter introduces our experimental setup and tooling, and gives an overvie
 \section{Language Identity Neural Networks}
 \label{sec:LITasks:GS}
 
-As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly the same. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer.
+As this thesis continues the work of~\cite{Mueller2016b}, the experimental setup stayed mostly similar. After extraction of the audio features, as further described in Ch.~\ref{ch:FP}, we get a feature vector of 702, consisting of a combination of IMel and tonal features with a context of 6 frames as input and CD phoneme states as targets. This was trained in the mentioned previous work in a multilingual fashion, meaning it consists of multiple output layers, one for each layer.
 
 The second last layer is the bottleneck layer (referring to a layer with a much smaller size than the previous and following one) with a size of 42. We then use the Bottleneck activations in training for the LID Neural Network. These BNF Vectors are stacked with a context to provide the input for the 2\textsuperscript{nd} LID network, as language identity is considered to be a long-term property of the audio data. We tried different context sizes (see Sec.~\ref{sec:LIDNetwork:Input}), choosing the most robust one.  In opposition to the previous work mentioned where another BNF layer was introduced in the LID network to reuse the BNF vector in speech recognition tasks, we then use the output layer of the 2\textsuperscript{2nd} layer to determine the language of the audio. This means the output layer consists of as many output neurons as available languages.
 
@@ -195,7 +195,7 @@ The corpus was broken down to a per-speaker-basis based on its automatic transcr
 \end{tabular}
 \end{table}
 
-The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) allocated to the train set, and \(10\%\) for both the development and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets. 
+The speaker list was then split into three smaller datasets: the train set, development set and test set using the common Simple Random Sampling. The sizes were \(80\%\) allocated to the train set, and \(10\%\) to each the development  and test set. Table ~\ref{tab:spkSplit} shows the split data for the three sets.  The development set will be referred to as DEV and the test set as TEST after this.
 
 The complete Euronews Corpus available was much larger. This was used to confirm intuition that a larger data corpus leads to better results which can be seen in Sec.~\ref{sec:LIDNetworkBig}. The breakdown of the large corpus' data is listed in Table~\ref{tab:spkDataBig}.
 
@@ -229,7 +229,7 @@ The complete Euronews Corpus available was much larger. This was used to confirm
 
 As part of the development of the KIT's Lecture Translator, German lectures at the KIT were recorded and annotated. This is described in~\cite{stuker2012kit}. This thesis then uses parts of this German corpus as well as newer recordings done at the KIT of English lectures with the same setup, English academic talks given at InterACT - 25\footnote{InterACT 25: \url{http://www.interact25.org/}}, as well as French talks done at the DGA's~\footnote{DGA: \url{http://www.defense.gouv.fr/dga}} yearly academic conference on speech recognition.
 
-This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further try out the findings about the net setup and net evaluation, as found with the Euronews corpus.
+This lecture data was then used in two different ways: Firstly, to evaluate the 10-Language trained Euronews-Net(s) to see how it would fare in a lecture-environment as part of the KIT's lecture translator by scaling the output down to the 3 available languages. Secondly to train a second net and further test the findings about the net setup and net evaluation, as found with the Euronews corpus.
 
 The breakdown of speakers and length can be seen in Table~\ref{tab:spkDataLD}. As the main work was done on the Euronews corpus this data corpus is considerably smaller and was mostly just used as a proof-of-concept for a possible integration of a LID-Net into the Lecture Translator. 
 
@@ -254,9 +254,9 @@ The development set for the LD corpus consisted of 1.5h of Lecture Data per each
 \section{European Parliament}
 \label{sec:LITasks:EU}
 
-As another form of evaluation recordings of the European Parliament speeches that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}} were used. The video recordings come with the simultaneous translations into all the official languages of the EU-countries.  This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. The audio extracted is of the simultaneous translations with an underlying audio track of the original speaker, which adds noise, but is similar in nature to the Euronews recordings that often feature an underlying audio track in a different language.
+As another form of evaluation, recordings of the European Parliament speeches, that are freely available online~\footnote{EU-Parliament plenary speeches: \url{http://www.europarl.europa.eu/ep-live/en/plenary/}} were used. The video recordings come with the simultaneous translations into all the official languages of the EU-countries.  This includes seven of the languages also available on Euronews, namely German, English, French, Spanish, Italian, Polish and Portuguese. We extracted the seven audio tracks embedded in the recordings with ffmpeg~\footnote{ffmpeg:\url{https://ffmpeg.org/}}. The audio extracted is of the simultaneous translations with an underlying audio track of the original speaker, which adds noise, but is similar in nature to the Euronews recordings that often feature an underlying audio track in a different language.
 
-The small corpus was used to evaluate performance of the Lecture-Data- as well as Euronews-trained nets, as well as improve capabilities of the networks with fine-tuning using the Euronews data, of which results can be seen in the following chapter.
+The small corpus was used to evaluate performance of the Lecture-Data- and Euronews-trained nets, as well as improve capabilities of the networks with fine-tuning using the Euronews data, of which results can be seen in the following chapter.
 
 As each parliament discussion includes the same audio tracks, the length of all the languages in the set is the same, with each language having 3.6 hours of data. 
 
@@ -264,27 +264,27 @@ As each parliament discussion includes the same audio tracks, the length of all 
 \label{ch:FP}
 
 This chapter deals with the feature preprocessing used to form normal speech into feature vectors to be understood by neural networks. The setup used is based on the standard capabilities of the Janus Recognition Toolkit. The following sections describe this Feature Preprocessing for data as well as the first multilingual ASR network as introduced previously, used to create the BNF features the LID net requires.  It is based on preprocessing introduced in~\cite{Mueller2016b}.
-Features produced by this preprocessing setup are then written to ``pfiles'' together with their labels (the target language). The pfiles are then used to train the network using detl, or, in the case of RNNs, lasagne by supervised training using the Stochastic Gradient Descent with newbob scheduling.
+Features produced by this preprocessing setup are then written to ``pfiles'' together with their labels (the target language). The pfiles are then used to train the network using detl, or, in the case of RNNs, lasagne by supervised training employing the Stochastic Gradient Descent with newbob scheduling.
 
 \section{Feature Retrieval}
 \label{sec:FP:FA}
 The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz. European Parliament data we collected ourselves were recorded with a sample rate of 44.1 kHz. We down-sampled the data using soX\footnote{soX Sound eXchange: \url{http://sox.sourceforge.net/}}. 
-\paragraph{Big Euronews Corpus} As the Big Euronews corpus as introduced already had training pfiles existing from previous work~\cite{Mueller2016b}, we reused them. This meant that the features here were completely based on 32ms windows and not a combination of 16ms and 32ms windows as for the rest of the corpora.
+\paragraph{Big Euronews Corpus} The Big Euronews Corpus, as introduced in section~\ref{sec:LITasks:Euronews}, had prexisting pfiles from previous work~\cite{Mueller2016b} that we reused. This meant that the features in this case were completely based on 32ms windows and not a combination of 16ms and 32ms windows as for the rest of the corpora.
 
 \section{Feature Description}
 \label{sec:FP:FD}
 For the DBNF network as input, a combination of sound power, lMEL, fundamental frequency variation (FFV)~\cite{laskowski2008fundamental}, \cite{laskowski2008fundamental} and pitch acoustic features~\cite{schubert1999grundfrequenzverfolgung} was used. Tonal features have shown improvements for DNNs, even with non-tonal languages as English~\cite{metze2013models}, so they were also incorporated. Lst.~\ref{lst:features} shows the complete feature extraction source code in tcl.
 
-Using the sound power feature that is part of janus' standard capabilities, we added a speech-detection feature as when the power of the sound in the recording reaches a threshold we consider it speech, otherwise noise. Calculations were done by calculating the Log on the current sound power, calculating the weighted average with a context of 2 frames on each side on this, normalizing the resulting value between -0.1 and 0.5 and then using a threshold of 0 in the normalized spectrum to consider it speech. We do not discard the non-speech marked parts but weigh the combined feature vector less for the total input if the threshold of 0 was not reached.  
+Using the sound power feature that is part of janus' standard capabilities, we added a speech-detection feature, which identifies speech and noise from the audio. We first calculate the \(log\) on the current sound power and then determine the weighted average with a context of 2 frames on each side. After normalizing the resulting value between -0.1 and 0.5, we apply a basic threshold function: We consider everything above 0 in the normalized spectrum as speech, and below as (non-speech) noise. We do not discard the non-speech marked parts however, but weigh the combined feature vector less in the resulting input vector for the neural network.
 
-The log Mel features are calculated the following way: We calculate the spectrum of the audio waveform using the Fast Fourier Transformation on 16 ms windows, calculate the Mel Coefficients, apply Vocal Tract Length Normalization (VTLN) on the spectrum in the linear domain and then multiply the Mel-Filterbank coefficients with the normalized coefficients. We apply a logarithm to this to get the lMEL features.
+The log mel features are calculated the following way: We calculate the spectrum of the audio waveform using the Fast Fourier Transformation on 16 ms windows, calculate the Mel Coefficients, apply Vocal Tract Length Normalization (VTLN) on the spectrum in the linear domain and then multiply the Mel-Filterbank coefficients with the normalized coefficients. We apply a logarithm to this to get the lMEL features.
 
 From janus' standard pitch capability, calculated on 16 ms windows, we calculate the symmetric delta coefficients \(((f(t+\delta) - f(t-\delta))\) on the pitch for \(\delta=1,2,3\) and the same deltas on those results and merge to give us a coefficients for frame t:
 \((PITCH(t), f(t):=PITCH(t+1)-PITCH(t-1),f(t+1)-f(t-1),g(t):=PITCH(t+2)-PITCH(t-2),g(t+2)-g(t-2),h(t):=PITCH(t+3)-PITCH(t-3),h(t+3)-h(t-3))\)
 
 The FFV is calculated on 32 ms windows, to then be merged  with the pitch feature we just defined to make up the TONE feature. lMEL coefficients and TONE coefficients are then merged. See~\cite{laskowski2009modeling},  \cite{laskowski2008fundamental}These feature vectors are stacked with a context of 6 adjacent frames and then passed to the DBNF net as introduced in the next section.
-\paragraph{Big Euronews Corpus} The big Euronews corpus used 32 ms for all feature calculations, so the sound power, FFT/lMEL and Pitch were calculated on 32ms windows, but used the same features aside from this.
-\paragraph{Lecture Data/European Parliament} For the other two data corpora we kept the 16ms windows for Power and lMEL, but changed the Pitch to be calculated on 32 ms windows.
+\paragraph{Big Euronews Corpus} The big Euronews corpus used 32 ms for all feature calculations, so the sound power, FFT/lMEL and pitch were calculated on 32ms windows, but used the same features aside from this.
+\paragraph{Lecture Data/European Parliament} For the other two data corpora we kept the 16ms windows for power and lMEL, but changed the pitch to be calculated on 32 ms windows.
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -292,8 +292,8 @@ The FFV is calculated on 32 ms windows, to then be merged  with the pitch featur
 puts "start featDesc"
 
 #-----------------speech detection------------------
-$fes   adc2pow         POWER   ADC    16ms #Extract Sound Power
-$fes   alog            POWER   POWER  1 4 #Log on Sound Power
+$fes   adc2pow         POWER   ADC    16ms #Extract sound power
+$fes   alog            POWER   POWER  1 4 #Log on sound power
 $fes   filter          POWER   POWER  {-2 {1 2 3 2 1}} #Weighted Average with context of 2
 $fes   normalize       POWER   POWER  -min -0.1 -max 0.5 #Normalize
 $fes   thresh          SPEECH  POWER  1.0 0 upper #> 0 -> Speech
@@ -317,7 +317,7 @@ $fes   filterbank       MEL             FFT            matrixMEL
 $fes   log              lMEL            MEL            1.0 1.0 #Log-Mel
 
  # Computing Tonal feature
-# Pitch
+# pitch
 $fes pitch              PITCH  ADC  16ms
 $fes delta              dPITCH1 PITCH -delta 1
 $fes delta              ddPITCH1 dPITCH1 -delta 1
@@ -340,19 +340,19 @@ $fes   adjacent        FEATSPR              FEAT            -delta 6 #Stack Cont
 \section{ASR BNF network}
 \label{sec:FP:Net}
 
-The DBNF use was trained as part of~\cite{Mueller2016b}. It is trained using the input features as just presented with a context of 6. The targets are Context-Dependent phoneme states, so a similar setup to how an ASR neural network would look. The network has 6 layers of 1000 neurons each plus a bottleneck layer of only 42 neurons before the final output layer. 
+The DBNF was trained as part of~\cite{Mueller2016b}. It is trained using the input features defined in section~\ref{sec:FP:FD}. The targets are context-dependent phoneme states, representing a similar setup to how an ASR neural network. The network has 6 layers of 1000 neurons each plus a bottleneck layer of 42 neurons before the final output layer. 
 
-The activations of the bottleneck layer are extracted, the context of 11 frames applied and used as the input features for the LID network on which the following chapter will elaborate.
+The activations of the bottleneck layer are extracted. We then apply a context of 11 frames and stack the frame itself with the context. The context is calculated using a spread of 3. This means we only use every 3\textsuperscript{rd} frame. The stacked vector is then used as the input for the LID network on which the following chapter will elaborate. 
 
 
 \section{Changing the Input Features}
 \label{sec:LIDNetwork:Input}
 
-Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the LID net of 2,3 and 6. So, as one of the first experiments on the Euronews corpus we increased the spread from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 44 Frames (880ms) and 55 Frames (1100ms) respectively). This however proved not successful as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
+Work in~\cite{Mueller2016b} included a comparison of different context spreads as stacked inputs for the LID net of 2,3 and 6. As one of the first experiments on the Euronews corpus we increased the spreads from 3 to 4 and 5 frames, while still keeping the original context width of 11 (meaning a total context width of 44 Frames (880ms) and 55 Frames (1100ms) respectively). This however proved not successful as performance decreased already in the frame-based metrics and was therefore likely to also decrease in the per-sample metric as introduced in the following chapter. 
 
 For all further experiments on Network layout and smoothing, we therefore used the best performing context of 33, with a spread of 3 frames.
 
-Table~\ref{tab:resCtx} at the end of the next chapter shows the results for different net structures, as introduced in the following, with different contexts.
+Table~\ref{tab:resCtx} at the end of the next chapter shows the results for the different selected spreads with different net structures, which are introduced in the following chapter.
 
 \chapter{LID Network Structure}
 \label{ch:LIDNetwork}
@@ -575,7 +575,7 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
-By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. However the results provided a surprise, in that they did not improve upon lecture-data fine tuning results. 
+By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a margin of 23 \%. This was to be expected just from the sheer increase of data however. 
 
 \section{Lecture-Data-Training}
 \label{sec:LIDNetworkLDTraining}
@@ -605,7 +605,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\parbox[t]{5cm}{Tree-net Euronews net \\
 	 w/o fine-tuning}  & 0.291 & - & - & 0.179 \\
 	\hline
-	\parbox[t]{5cm}{Concatenated \\ Euronews/LD-trained net } & & 0.206 & 0.245 & \\
+	\parbox[t]{5cm}{Concatenated \\ Euronews/LD-trained net } & & 0.206 & 0.245 & 0.065 \\
 	\hdashline
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } & 0.456 & 0.075 & 0.116 & 0.130 \\
 	\hdashline
@@ -617,7 +617,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hdashline
 	\parbox[t]{5cm}{LD-Trained Net 6 layers \\ \& lowered learning rate} & 0.417 & 0.066 & 0.100 & 0.112 \\
 	\hline
-	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.091}} \\
+	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.114}} \\
 	\hline
 \end{tabular}
 \end{table}
@@ -658,7 +658,7 @@ Surprisingly, even though the train data available was very small, the improveme
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Ch.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Ch.~\ref{sec:FP:Net} $\rightarrow$ LID network Ch.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated in real time while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:evalTotal}, ~\ref{tab:evalTotal2} for both the development and test set results. We evaluated different net structures, however the results presented here are based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but it gave us the best results on a sample basis (see Tab.~\ref{tab:evalNS}).
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing Ch.~\ref{ch:FP} $\rightarrow$ ASR BNF extraction Ch.~\ref{sec:FP:Net} $\rightarrow$ LID network Ch.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated in real time while new data is still coming in. The summarized results are listed in Tab.~\ref{tab:evalTotal}, ~\ref{tab:evalTotal2} for both the DEV and TEST results. We chose to only run the experiments on the Euronews corpus, as the 10-language-target will always have more possible erroneous outputs and filtering can prove to more successfull. We evaluated different net structures, however the results presented here are based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but it gave us the best results on a sample basis (see Tab.~\ref{tab:evalNS}).
 
 \section{Analyzing Outputs}
 \label{sec:outputs}
@@ -700,6 +700,23 @@ To have a baseline to improve upon we evaluated the base net on full samples of 
 \label{sec:eval:ole}
 
 The first correctness metric proved to be too restrictive for filters. As filters might reduce the count of the correct language while making the total number of wrong outputs less, we present another metric to evaluate filter effectiveness. We count the total number of falsely (as in not-equal to the maximum output) classified frames/output per sample divided by the number of total frames/outputs and average them on a per-sample basis to see if filters actually work in filtering out false outputs. It basically gives a metric for the amount of noise the net output includes. Arguably this would be even more important in an online-fashion in the lecture translator, as wrong outputs/filters would be passed on to the speech recognition/translation APIs. This second metric evaluation for well-performing filters can be found at the end of the chapter in Table~\ref{tab:evalTotal}.
+
+\begin{table}[h!]
+\centering
+\caption{Results of different net structures evaluated on the Euronews DEV set.}
+\label{tab:evalNS}
+\begin{tabular}{| l | r |}
+	\hline
+	\textbf{Net Structure} & \textbf{Overall Error}  \\
+	\hline
+	6-layer tree-net lr 0.1 & 0.318 \\
+	\hline
+	6-layer tree-net  &  0.311 \\
+	\hline
+	7-layer tree-net & 0.316 \\
+	\hline
+\end{tabular}
+\end{table}
 
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
@@ -779,7 +796,7 @@ As one can see a length of around 100 frames (meaning a sample length of: \(100*
 \end{tikzpicture}
 \end{figure}
 \begin{table}[h!]
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with only bare net output.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews DEV with only bare net output.}
 \label{tab:bareResults}
 \centering
 \begin{tabular}{| l | c | r | }
@@ -813,7 +830,7 @@ Table~\ref{tab:basic} shows the result of the basic filter for each language. Ov
 
 \begin{table}[h!]
 \centering
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Basic Filter.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews DEV Set with the Basic Filter.}
 \label{tab:basic}
 \begin{tabular}{| l | c | r | }
 	\hline
@@ -849,7 +866,7 @@ which however did not provide a further increase in correctness. In our tcl filt
 
 \begin{table}[h!]
 \centering
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Advanced FILTER}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews DEV Set with the Advanced FILTER}
 \label{tab:evalAdvanced}
 \begin{tabular}{| l | r |}
 	\hline
@@ -877,7 +894,7 @@ This filter included a counting of the occurrence of a certain net output in a f
 The full code of this filter can be found in the Appendix.
 
 \begin{table}[h!]
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Counting Window Filter}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews DEV Set with the Counting Window Filter}
 \label{tab:counting}
 \centering
 \begin{tabular}{| l | r |}
@@ -1008,7 +1025,7 @@ Once the Gaussian function is calculated for the window, the convolution of the 
 \end{lstlisting}
 
 
-We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalGauss} on the Development Set.  As can be seen, the Window size of 15 performed the best out of the different window sizes tried. To showcase a correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has evidently occurred.  As it turns out the Gauss Filter indeed performs much better even on the correctness-metric on small samples with a size under 50 frames (=500ms). Tab.~\ref{tab:50Gauss} showcases this in comparison to the bare net output, which shows a very significant improvement of 15\%.
+We tried different window sizes of which the result can be seen in Tab.~\ref{tab:evalGauss} on the DEV Set.  As can be seen, the Window size of 15 performed the best out of the different window sizes tried. To showcase a correct implementation Fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has evidently occurred.  As it turns out the Gauss Filter indeed performs much better even on the correctness-metric on small samples with a size under 50 frames (=500ms). Tab.~\ref{tab:50Gauss} showcases this in comparison to the bare net output, which shows a very significant improvement of 15\%.
 
 \begin{figure}
 \label{fig:gaussWS10}
