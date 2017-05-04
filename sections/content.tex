@@ -575,7 +575,7 @@ Since the Lecture Data corpus only has 3 languages, we couldn't evaluate the fin
 
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
-By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a margin of 23 \%. This was to be expected just from the sheer increase of data however. 
+By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a big margin of 23 \%. This was to be expected just from the sheer increase of data however. The concateneted corpus also produced the best results on the Euronews corpus with an increase in the error of only 0.005 compared to the non-augmented Euronews data. 
 
 \section{Lecture-Data-Training}
 \label{sec:LIDNetworkLDTraining}
@@ -594,7 +594,7 @@ Suprisingly, the other ld-only nets did feature a better validation/train error 
 
 Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the 4-layer LD-trained net with an improvement of 9.1\% in the sample-error compared to the plain Euronews net. The obvious and expected results of the fine-tuned versions performing better on the Euronews corpus than the ld-only trained ones was confirmed, however the difference in error was smaller than expected with only 2.6\% between the best-performing LD-net and the fine-tuned 2-layer net in Euronews error.
 
-%TODO%TODO
+
 \begin{table}
 \caption{Results of the different lecture data approaches}
 \label{tab:resultsLD}
@@ -605,7 +605,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\parbox[t]{5cm}{Tree-net Euronews net \\
 	 w/o fine-tuning}  & 0.291 & - & - & 0.179 \\
 	\hline
-	\parbox[t]{5cm}{Concatenated \\ Euronews/LD-trained net } & & 0.206 & 0.245 & 0.065 \\
+	\parbox[t]{5cm}{Concatenated \\ Euronews/LD-trained net } & 0.296 & 0.206 & 0.245 & 0.065 \\
 	\hdashline
 	\parbox[t]{5cm}{Tree-net Euronews net \\ with fine-tuning } & 0.456 & 0.075 & 0.116 & 0.130 \\
 	\hdashline
@@ -617,7 +617,7 @@ Table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 	\hdashline
 	\parbox[t]{5cm}{LD-Trained Net 6 layers \\ \& lowered learning rate} & 0.417 & 0.066 & 0.100 & 0.112 \\
 	\hline
-	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.121}} & - & - & \color{green}{\textbf{0.114}} \\
+	\parbox[t]{5cm}{\textbf{Change} \textbf{(best)}} & \color{red}{\textbf{0.005}} & - & - & \color{green}{\textbf{0.114}} \\
 	\hline
 \end{tabular}
 \end{table}
