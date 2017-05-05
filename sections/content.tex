@@ -457,6 +457,8 @@ performed not at all featuring an error rate of 90 \%, meaning the net was not c
 
 As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first, to then affect the deeper layers), our setup did most likely not include enough data for the training of these nets. Another explanation could be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
 
+Overall the tree-net with 5 layers and reduced learning rate performed the best in the frame-based errors, featuring a relative improvement of 0.175 compared to the basic net.
+
 \begin{table}[h!]
 \caption{Results of the different Context sizes on the Euronews corpus for the first 3 introduced net structures. Frame-based errors on train/validation set.}
 \label{tab:resCtx}
@@ -491,30 +493,30 @@ As deeper hidden layers will take longer/more data to train correctly (as the ch
 \centering
 \caption{Results of the different net structures on the Euronews corpus. Frame-based errors on train/validation set.}
 \label{tab:resFrameBased}
-\begin{tabular}{| l | c | r | }
+\begin{tabular}{| l | c | c | r |}
 	\hline
-	\textbf{Net Structure} & \textbf{Train Error} & \textbf{Validation Error}  \\
+	\textbf{Net Structure} & \textbf{Train Error} & \textbf{Validation Error}   & \parbox[t]{2.5cm}{\textbf{Rel. Impr.} \\ \textbf{Val. Error}} \\
 	\hline
-	Basic (5 layers 1000 Neurons) & 0.226 &  0.285 \\
+	Basic (5 layers 1000 Neurons) & 0.226 &  0.285 & -\\
 	\hline
-	6-Layers (1000 Neurons) & 0.236 & 0.276 \\
+	6-Layers (1000 Neurons) & 0.236 & 0.276 & 0.032 \\
 	\hline
-	Reduced Learning Rate & 0.273 & 0.266 \\ 
+	Reduced Learning Rate & 0.273 & 0.266 & 0.067 \\ 
 	\hline
-	Tree Structure (5 layers 1000...200 neurons) & 0.221 & 0.245 \\
+	Tree Structure (5 layers 1000...200 neurons) & 0.221 & 0.245 & 0.140 \\
 	\hline
-	\parbox[t]{5cm}{Tree Structure (5 layers 1000...200 neurons)\\and reduced Learning Rate} & 0.245 & 0.235 \\
+	\parbox[t]{5cm}{Tree Structure (5 layers 1000...200 neurons)\\and reduced Learning Rate} & 0.245 & 0.235 & 0.175 \\
 	\hline
-	Tree Structure (6 layers 1200...200 neurons) & 0.211 & 0.242 \\
+	Tree Structure (6 layers 1200...200 neurons) & 0.211 & 0.242 & 0.151 \\
 	\hline
 	\parbox[t]{5cm}{Tree Structure (6 layers 1200...200 neurons) \\
-	and reduced Learning Rate} & 0.251 & 0.238 \\
+	and reduced Learning Rate} & 0.251 & 0.238 & 0.164 \\
 	\hline
-	Tree Structure (7 layers 1400...200 neurons) & 0.206 & 0.247 \\
+	Tree Structure (7 layers 1400...200 neurons) & 0.206 & 0.247 & 0.133 \\
 	\hline
-	Tree Structure (10 layers 2000...200 neurons) & 0.899 & 0.910 \\
+	Tree Structure (10 layers 2000...200 neurons) & 0.899 & 0.910 & - \\
 	\hline
-	\textbf{Best} & 0.245 & 0.235 \\
+	\textbf{Best} & 0.245 & 0.235 & 0.175 \\
 	\hline
 \end{tabular}
 \end{table}
