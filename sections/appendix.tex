@@ -14,10 +14,10 @@
 
 \chapter{Appendix}
 \label{chap:appendix}
-In this Appendix we present images, data that did not make it into the main matter, complete source code listings as well as a Glossary at the end.
+In this Appendix we present images, data that did not make it into the main bodz, complete source code listings as well as a glossary at the end.
 
 \section{Detailed Error rates for Filters}
-
+\label{app:res:lid}
 \begin{table}[!htbp]
 \centering
 \caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Advanced small Filter.}
@@ -116,7 +116,7 @@ In this Appendix we present images, data that did not make it into the main matt
 
 \begin{table}[!htbp]
 \centering
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Sequence Filter}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Sequence Filter (WS 10)}
 \label{tab:sequence}
 \begin{tabular}{| l | c | r | }
 	\hline
@@ -162,37 +162,116 @@ In this Appendix we present images, data that did not make it into the main matt
 \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
-\centering
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews Development Set with the Gaussian Filter (WS 15).}
-\label{tab:gauss}
-\begin{tabular}{| l | c | r | }
-	\hline
-	\textbf{Language} & \textbf{Error (total) }  \\
-	\hline
-	Arabian & 0.366  \\
-	German & 0.303  \\
-	Spanish & 0.321 \\ 
-	French & 0.303 \\
-	Italian & 0.325  \\
-	Polish & 0.271 \\
-	Portuguese& 0.292 \\
-	Russian&  0.315 \\
-	Turkish&  0.338 \\
-	English&  0.265 \\
-	\hline
-	\textbf{Overall} & 0.313 \\
-	\hline
-\end{tabular}
-\end{table}
-
 \FloatBarrier
+\clearpage
 \section{Complete Source Code Listings}
 
-As mentioned in Ch.~\ref{ch:eval}, we are listing the complete source code for all the different smoothing algorithms tried here.
+As mentioned in ch.~\ref{ch:eval}, we are listing the complete source code for all the different smoothing algorithms tried here, as well as the full source code for the feature description.
+
 \definecolor{green}{rgb}{0.0, 0.4, 0.13}
 \lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+\begin{lstlisting}[label=lst:features,caption=The feature description as used by our pre-DBNF-preprocessing]
+puts "start featDesc"
 
+#-----------------speech detection------------------
+$fes   adc2pow         POWER   ADC    16ms #Extract sound power
+$fes   alog            POWER   POWER  1 4 #Log on sound power
+$fes   filter          POWER   POWER  {-2 {1 2 3 2 1}} #Weighted Average with context of 2
+$fes   normalize       POWER   POWER  -min -0.1 -max 0.5 #Normalize
+$fes   thresh          SPEECH  POWER  1.0 0 upper #> 0 -> Speech
+$fes   thresh          SPEECH  SPEECH 0   0 lower #< 0 -> No Speech
+
+#----------------- mel filter bank------------------
+$fes   spectrum        FFT0            ADC             16ms
+set WARP 1.0
+        
+### computing log-mel
+#Help Check to not allocate mel filterbank coefficient matrix twice (will lead to tcl error)
+if { [llength [objects FBMatrix matrixMEL]] != 1} {
+        set melN 40
+        set points [$fes:FFT0 configure -coeffN]
+        set rate   [expr 1000 * [$fes:FFT0 configure -samplingRate]]
+        [FBMatrix matrixMEL] mel -N $melN -p $points -rate $rate
+}
+
+$fes   VTLN             FFT             FFT0           $WARP -mod lin -edge 0.8
+$fes   filterbank       MEL             FFT            matrixMEL
+$fes   log              lMEL            MEL            1.0 1.0 #Log-Mel
+
+ # Computing Tonal feature
+# pitch
+$fes pitch              PITCH  ADC  16ms
+$fes delta              dPITCH1 PITCH -delta 1
+$fes delta              ddPITCH1 dPITCH1 -delta 1
+$fes delta              dPITCH2 PITCH -delta 2
+$fes delta              ddPITCH2 dPITCH2 -delta 2
+$fes delta              dPITCH3 PITCH -delta 3
+$fes delta              ddPITCH3 dPITCH3 -delta 3
+$fes merge              P16 PITCH dPITCH1 ddPITCH1 dPITCH2 ddPITCH2 dPITCH3 ddPITCH3
+
+# Calculating FFV
+$fes intonation         FFV  ADCffv 32ms -tint 11ms -text 9ms -tsep 14ms # On 32 ms Windows!
+$fes merge              TONE FFV  P16
+
+$fes   merge           mergedFEAT           lMEL      TONE
+$fes   meansub         FEAT                 mergedFEAT      -a 2 -weight SPEECH #Weigh with the Speech feature.
+
+$fes   adjacent        FEATSPR              FEAT            -delta 6 #Stack Context of 6 frames
+\end{lstlisting}
+\newpage
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
+\begin{lstlisting}[label=lst:basic,caption=Evaluation setup to count outputs per sample and count correctness(return value)/OLE (totalE)]
+proc filter{} {
+    global totalE
+    #setting up variables
+     for {set i 0} {$i < 10} {incr i} {
+        set totalM($i) 0
+    }
+    set currentOutput -1
+    #Going through whole sample frame by frame in output layer of nn called nnBNF-> can be changed to work on continuously incoming data easily
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+        #we find the current output of the net
+        set maxFrame [lindex [lsort -decreasing -real [featureSetLID frame nnBNF $i]] 0]
+        set maxFrameID [lsearch -real [featureSetLID frame nnBNF $i] $maxFrame]
+        set currentOutput $maxFrameID
+        #setting total classification amounts for current sample
+        if {$currentOutput != -1} {
+             set totalM($currentOutput) [expr {[set totalM($currentOutput)] + 1}]
+        }
+    }
+    set maxOverall -1
+    set maxID -1
+    set totalN 0
+    #Now get the output for the whole sample (smoothing over entire sample)
+    for {set i 0} {$i < 10} {incr i} {
+        if {[set totalM($i)] > $maxOverall} {
+            set maxOverall [set totalM($i)]
+            set maxID $i
+        }
+        set totalN [expr $totalN + [set totalM($i)]]
+    }
+    puts "totalN $totalN"
+    puts "maxOverall $maxOverall"
+    set wrongN [expr $totalN - $maxOverall]
+    puts "wrongN $wrongN"
+    set totalE [expr {(double($wrongN) / $totalN)}]
+    #TotalE is the OLE of the sample
+    puts "totalE $totalE"
+
+    #print out the total classification for the entire sample
+    puts -nonewline "Overall we have classified as: "
+    #help function to print language name not id.0
+    puts [getName $maxID]
+    return $maxID
+}
+\end{lstlisting}
+
+\newpage
+
+
+\definecolor{green}{rgb}{0.0, 0.4, 0.13}
+\lstset{captionpos=b,tabsize=3,frame=lines,keywordstyle=\color{blue},commentstyle=\color{green},stringstyle=\color{red},numbers=left,numberstyle=\tiny,numbersep=5pt,breaklines=true,showstringspaces=false,basicstyle=\footnotesize,emph={label}}
 \begin{lstlisting}[label=lst:BasicFilter,caption=Basic (first try) Filter employed to smooth/improve output][!htbp]
 proc filter {} {
     global totalE
@@ -234,7 +313,7 @@ proc filter {} {
     puts [getName $maxID]
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:AdvancedFilter,caption=Advanced FILTER employed to smooth/improve output]
 proc filter {} {
     global totalE
@@ -276,7 +355,7 @@ proc filter {} {
     return $maxID
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:DifferenceFilter,caption=Difference Filter employed to smooth/improve output]
 proc filter {} {
     global totalE
@@ -322,7 +401,7 @@ proc filter {} {
     return $maxID
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:CountingFilter,caption=Counting Filter employed to smooth/improve output]
 proc filter {} {
     global totalE
@@ -373,7 +452,7 @@ proc filter {} {
     return $maxID
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:SpeechFilter,caption=Speech Filter employed to smooth/improve output]
 proc filter {} {
     global totalE
@@ -415,7 +494,7 @@ proc filter {} {
     return $maxID
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:2LFilter,caption=2-Language Filter (For DE/EN) employed to smooth/improve output]
 proc filter {} {
     global totalE
@@ -471,7 +550,7 @@ proc filter {} {
     return $maxID
 }
 \end{lstlisting}
-
+\newpage
 \begin{lstlisting}[label=lst:SequenceFilter,caption=Sequence Filter employed to smooth/improve output]
 proc getMax {} {
     global totalE
@@ -538,3 +617,49 @@ proc getMax {} {
     return $maxID
 }
 \end{lstlisting}
+\newpage
+\begin{lstlisting}[label=lst:tclGauss,caption=Gaussian Smoothing Filter as implemented in tcl/tk for the JRTk]
+    #Windowsize definition
+    set ws 5
+    set sigma [expr sqrt($ws/(2*[Pi]))]
+    #calculate gauss kernel
+    for {set k 0} {$k <= $ws} {incr k} {
+        set gauss($k) [expr (1/(sqrt(2*[Pi])*$sigma)) * ([E] ** - (( $k ** 2)/ (2 * $sigma ** 2)))]
+    }
+    #For each frame
+    for {set i 0} { $i < [featureSetLID frameN nnBNF]} {incr i} {
+        for {set j 0} {$j < 10} {incr j} {
+            set values($j) [lindex [featureSetLID frame nnBNF $i] $j]
+            set curValue 0
+	         #go from $i - $ws to $i + $ws
+            for {set k [expr -$ws]} {$k < $ws} {incr k} {
+                #Only use the current value if it actually exists
+                if {[expr $i + $k] >= 0 && [expr $i + $k] < [featureSetLID frameN nnBNF]} {
+                    set cur [lindex [featureSetLID frame nnBNF [expr $i + $k]] $j]
+                    #get correct index for gauss kernel, as we only calculated once above for symmetric function
+                    if {$k < 0} {
+                        set curIdx [expr -$k]
+                    } else {
+                        set curIdx $k
+                    }
+		              #running sum of all previous values in the window convoluted with the gaussian kernel.
+                    set curValue [expr $curValue + $cur * [set gauss($curIdx)]]
+                }
+            }
+	         #save the value for current language coefficient
+            set values($j) $curValue
+        }
+        #Find maximum on smoothed values
+        set max -1
+        set maxID -1
+        for {set j 0} {$j < 10} {incr j} {
+            if {[set values($j)] > $max} {
+                set max [set values($j)]
+                set maxID $j
+            }
+        }
+        #Set the output as the Language with Max. coefficient.
+        set currentOutput $maxID
+    }
+\end{lstlisting}
+
