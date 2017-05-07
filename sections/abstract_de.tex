@@ -11,3 +11,9 @@
 %% Version 1.1, 2014-11-21
 
 \Abstract
+
+Heutzutage ist Automatische Spracherkennung (ASR) aus der Mensch-Maschinen-Kommunikation (MMK) nicht mehr wegzudenken. Ob es Sprachkontrolle, Sprachübersetzung oder persönliche Assistenten auf dem Smartphone sind, der ASR Teil beruht darauf,  dass die Eingangssprache vor der Erkennung bekannt ist. Dies verbessert die Leistung des Spracherkenners, da auf einer Sprache trainierte Spracherkenner eine geringere Fehlerrate haben als multilingual-trainierte. Daher kann die Sprachenidentifizierung (LID) in dieser MMK die Benutzerfreundlichkeit und Leistung verbessern, da keine Aktion des Benutzers mehr erforderlich wird um die Eingangssprache zu ändern und ein anderes Modell zu laden. Da diese MMK in der heutigen Technologie immer auf Online-Performanz und Geschwindigkeit bedacht ist, evaluieren wir alle unsere Ansätze unter diesem Gesichtspunkt.
+
+Diese Arbeit untersucht einen Ansatz der LID, der Neuronale Netze benutzt. Auch stellen wir heutige Ansätze der LID der Literatur  dar und vergleichen sie mit unserem. In der Arbeit haben wir verschieden Netzwerkstrukturen, verschiedene Audio-Vorverarbeitungen und Netzwerk-Nachverarbeitungen evaluiert. Drei verschiedene Datensätze werden eingeführt auf denen wir alle unsere Ergebnisse testen. Die beste Netzstruktur resultierte in einer relativen Verbesserung von 18 \% gegenüber unserem ursprünglichen Aufbau.
+
+Wir haben auch verschiedene Nachverarbeitungen der Neuronalen Netz-Ausgabe verglichen. Hierfür führen wir unser eigene Metrik den ``Out-of-Language-Error'' (OLE) ein, der das ``Rauschen'' der einzelnen Filter/des Netzes misst. Insgesamt produzieren ein einfacher Zählfilter, ein maximal-Sequenz Filter und ein Gauß-Filter die besten Ergebnisse und könnten die Ergebnisse eines LID Netzes in einer wirklichen Implementierung stark verbessern.

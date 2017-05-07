@@ -11,9 +11,11 @@
 %% Version 1.1, 2014-11-21
 
 \Abstract
-Today, speech recogntion has become ubiquitous in human machine interfaces. Be it voice control, speech translation or personal assistants, the speech recognition component always relies on the source language being known beforehand. This is due to the fact, that single-language speech recognizers perform better than multilingually trained ones. Language identification could therefore improve usability and performance of speech-based technology, without requiring any human interaction of selecting the correct source language. 
+Today, speech recognition has become ubiquitous in human machine interfaces (HMIs). Be it voice control, speech translation or personal assistants, the speech recognition component always relies on the source language being known beforehand. This is due to the fact, that single-language speech recognizers perform better than multi-lingually trained ones. Language Identification  (LID) could therefore improve usability and performance of speech-based technology, without requiring any human interaction of selecting the correct source language. Online performance, as well as speed in these HMIs is of utmost importance, which is why we evaluate all our approaches in consideration of this aspect.
 
-This thesis investigates a neural-network based approach to language identification. As all technologies mentioned above are used online, with a continous input signal, the focus here also lies on approaches feasible in an online environment. Current approaches to language identification are presented and compared. The results in this thesis compare different network structures, different audio preprocessing and network-postprocessing. Three different data corpora are used to verify results with different data sets. The best neural network structure gives a relative improvement of 18\% over the neural network employed in previous work.
+This thesis investigates a neural-network based approach to LID. Current approaches to language identification are presented and compared. The results in this thesis compare different network structures, different audio preprocessing and network-post-processing. Three different data corpora are used to verify results with different data sets. The best neural network structure gives a relative improvement of 18\% over our baseline setup.
 
-Afterwards we eva
+We also evaluate different post-processing approaches to further improve classification results. We introduce our own metric of the ``Out-of-Language-Error'' (OLE) that measures the ``noisiness'' of the filter/net output. Overall, a basic counting filter, a maximum-sequence filter and a gauss smoothing produces the best results and could increase performance in an online implementation.
+
+
 
