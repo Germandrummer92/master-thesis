@@ -318,14 +318,14 @@ table~\ref{tab:resCtx} at the end of the next chapter shows the results for the 
 \chapter{LID Network Structure}
 \label{ch:LIDNetwork}
 
-This chapter describes the actual Language Identification Neural Network trained as well as the results of different network/data setups used. Most network experiments in the Network Geometry, meaning the number of hidden layers as well as the layout of the neurons in these layers were tried using the Euronews corpus. Results from this corpus were then transferred over to the other corpora, meaning that the network layout that worked best for Euronews was then adjusted for the lecture data but otherwise the geometry was kept intact.
+This chapter describes the actual Language Identification neural networks trained as well as the results of different network/data setups used. Most network experiments in the network geometry, referring to the number of hidden layers as well as the layout of the neurons in these layers, were evaluated using the Euronews corpus. Results from this corpus were then transferred over to the other corpora, meaning that the network layout that worked best for Euronews was then adjusted for the lecture data but otherwise the geometry was kept intact.
 
 \section{Baseline Setup}
 \label{sec:LIDNetwork:Basic}
 
 The first experimental net setup consisted of 5 layers of denoising auto-encoders. Each layer had 1000 nodes, aside from the input layer using the 966 feature frames that is the input vector whose contents were described in the previous chapter, and a \texttt{tanh} activation function using the mean squared error as the loss function. 
 
-The neural net was then trained using mini batches of size 2m. The training was done using a learning rate of 0.01. The pre-trained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
+The neural net was then trained using mini batches of size 2,000,000. The training was done using a learning rate of 0.01. The pre-trained net was then retrained with a 1000 neuron to 10 coefficient output to get to our 10 Languages as classes to classify against. In the basic setup this was trained using a learning rate of 1 and the exit condition of a minimum change of 0.005 / 0.0001 for the training/validation data respectively.
 
 The beginning benchmark to improve upon was then set to the frame-based validation/train error of 0.23 / 0.27 respectively, while of course understanding that non-training per-sample data would most likely have worse results at first than the frame-based validation error calculated on training data.
 
@@ -338,7 +338,7 @@ Different network layout were tried and experimented with. This includes a 6 pre
 
 \paragraph{Decreasing Learning Rate} Setting the learning rate of the output layer training to 0.1 instead of the default 1, gave us the first increase in frame-based recognition rates, improving it from an error of 0.274 for the base setup to an error rate of only 0.256, giving an improvement of almost 2\%. As table~\ref{tab:resFrameBased} shows, the higher learning rate lead to a better train-set result but worse validation performance, this could be an indication that the lower learning rate stops the net from over-learning as much and increases generality.
 
-\paragraph{Adding the 6th hidden layer} Adding another 1000 neuron hidden layer did not lead to an increase in recognition compares to the version using a lower learning rate and rather gave us an decrease of about 2\%, meaning a error rate of 0.275 compared to the 0.256 for the lower learning rate version.
+\paragraph{Adding the 6th hidden layer} Adding another 1000 neuron hidden layer did not lead to an increase in recognition compared to the version using a lower learning rate and rather gave us an decrease of about 2\%, meaning an error rate of 0.275 compared to the 0.256 for the lower learning rate version.
 
 \paragraph{``Tree'' net structure} The biggest increase was achieved by changing the geometry of the net from 5 layers with each 1000 neurons to one of each layer having 200 less neurons of the previous one giving us a net definition of (\texttt{tanh} being the activation function, \texttt{mse} the loss function of the mean squared error and make da the command for \texttt{detl} to add another hidden layer):
 
@@ -351,7 +351,7 @@ Different network layout were tried and experimented with. This includes a 6 pre
 
 This setup, with the standard output layer with 10 output neurons, improved error rates from 0.256 down to 0.245, an improvement of 1.2 \%.
 
-Adding another 6th hidden layer onto this structure to give a net definition of (visualized in fig.~\ref{fig:treeNet}).
+Adding another 6th hidden layer onto this structure to give a net definition of (visualized in fig.~\ref{fig:treeNet}):
 \begin{verbatim}'!make da 966,tanh:1200 loss=mse' \
   '!make da 1200:1000' \
   '!make da 1000:800' \
@@ -414,7 +414,7 @@ Adding a larger number of hidden layers into this tree structure did not improve
   '!make da 400:200' \
 \end{verbatim}
 
-performed not at all featuring an error rate of 90 \%, meaning the net was not classifying at all anymore.  
+failed to perform featuring an error rate of 90 \%, meaning the net was not able to classify correctly anymore.
 
 As deeper hidden layers will take longer/more data to train correctly (as the changes have to propagate through the earlier layers first, to then affect the deeper layers), our setup did most likely not include enough data for the training of these nets. Another explanation could be the spreading of information in the input 966 features onto the 2000 neurons of the first hidden layer added wrong coefficients.
 
@@ -487,7 +487,7 @@ Overall the tree-net with 5 layers and reduced learning rate performed the best 
 \section{Full Euronews Corpus}
 \label{sec:LIDNetworkBig}
 
-As introduced in sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to furthe evaluate our network structure. The net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. It only improved the error in classifying each sample of the DEV set (as further introduced in the next chapter), by about 4\% however, suggesting that a suitable post-net filtering approach and net setup is even more important than the amount of train data, as the data corpus was more than trippled in size but did not improve the results in the same way.
+As introduced in sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to further evaluate our network structure. The net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. However, it only improved the error in classifying each sample of the DEV set (as further introduced in the next chapter) by about 4\%. As the amount of train data was trippled while the classification only improved by about 4 \%, this suggests that a suitable post-net filtering approach and net setup will have a bigger impact than the data corpus size after a certain threshold.
 
 \begin{table}[h!]
 \centering
@@ -508,9 +508,9 @@ As introduced in sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was use
 
 \section{Cross-set training}
 \label{sec:LIDNetwork:Fine}
-As a further experiment, we used the pre-trained nets of the stacked hidden layers of the Euronews net and trained the output layer on top with the cross-set of Lecture-Data. This was done by loading net-parameters from pre-training and training the final output layer with a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup to make meaningful learning possible while cross-training) using the cross-set. 
+As a further experiment, we used the pre-trained nets of the stacked hidden layers of the Euronews net and trained the output layer on top with the cross-set of Lecture-Data. This was done by loading net-parameters from pre-training and training the final output layer with the cross-set on top of them. For the final layer we used a low learning rate of 0.1 (1/10th of the learning rate we used in the normal setup), to make meaningful learning possible while cross-training only the final layer.
 
-For this experiment we used the tree-net 6-layer structure of the Euronews nets, just omitting the output layer, and then used the lecture data corpus to train the output layer with only 3 output neurons. This yielded an improvement of 4.9\% for the error of the tree-net Euronews net recognizing the lecture data development set on a per-sample basis (for which the test setup is introduced in the next chapter).
+As a basis for the cross-training, we loaded the tree-net 6-layer structure of the Euronews nets, omitting the output layer. We then used the lecture data corpus to train the output layer with only 3 output neurons. This yielded an improvement of 4.9\% for the error of the tree-net Euronews net recognizing the lecture data development set on a per-sample basis (for which the test setup is introduced in the next chapter).
 
 A second experiment was conducted, using the same base Euronews net, but adding 2 layers on top for the cross-training with 200 and 100 neurons respectively, instead of only one output layer with 200:10 neurons. This further improved the Frame-based results, by another 1.4\%., and sample-based results by another 1.8\%. This gives us a total improvement of 6.7\% for the cross-training compared to the base Euronews net. See tab.~\ref{tab:LIDFine} for the detailed results.
 
@@ -540,12 +540,12 @@ Since the Lecture Data corpus only has 3 languages, we could not evaluate the cr
 
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
-By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a big margin of 23 \%. This was to be expected just from the sheer increase of data however. The concateneted corpus also produced the best results on the Euronews corpus with an increase in the error of only 0.005 compared to the non-augmented Euronews data. 
+By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a big margin of 23 \%. The concateneted corpus also produced the best results on the Euronews corpus with an increase in the error of only 0.005 compared to the non-augmented Euronews data. 
 
 \section{Lecture-Data-Training}
 \label{sec:LIDNetworkLDTraining}
 
-After trying cross-training and concatenation for the lecture data corpus, we also trained a net on the Lecture Data corpus. We continued the use of the tree-net structure as it had proven successful with the Euronews corpus.  We first tried the same 6-layer setup with and without an adjusted learning rate, and also tried a smaller, 4-layer tree-net with a structure of:
+After trying cross-training and concatenation for the lecture data corpus, we also trained a net on the Lecture Data corpus. We continued the use of the tree-net structure as it had proven successful with the Euronews corpus. We first evaluated the same 6-layer setup with and without an adjusted learning rate. Additionally we also experimented with a smaller, 4-layer tree-net with a structure of:
 \begin{verbatim}
   '!make da 966,tanh:800 loss=mse' \
   '!make da 800:600' \
@@ -553,11 +553,14 @@ After trying cross-training and concatenation for the lecture data corpus, we al
   '!make da 400:200' \
 \end{verbatim}
 
-The 6-layer net did prove to perform better than the 4-layer one in the frame-based metric, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate for the LD Evaluation.  Overall however, the LD-Trained Net with 4 layers performed the best on samples, the metric that can be most related to performance in an online fashion. This means that our finding on the Euronews net of a tree-net structure performing the best are confirmed.
+The 6-layer net did prove to perform better than the 4-layer one in the frame-based metric, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate for the LD Evaluation.  Overall however, the LD-Trained Net with 4 layers performed the best on full samples, the metric that can be most related to performance in an online fashion. This confirms our findings on the Euronews corpus of a tree-net structure performing the best for LID.
 
 Suprisingly, the other ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in sample-evaluation in comparison with the cross-trained versions. Possibly, this can be attributed to the fact that the lecture data corpus overall is much smaller than the Euronews one, on which the cross-trained version were pre-trained on, and therefore have less transferabilty.
 
-table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the 4-layer LD-trained net with an improvement of 9.1\% in the sample-error compared to the plain Euronews net. The obvious and expected results of the cross-trained versions performing better on the Euronews corpus than the ld-only trained ones was confirmed, however the difference in error was smaller than expected with only 2.6\% between the best-performing LD-net and the cross-trained 2-layer net in Euronews error.
+table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the concatenated data corpus trained net with a sample error of only 0.65\%. However, zhe LD-only trained net with 4 layers and a tree-structure, is only 2.3\% worse than this net, while having a much smaller corpus size. 
+
+Intuition dictates, that the cross-trained versions would perform better on the Euronews corpus than the ld-only trained ones, which was confirmed by the results. However, the difference in error was smaller than expected, with only 2.6\% between the best-performing LD-net and the cross-trained 2-layer net for the Euronews error.
+
 
 
 \begin{table}
@@ -592,9 +595,9 @@ table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data exper
 
 As to further test the conclusions made about net-structure/cross-training we also trained data on the small European Parliament corpus we collected. The setup was very similar to the Lecture Data tests as introduced in the previous section.  We however did not try to concatenate the train data with the other corpora available.
 
-The two cross-training attempts had the same setup. For the EP-only training we actually found that the 6-layer tree-net structure performs worse than the base setup (5 layers with 1000 neurons each). This however could be due to the minimal data available in the EP corpus and the fact that less layers in this case would always perform better.
+The two cross-training attempts had the same setup. For the EP-only training we found that the 6-layer tree-net structure performs worse than the base setup (5 layers with 1000 neurons each). This however could be due to the minimal data available in the EP corpus and the fact that less layers in this case would always perform better.
 
-Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still better by 2.6\%, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See table ~\ref{tab:resultsEP} for the summarized results. Overall it's clear, that the European parliament data is substantially different from the Euronews set up as the Euronews trained net performs worse even with cross-training than a net trained on the small Europearn Parliament corpus itself directly.
+Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still better by 2.6\%, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See table ~\ref{tab:resultsEP} for the summarized results. Overall it's clear, that the European parliament data is substantially different from the Euronews set up as the Euronews trained net performs worse even with cross-training than a net trained directly on the small Europearn Parliament corpus itself.
 
 
 \begin{table}
