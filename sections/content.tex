@@ -269,7 +269,7 @@ Features produced by this preprocessing setup are then written to ``pfiles'' tog
 \section{Feature Retrieval}
 \label{sec:FP:FA}
 The audio files available to us in the Euronews and Lecture Data corpus were recorded using a sampling rate of 16 kHz. European Parliament data we collected ourselves were recorded with a sample rate of 44.1 kHz. We down-sampled the data using soX\footnote{soX Sound eXchange: \url{http://sox.sourceforge.net/}}. 
-\paragraph{Full Euronews Corpus} The Full Euronews Corpus, as introduced in section~\ref{sec:LITasks:Euronews}, had prexisting pfiles from previous work~\cite{Mueller2016b} that we reused. This meant that the features in this case were completely based on 32ms windows and not a combination of 16ms and 32ms windows as for the rest of the corpora.
+\paragraph{Full Euronews Corpus} The Full Euronews Corpus, as introduced in section~\ref{sec:LITasks:Euronews}, had preexisting pfiles from previous work~\cite{Mueller2016b} that we reused. This meant that the features in this case were completely based on 32ms windows and not a combination of 16ms and 32ms windows as for the rest of the corpora.
 
 \section{Feature Description}
 \label{sec:FP:FD}
@@ -487,7 +487,7 @@ Overall the tree-net with 5 layers and reduced learning rate performed the best 
 \section{Full Euronews Corpus}
 \label{sec:LIDNetworkBig}
 
-As introduced in sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to further evaluate our network structure. The net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. However, it only improved the error in classifying each sample of the DEV set (as further introduced in the next chapter) by about 4\%. As the amount of train data was trippled while the classification only improved by about 4 \%, this suggests that a suitable post-net filtering approach and net setup will have a bigger impact than the data corpus size after a certain threshold.
+As introduced in sec.~\ref{sec:LITasks:Euronews}, a bigger Euronews data was used to further evaluate our network structure. The net was trained with the tree-net 6-layer structure with a reduced learning rate as introduced above. This resulted in a train error of 0.204 and a validation error of only 0.169, an improvement of 6.9\% compared to the smaller corpus with the same net structure. However, it only improved the error in classifying each sample of the DEV set (as further introduced in the next chapter) by about 4\%. As the amount of train data was tripled while the classification only improved by about 4 \%, this suggests that a suitable post-net filtering approach and net setup will have a bigger impact than the data corpus size after a certain threshold.
 
 \begin{table}[h!]
 \centering
@@ -515,7 +515,7 @@ As a basis for the cross-training, we loaded the tree-net 6-layer structure of t
 A second experiment was conducted, using the same base Euronews net, but adding 2 layers on top for the cross-training with 200 and 100 neurons respectively, instead of only one output layer with 200:10 neurons. This further improved the Frame-based results, by another 1.4\%., and sample-based results by another 1.8\%. This gives us a total improvement of 6.7\% for the cross-training compared to the base Euronews net. See tab.~\ref{tab:LIDFine} for the detailed results.
 
 
-Since the Lecture Data corpus only has 3 languages, we could not evaluate the cross-trained nets using all Euronews languages but still gave a figure for the net results with the Euronews corpus for English, German and French. These results are obviously much worse than pure-Euronews-trained nets, as the two output layers have never seen euronews data, that while similiar, is obviously still sufficiently different, as the performance suffered by 12.1\%.
+Since the Lecture Data corpus only has 3 languages, we could not evaluate the cross-trained nets using all Euronews languages but still gave a figure for the net results with the Euronews corpus for English, German and French. These results are obviously much worse than pure-Euronews-trained nets, as the two output layers have never seen Euronews data, that while similar, is obviously still sufficiently different, as the performance suffered by 12.1\%.
 
 
 \begin{table}
@@ -540,7 +540,7 @@ Since the Lecture Data corpus only has 3 languages, we could not evaluate the cr
 
 \section{Combining Lecture Data and Euronews}
 \label{sec:LIDNetworkConcat}
-By combining both the lecture data and Euronews corpusses, we produced improved results that can be seen in Tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a big margin of 23 \%. The concateneted corpus also produced the best results on the Euronews corpus with an increase in the error of only 0.005 compared to the non-augmented Euronews data. 
+By combining both the lecture data and Euronews corpus, we produced improved results that can be seen in tab~\ref{tab:resultsLD}. This was to be expected just from the amount of train data almost doubling for the 3 lecture data-languages. Overall, this net produced the best results for the lecture data corpus by a big margin of 23 \%. The concatenated corpus also produced the best results on the Euronews corpus with an increase in the error of only 0.005 compared to the non-augmented Euronews data. 
 
 \section{Lecture-Data-Training}
 \label{sec:LIDNetworkLDTraining}
@@ -555,9 +555,9 @@ After trying cross-training and concatenation for the lecture data corpus, we al
 
 The 6-layer net did prove to perform better than the 4-layer one in the frame-based metric, and surprisingly in this case, the non-adjusted learning rate version (so the standard learning rate of 1.0) performed better than the lowered one, as the validation error of the 6-layer-standard-lr-net was about 0.6\% better than the version with the lowered learning rate for the LD Evaluation.  Overall however, the LD-Trained Net with 4 layers performed the best on full samples, the metric that can be most related to performance in an online fashion. This confirms our findings on the Euronews corpus of a tree-net structure performing the best for LID.
 
-Suprisingly, the other ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in sample-evaluation in comparison with the cross-trained versions. Possibly, this can be attributed to the fact that the lecture data corpus overall is much smaller than the Euronews one, on which the cross-trained version were pre-trained on, and therefore have less transferabilty.
+Surprisingly, the other ld-only nets did feature a better validation/train error frame-based but failed to achieve higher accuracy in sample-evaluation in comparison with the cross-trained versions. Possibly, this can be attributed to the fact that the lecture data corpus overall is much smaller than the Euronews one, on which the cross-trained version were pre-trained on, and therefore have less transferability.
 
-table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the concatenated data corpus trained net with a sample error of only 0.65\%. However, zhe LD-only trained net with 4 layers and a tree-structure, is only 2.3\% worse than this net, while having a much smaller corpus size. 
+table~\ref{tab:resultsLD} shows a comparison of the different Lecture Data experiments and a summary of the improvements we made. Overall the best net for lecture data would be the concatenated data corpus trained net with a sample error of only 0.65\%. However, the LD-only trained net with 4 layers and a tree-structure, is only 2.3\% worse than this net, while having a much smaller corpus size. 
 
 Intuition dictates, that the cross-trained versions would perform better on the Euronews corpus than the ld-only trained ones, which was confirmed by the results. However, the difference in error was smaller than expected, with only 2.6\% between the best-performing LD-net and the cross-trained 2-layer net for the Euronews error.
 
@@ -597,7 +597,7 @@ As to further test the conclusions made about net-structure/cross-training we al
 
 The two cross-training attempts had the same setup. For the EP-only training we found that the 6-layer tree-net structure performs worse than the base setup (5 layers with 1000 neurons each). This however could be due to the minimal data available in the EP corpus and the fact that less layers in this case would always perform better.
 
-Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still better by 2.6\%, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See table ~\ref{tab:resultsEP} for the summarized results. Overall it's clear, that the European parliament data is substantially different from the Euronews set up as the Euronews trained net performs worse even with cross-training than a net trained directly on the small Europearn Parliament corpus itself.
+Surprisingly, even though the train data available was very small, the improvements in comparison to the Euronews net results for European Parliament speeches are still better by 2.6\%, showing that neural networks already start performing even with minimal data available and selection of train data similar to later actual input is very important. See table ~\ref{tab:resultsEP} for the summarized results. Overall it's clear, that the European parliament data is substantially different from the Euronews set up as the Euronews trained net performs worse even with cross-training than a net trained directly on the small European Parliament corpus itself.
 
 
 \begin{table}
@@ -626,12 +626,12 @@ Surprisingly, even though the train data available was very small, the improveme
 \chapter{Smoothing and Evaluation}
 \label{ch:eval}
 
-While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance, so the development setup consisted of (for each data corpus) a development set (as introduced in Ch.~\ref{ch:LITasks}) of speakers whose samples were run through the LID setup (Feature Preprocessing ch.~\ref{ch:FP}, DBNF extraction ch.~\ref{sec:FP:Net}. LID network ch.~\ref{ch:LIDNetwork}). The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated in real time while new data is still coming in. The summarized results are listed in tab.~\ref{tab:evalTotal},~\ref{tab:evalTotal2} for both the DEV and TEST results. We chose to only run the experiments on the Euronews corpus, as the 10-language-target will always have more possible erroneous outputs and filtering can prove to more successfull. We evaluated different net structures, however the results presented here are based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but it gave us the best results on a sample basis (see tab.~\ref{tab:evalNS}).
+While frame-based error rates on the training/validation sets were already sufficiently good from the LID networks, this of course is not a reliable indicator of real-world online performance. Thus, we evaluated further using the development set, as introduced in Ch.~\ref{ch:LITasks}, of speakers whose samples were run through the LID setup (Feature Preprocessing ch.~\ref{ch:FP}, DBNF extraction ch.~\ref{sec:FP:Net}. LID network ch.~\ref{ch:LIDNetwork}) and the outputs then evaluated. The following smoothing approaches were applied in an ''online'' fashion, meaning it was made sure they can be calculated in real time while new data is still coming in. The summarized results are listed in tab.~\ref{tab:evalTotal},~\ref{tab:evalTotal2} for both the DEV and TEST results. We chose to only run the experiments on the Euronews corpus, as the 10-language-target will always have more possible erroneous outputs and filtering can prove to be more successful. We evaluated different net structures, however the results presented here are based on the tree-net 6-layer structure as introduced in the previous chapter. This is not necessarily the best structure for the frame-based train error, but it gave us the best results on a sample basis. See tab.~\ref{tab:evalNS} for a comparison of different network structures.
 
 \section{Output Activations}
 \label{sec:outputs}
 
-We started by evaluating a few samples manually by looking at the output. In the following diagrams one row is equal to activation of one output neuron (bottom to top ID 0-9). Activations are marked black for high activations and white for low activations. The x-scale is the current frame number (with one frame being 10 ms long). As expected activations for random noise/music as in fig.~\ref{fig:noise} are smooth over all the frames and do not show any language as being predominant. 
+First, we evaluated a few sampled manually by looking at the output. In the following diagrams one row is equal to activation of one output neuron (bottom to top ID 0-9). Activations are marked black for high activations and white for low activations. The x-scale is the current frame number (with one frame being 10 ms long). As expected activations for random noise/music as in fig.~\ref{fig:noise} are smooth over all the frames and do not show any language as being predominant. 
 
 Also, for a 800 ms Polish sample, fig.~\ref{fig:polish} shows the output activations for a correctly recognized sample. It is clear, that the language with ID 5 is the one being spoken in the sample as the 5th row in the picture has the highest activations. This is equal to Polish (as arbitrarily defined in the pfiles writing script). 
 
@@ -662,12 +662,12 @@ An incorrectly classified sample can be seen in fig.~\ref{fig:incorrect}. The la
 \section{Evaluation Metric}
 \label{sec:eval:bare}
 
-To have a baseline to improve upon we evaluated the base net on full samples of differing lengths and then tried to improve these results. See app.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire set of samples and counts the correctly/wrongly classified samples for each language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.  This additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incur delay, window size and then counting the occurence of outputs to give the same effect as used here. 
+To have a baseline to improve upon we evaluated the bare net-output on full samples of differing lengths and then tried to improve these results. See app.~\ref{lst:basic} for the corresponding tcl/tk code for this bare approach. It counts a sample as correctly classified if the majority of frames/filtering steps have been classified correctly. The test setup used then goes through the entire set of samples and counts the correctly/wrongly classified samples for each language. This means that an extra amount of smoothing is included, but results should still be sufficiently general to be able to infer properties of employed filters, as they all include this extra smoothing.  This additional smoothing can be applied in an online fashion by setting a sufficiently large, while still small enough to not incur delay, window size and then counting the occurrence of outputs to give the same effect as used here, see sec.~\ref{sec:counting} for how a windowed counting filter works.
 
 \subsection{Out-Of-Language Error (OLE)}
 \label{sec:eval:ole}
 
-The first correctness metric proved to be too restrictive for filters. As filters might reduce the count of the correct language while making the total number of wrong outputs less, we present another metric to evaluate filter effectiveness. We count the total number of falsely (as in not-equal to the maximum output) classified frames/output per sample divided by the number of total frames/outputs and average them on a per-sample basis to see if filters actually work in filtering out false outputs. It basically gives a metric for the amount of noise the net output includes. Arguably this would be even more important in an online-fashion in the Lecture Translator, as wrong outputs/filters would be passed on to the speech recognition/translation APIs. This second metric evaluation for well-performing filters can be found at the end of the chapter in table~\ref{tab:evalTotal}.
+The first correctness metric proved to be too restrictive for filters. As filters might reduce the count of the correct language while making the total number of wrong outputs less, we present another metric to evaluate filter effectiveness. We count the total number of falsely (as in not-equal to the maximum output) classified frames/output per sample divided by the number of total frames/outputs and average them on the full development set to see if filters actually work in filtering out false outputs. It can be described as a metric for the amount of noise the net output includes. Arguably this would be even more important in an online-fashion, as e.g. in the Lecture Translator, as wrong outputs would be passed on to the speech recognition/translation APIs. This second metric evaluation for well-performing filters can be found at the end of the chapter in table~\ref{tab:evalTotal}.
 
 \begin{table}[h!]
 \centering
@@ -686,7 +686,7 @@ The first correctness metric proved to be too restrictive for filters. As filter
 \end{tabular}
 \end{table}
 
-The results of the bare-net evaluation for Euronews can be seen in table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net.  fig.~\ref{fig:lengthBasic} shows the relation of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net. It shows the intuitive results of a longer length of a sample coinciding with a higher recognition rate through the net, as more frames can be used for the recognition task in the context produced by the ASR BNF net. However, it is also evident that for samples with a length of only 17 frames (~200 ms), the net already categorizes the sample better than guessing a language (which on average would yield a correctness of 0.1), as for 17, the net produces a correctness of 0.1896.
+The results of the bare-net evaluation for Euronews can be seen in table~\ref{tab:bareResults} for the best performing net structure, the 6-layered-tree-structure as introduced in sec.~\ref{sec:LIDNetwork:Layout}. The results are, as expected, worse than the frame-based training-recognition, as here the entire (not-yet seen) samples are run through the net. Fig.~\ref{fig:lengthBasic} shows the relation of the length of samples and the amount of correctly classified samples of this length for the tree-structure-net. It shows the intuitive results of a longer length of a sample coinciding with a higher recognition rate through the net, as more frames can be used for the recognition task in the context produced by the ASR BNF net. However, it is also evident that for samples with a length of only 17 frames (\(\approx\)200 ms), the net already categorizes the sample better than guessing a language (which on average would yield a correctness of 0.1), as for a length of 17, the net produces a correctness of 0.1896.
 
 As one can see a length of around 100 frames (meaning a sample length of: \(100*10 / 1000 = 1s \)) is sufficient to be able to recognize the language with a correctness of \(\approx\)70 \%. This means online recognition of language is possible with a relatively small warm-up time of 1 second (or around 2 seconds with a higher correctness of then well over 80 \%).
 \begin{figure}[h!]
@@ -741,11 +741,11 @@ As one can see a length of around 100 frames (meaning a sample length of: \(100*
 \section{Basic Test Filter}
 \label{sec:eval:basic}
 
-The first filter used was basic 5-Frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs would have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than an arbitrarily defined activation of 0.61. However this can be disregarded, as for the vast majority of samples the maximum neuron for a certain frame never fell underneath this threshold.
+The first filter used was basic 5-frame smoothing: It saves the value of the last direct outputs and only outputs a language if the last 5 direct outputs have been the same. It also includes a filtering based on the actual output of the language ID neuron, only counting outputs higher than an arbitrarily defined activation of 0.61. However this can be disregarded, as for the vast majority of samples the maximum neuron for a certain frame never fell underneath this threshold.
 
 This approach requires a 5 frame (\(\approx 50 ms\)) ``warm-up'' time, which still would make it usable in an online environment.
 
-table~\ref{tab:basic} shows the result of the basic filter for each language. Overall the error (for our defined metric) went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial, as apparently some languages will benefit from a certain type of filter while another will not. 
+Table~\ref{tab:basic} shows the result of the basic filter for each language. Overall the error (for our defined metric) went up by about 5 \%. It did however improve results for Arabian by about 3 \%, showing that the finding of a suitable filter that improves the overall recognition is non-trivial, as apparently some languages will benefit from a certain type of filter while another will not. 
 
 \begin{table}[h!]
 \centering
@@ -777,11 +777,11 @@ table~\ref{tab:basic} shows the result of the basic filter for each language. Ov
 The advanced test filter is based on the JRTk's \textit{FILTER} capability. It automatically takes a defined amount of frames and calculates the weighted arithmetic mean with predefined weights for incoming audio. First tries were done using a small filter setup of:
 \begin{verbatim}
 filter          nnFILTERSMALL   nnBNF  {-2 {1 2 3 2 1}}
-\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  It however offered no improvement of results, rather a decline in total correctness so different filter approaches were tried:
+\end{verbatim}  Herein the context is 2 frames on each side of the current frame (the first parameter) with weights 1, 2 , 3 , 2 , 1 for the 5 frames respectively.  We also evaluated a second bigger filter setup of:
 \begin{verbatim}
 filter          nnFILTERBIG nnBNF {-5 {1 2 3 4 5 6 5 4 3 2 1}}
 \end{verbatim}
-which however did not provide a further increase in correctness. In our tcl filtering, we only then changed the feature to read the frames from, while still then taking the maximum of the filter-feature as the output. Comparison of the two filter can be seen  in table ~\ref{tab:evalAdvanced} for evaluation on the DEV set. As compared to the bare net output, the bigger advanced filter offered a tiny improvement for some languages, (~0.1\% for both Portuguese and English) in correctness but lost out in all other languages. Detailed per-Language results for this and the following filters can be found in app.~\ref{app:res:lid}.
+In our tcl code implementation, we changed the feature to read the frames from, while still then taking the maximum of the filter-feature as the output. Comparison of the two filters can be seen in table~\ref{tab:evalAdvanced} for evaluation on the DEV set. As compared to the bare net output, the bigger advanced filter offered a tiny improvement for some languages, (\(\approx\)0.1\% for both Portuguese and English) in correctness but lost out in all other languages. Detailed per-language results for this and the following filters can be found in app.~\ref{app:res:lid}.
 
 \begin{table}[h!]
 \centering
@@ -801,16 +801,17 @@ which however did not provide a further increase in correctness. In our tcl filt
 
 \section{Difference Test Filter}
 \label{sec:eval:variance}
-As a next approach, the difference between the two most likely outputs was taken into account. We filtered the direct output by only changing from the previous output, if the difference (which we implied to be how sure the net was when determining the language) was bigger than 0.01. 
+As a next approach, the difference between the two biggest outputs was taken into account. We filtered the direct output by only changing from the previous output, if the difference (which we implied to be how sure the net was when determining the language) was bigger than 0.01. 
 
 Aside from the general errors with the correctness metric as already outlined in the beginning of this chapter, we also thought one possible reason for a worse performance of this filter could be, that the output of the 2\textsuperscript{nd} most likely neuron is not going to differ from the maximum output on many language pairs: E.g. French/Italian, Russian/Polish, Italian/Portuguese,  even if the net predicts one over the other as the difference between the languages is also relatively ``small''. E.g as presented in~\cite{doi:10.1080/14790710508668395}, the difference between English and French is small as the ``linguistic score'' is relatively high with 2.5. 
 
 The full tcl code of this filter can be found in the appendix . The evaluation results can be seen in tab.~\ref{tab:evalTotal}
 
 \section{Counting Filter}
+\label{sec:counting}
 This filter included a counting of the occurrence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized the most in that frame-range (while still then employing the same per-sample smoothing as above). The first try was done using a frame-range of 10, later increased further. We listed the results of this filter with different ranges on the DEV set in \ref{tab:counting}. As a further experiment we also used overlapping windows (meaning we count the occurrence in 10 frames and the next 10 frames are not 10 frames further but starts at the 8th frame of the previous window -> overlap of 3 frames).
 
-The full code of this filter can be found in the Appendix.
+The full code of this filter can be found in the appendix.
 
 \begin{table}[h!]
 \caption{Results of the best net structure (tree-structure 6-layer) evaluated on the Euronews DEV Set with the Counting Window Filter}
@@ -836,17 +837,17 @@ The full code of this filter can be found in the Appendix.
 
 \section{Sequence Filter}
 \label{sec:eval:seq}
-This filter included a counting of the longest sequence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized for the ongest sequence in that frame-range (while still then employing the same per-sample smoothing as above). This decreased the OLE substantially as can be see in table~\ref{tab:evalTotal}, however the filter did increase the overall error by 8\%, more than any of the other filters, 
+This filter included a counting of the longest sequence of a certain net output in a frame-range, and then outputting the ID of the language that was recognized for the longest sequence in that frame-range (while still then employing the same per-sample smoothing as above). This decreased the OLE substantially as can be see in table~\ref{tab:evalTotal}, however the filter did increase the overall error by 8\%, more than any of the other filters, which seems intuitive as possible noise or music interruptions in speech can easily lead to long sequences of wrongly classified frames.
 
-The full code of this filter can be found in the Appendix.
+The full code of this filter can be found in the appendix.
 
 
 \section{Two-Language Setup}
 \label{sec:eval:2L}
-table~\ref{tab:eval2L} shows the result produced by using the LID Euronews net for 10 languages on different combinations of 2 languages (namely French/Italian and English/German). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, intuitively, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the bare approach in sec.~\ref{sec:eval:bare}.
+Table~\ref{tab:eval2L} shows the result produced by using the LID Euronews net for ten languages on different combinations of two languages (namely French/Italian and English/German). In this case we ignore the output of the net if it doesn't equal one of the two languages and instead keep the previous output intact in this case. This, intuitively, gave a big boost in the recognition rate, bringing the rate up to 85 \% for the two languages combined, an improvement of more than 10 \% in correctness compared to the bare approach in sec.~\ref{sec:eval:bare}.
 
 \begin{table}[h!]
-\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 Languages with the 2-language filter on the DEV set.}
+\caption{Results of the best net structure (tree-structure 6-layer) evaluated on only 2 languages with the 2-language filter on the DEV set.}
 \label{tab:eval2L}
 \centering
 \begin{tabular}{| l | r |}
@@ -889,7 +890,7 @@ A one-dimensional Gaussian filter returns a response that is akin to the form of
 \end{axis}
 \end{tikzpicture}
 \end{figure}
-To calculate the Gaussian Filter Response, one needs a Gaussian Kernel with a Window-Size. While in general the Gaussian filter has an infinite window size, choosing a fixed window size can approximate the Gaussian well. In this discrete case \(\sigma\), the standard deviation of the Gaussian, can be approximated with \(N\) the size of the window:
+To calculate the Gaussian Filter Response, one needs a Gaussian Kernel with a window size. While in general the Gaussian filter has an infinite window size, choosing a fixed window size can approximate the Gaussian well. In this discrete case \(\sigma\), the standard deviation of the Gaussian, can be approximated with \(N\) the size of the window:
 \begin{equation}
 \sigma  =\sqrt{\frac{N}{2\pi}}
 \end{equation}
@@ -900,7 +901,7 @@ g(x) = \frac{1}{\sqrt{2\pi}\sigma} * e^{{- \frac{x^2}{2\sigma^2}}}
 Once the Gaussian function is calculated for the window, the convolution of the data points with the Gaussian kernel is performed, resulting in smoothed over coefficients of the LID net output. The maximum smoothed coefficient is then chosen and the corresponding language is output, which gave us definite improvements over the unsmoothened net output. In tcl the relevant code part can be seen in~\ref{lst:tclGauss}, in which we presume the window size to mean the number of points we take into account on both sides of the origin, while normally this number is the window size - 1.
 
 
-We tried different window sizes of which the result can be seen in tab.~\ref{tab:evalGauss} on the DEV Set.  As can be seen, the Window size of 15 performed the best out of the different window sizes evaluated. To showcase a correct implementation fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has evidently occurred.  As it turns out the Gauss Filter indeed performs much better even on the correctness-metric on small samples with a size under 50 frames (=500ms). tab.~\ref{tab:50Gauss} showcases this in comparison to the bare net output, which shows a very significant improvement of 15\%.
+We tried different window sizes of which the result can be seen in tab.~\ref{tab:evalGauss} on the DEV set.  As can be seen, the window size of 15 performed the best out of the different window sizes evaluated. To showcase a correct implementation fig.~\ref{fig:gaussWS10} shows the result of one Gaussian convolution for a window size of 10 as a graph, as one can see it is evident that the graph looks similar to the Gaussian kernel as graphed above and smoothing of the data has evidently occurred.  As it turns out the Gauss filter indeed performs much better even on the correctness-metric on small samples with a size under 50 frames (=500ms). Tab.~\ref{tab:50Gauss} showcases this in comparison to the bare net output, which shows a very significant improvement of 15\%.
 
 \begin{figure}
 \label{fig:gaussWS10}
@@ -973,7 +974,7 @@ We tried different window sizes of which the result can be seen in tab.~\ref{tab
 \section{Speech Filter}
 \label{sec:speech}
 
-As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the Sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This only gave us an error of around 0.02\% higher compared to the bare net output, however the filtering effectiveness (OLE) was worse than for the other filters as can be seen in \ref{tab:evalTotal}. 
+As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input audio using the sound power as a basis. In a further attempt to smooth output we used this to ignore any non-speech marked frames for output-calculation. This only gave us an error of around 0.02\% higher compared to the bare net output, however the filtering effectiveness (OLE) was worse than for the other filters as can be seen in \ref{tab:evalTotal}. 
 
 \begin{table}[h!]
 \caption{Results of the 6-layer tree-structure evaluated on samples longer than 50 frames (~500 ms)}
@@ -1028,11 +1029,11 @@ As described in Chapter~\ref{ch:FP} we extract a SPEECH feature from the input a
 \section{Filter Selection}
 \label{sec:eval:filterSelection}
 
-Overall we conclude, that selection of a good filter is  a non-trivial problem, as already we saw that some filters perform better for certain languages or setups while suffering for others. Overall, our net performs reasonably well with all filters, reaching error of less than 20 \% for samples of length > 500 ms (See tab.~\ref{tab:evalTotal2}), a delay that would still make online-usage feasibly. On 10 target languages, using the Counting Filter with a Window size of 100 (so a delay of 1 second), would arguably perform the best while still filtering out the maximum of wrong outputs, featuring an OLE of only 0.007, a relative improvement of \((0.202-0.007) / 0.185 = 0.97 = 97 \% \) for the DEV set and \( 0.198- 0.006)/ 0.198 = 0.97 = 97\% \) compared to the bare net output.
+Overall we conclude, that selection of a good filter is  a non-trivial problem, as already we saw that some filters perform better for certain languages or setups while suffering for others. Overall, our net performs reasonably well with all filters, reaching error of less than 20 \% for samples of length > 500 ms (See tab.~\ref{tab:evalTotal2}), a delay that would still make online-usage feasibly. On 10 target languages, using the counting filter with a window size of 100 (so a delay of 1 second), would arguably perform the best while still filtering out the maximum of wrong outputs, featuring an OLE of only 0.007, a relative improvement of \((0.202-0.007) / 0.185 = 0.97 = 97 \% \) for the DEV set and \( 0.198- 0.006)/ 0.198 = 0.97 = 97\% \) compared to the bare net output.
 
-For less delay, one could also implement the Sequence Filter for a small Window size of 10, which also gives us an relative improvement of \((0.202-0.031) / 0.202 = 0.85 = 85 \%\) on the DEV and \((0.198 - 0.031) / 0.198 = 0.84 = 84\% \) on the TEST set. However, this filter is likely to possibly change the overall output. However a combination of the Sequence and the Counting Filter on smaller window sizes might be feasible.
+For less delay, one could also implement the sequence filter for a small window size of 10, which also gives us an relative improvement of \((0.202-0.031) / 0.202 = 0.85 = 85 \%\) on the DEV and \((0.198 - 0.031) / 0.198 = 0.84 = 84\% \) on the TEST set. However, this filter is likely to possibly change the overall output. However a combination of the sequence and the counting filter on smaller window sizes might be feasible.
 
-The Gauss Filter might also be a feasible choice as it improved results for very short samples (< 500 ms) and less jumps in the output of the Lecture Translator would be preferable, however the computational complexity of this filter is much higher compared to the other filters which might have to be taken into account in an online-environment.
+The Gauss filter might also be a feasible choice as it improved results for very short samples (< 500 ms) and less jumps in the output of the Lecture Translator would be preferable, however the computational complexity of this filter is much higher compared to the other filters which might have to be taken into account in an online-environment.
 
 Overall, in the lecture-translator environment, less target languages are likely, and so the language-filter for the correct amount of target languages would most likely be sufficient. However, further filtering on top of this will most likely decrease the amount of wrong output.
 

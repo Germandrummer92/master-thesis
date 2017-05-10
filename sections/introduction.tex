@@ -1,15 +1,3 @@
-%% LaTeX2e class for student theses
-%% sections/content.tex
-%% 
-%% Karlsruhe Institute of Technology
-%% Institute for Program Structures and Data Organization
-%% Chair for Software Design and Quality (SDQ)
-%%
-%% Dr.-Ing. Erik Burger
-%% burger@kit.edu
-%%
-%% Version 1.1, 2014-11-21
-
 \chapter{Introduction}
 \label{ch:Introduction}
 Language Identification (LID) describes the classification task of differentiating between spoken speech in different languages and being able to correctly classify which speech-segments consists of which language.  Neural Networks refer to Artificial Neural Networks (ANNs), a Machine Learning approach to classification tasks. They are employed greatly throughout all sciences and especially in computer science and tasks concerned with the processing of speech. This thesis proposes a low-latency, fast, and ``online'', approach to Language Identification using ANNs.
@@ -18,7 +6,7 @@ The work done in this thesis uses the Janus Recognition Toolkit (JRTk)~\cite{wos
 
 \section{Motivation}
 \label{sec:Introduction:Motivation}
-ASR is used in many applications and devices today, especially in the rise of handheld mobile devices like smartphones and tablets. It has progressed quickly in the last five years and has found commercial success. Famous examples include Google's\footnote{Google: \url{www.google.com}} ``Ok, Google'' and Apple's\footnote{Apple: \url{www.apple.com}} Siri. Which both include voice search\cite{franz2008voice} and a form of voice control, that even is extensible in the case of Google and Android e.g\cite{voicecontrol2014}. Many other applications have emerged, including spoken language translation\footnote{IWSLT: \url{iwslt.org}}, especially relevant for this thesis in the realm of spoken language translation, in the form of the Lecture Translator\cite{lecturetranslator2016} .
+ASR is used in many applications and devices today, especially in the rise of hand held mobile devices like smartphones and tablets. It has progressed quickly in the last five years and has found commercial success. Famous examples include Google's\footnote{Google: \url{www.google.com}} ``Ok, Google'' and Apple's\footnote{Apple: \url{www.apple.com}} Siri. Which both include voice search\cite{franz2008voice} and a form of voice control, that even is extensible in the case of Google and Android e.g\cite{voicecontrol2014}. Many other applications have emerged, including spoken language translation\footnote{IWSLT: \url{iwslt.org}}, especially relevant for this thesis in the realm of spoken language translation, in the form of the Lecture Translator\cite{lecturetranslator2016} .
 
 The task of LID can be applied in all of those fields, as the best-performing ASR is trained on one language and therefore requires changing the trained model when the input language changes. This requires user interaction in the form of defining the input language. Robust and low-latency language identification could eliminate the need for this interaction and make the user experience more streamlined.
 
